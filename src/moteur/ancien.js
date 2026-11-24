@@ -40,6 +40,7 @@ B.ancien.convertir = function (o, infos) {
   B.equipe.replacer(S);
   B.equipe.genererDepart(S);
   S.ouvert = B.equipe.peutOuvrir(S);
+  S.dejaOuvert = S.ouvert;
   S.equipeReprise = n;
   S.jour = Math.max(1, r.jour);
   S.argent = r.argent;
@@ -62,6 +63,7 @@ B.ancien.reprendreEquipe = function (S, o) {
   let n = 0;
   staff.forEach(function (s) {
     if (!s || typeof s.name !== 'string' || !s.name.trim()) return;
+    if (s.tmp || (s.ct && s.ct.k === 'interim')) return; /* intérimaires d'un jour : pas repris */
     let poste = B.DATA.equipe.postes[s.post] ? s.post : (s.role === 'cook' ? 'commis' : s.role === 'waiter' ? 'serv' : null);
     if (!poste) return;
     const sub = s.sub || {}, note = borne(s.skill, 5), exp = Math.max(0, Math.min(45, Math.round(+s.exp) || 0));

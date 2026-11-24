@@ -117,3 +117,7 @@ button { font: inherit; cursor: pointer; }
 #portrait .tel { width: 70px; height: 120px; border: 6px solid #f2c14e; border-radius: 14px; animation: tourne 2.2s ease-in-out infinite; }
 @keyframes tourne { 0%, 25% { transform: rotate(0); } 55%, 100% { transform: rotate(-90deg); } }
 @media (orientation: portrait) { #portrait { display: flex; } }
+
+.personne .partant { color: #b8322a; font-style: italic; }
+.personne .refus { margin-top: 4px; background: #fbe6e3; border-radius: 6px; padding: 4px 8px; font-size: 14px; color: #8e2a22; font-weight: 600; }
+.confirmation p { margin: 6px 0; }

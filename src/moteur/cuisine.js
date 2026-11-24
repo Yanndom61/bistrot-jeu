@@ -3,7 +3,7 @@
 B.cuisine = {};
 
 B.cuisine.avancer = function (S) {
-  const cuisiniers = B.equipe.cuisine(S);
+  const cuisiniers = B.equipe.actifs(S, 'cuisine');
   if (!cuisiniers.length) return;
   const cap = B.DATA.equipe.commandesParCuisinier;
   const enCours = {};

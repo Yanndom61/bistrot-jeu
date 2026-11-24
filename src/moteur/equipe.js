@@ -16,7 +16,7 @@ B.tChoix = function (cle, n, vars, genre) {
   if (s == null) { B.textesManquants[cle] = true; return ''; }
   if (Array.isArray(s)) s = s[Math.abs(n | 0) % s.length];
   const f = genre === 'f';
-  const accords = { e: f ? 'e' : '', ere: f ? 'ère' : 'er', le: f ? 'la' : 'le', nerveux: f ? 'nerveuse' : 'nerveux' };
+  const accords = { e: f ? 'e' : '', ere: f ? 'ère' : 'er', le: f ? 'la' : 'le', nerveux: f ? 'nerveuse' : 'nerveux', il: f ? 'elle' : 'il', Il: f ? 'Elle' : 'Il' };
   return String(s).replace(/\{(\w+)\}/g, function (m, k) {
     if (vars && vars[k] != null) return vars[k];
     if (accords[k] != null) return accords[k];
@@ -41,10 +41,12 @@ B.equipe.euroHeure = function (n) { return n.toFixed(2).replace('.', ',') + '\u0
 /* ---------- Composition ---------- */
 B.equipe.salle = function (S) { return S.equipe.filter(function (p) { return p.service === 'salle'; }); };
 B.equipe.cuisine = function (S) { return S.equipe.filter(function (p) { return p.service === 'cuisine'; }); };
+/* Ceux qui restent (sans compter les personnes renvoyées qui finissent leur tâche). */
+B.equipe.actifs = function (S, service) { return S.equipe.filter(function (p) { return p.service === service && !p.partant; }); };
 B.equipe.patron = function (S) { return S.equipe.find(function (p) { return p.patron; }); };
-B.equipe.peutOuvrir = function (S) { return B.equipe.salle(S).length > 0 && B.equipe.cuisine(S).length > 0; };
+B.equipe.peutOuvrir = function (S) { return B.equipe.actifs(S, 'salle').length > 0 && B.equipe.actifs(S, 'cuisine').length > 0; };
 B.equipe.coutMensuel = function (S) {
-  return S.equipe.reduce(function (s, p) { return s + (p.patron ? 0 : B.equipe.parMois(p.salaire)); }, 0);
+  return S.equipe.reduce(function (s, p) { return s + (p.patron || p.partant || p.interim ? 0 : B.equipe.parMois(p.salaire)); }, 0);
 };
 
 /* Place de repos d'une personne de salle (près de la passe) ou de cuisine (près des fourneaux). */
@@ -80,7 +82,7 @@ B.equipe.creerPatron = function (S) {
 B.equipe.patronPeutChanger = function (S) {
   const p = B.equipe.patron(S);
   if (!p) return false;
-  return (p.service === 'salle' ? B.equipe.salle(S) : B.equipe.cuisine(S)).length > 1;
+  return B.equipe.actifs(S, p.service).length > 1;
 };
 B.equipe.changerPatron = function (S) {
   const p = B.equipe.patron(S);
@@ -89,6 +91,102 @@ B.equipe.changerPatron = function (S) {
   p.service = p.service === 'salle' ? 'cuisine' : 'salle';
   B.equipe.replacer(S);
   return true;
+};
+
+/* ---------- Effectif : les 16 places fixées dans Chez YaYa (le patron et les intérimaires en plus) ---------- */
+B.equipe.place = function (poste) {
+  return B.DATA.equipe.effectif.places.find(function (pl) { return pl.postes.indexOf(poste) >= 0; }) || null;
+};
+B.equipe.placeRecrutable = function (pl) { return pl.postes.some(function (k) { return B.equipe.poste(k).recrutable; }); };
+B.equipe.titulaires = function (S) { return S.equipe.filter(function (p) { return !p.patron && !p.interim && !p.partant; }); };
+B.equipe.occupes = function (S, pl) { return B.equipe.titulaires(S).filter(function (p) { return pl.postes.indexOf(p.poste) >= 0; }).length; };
+B.equipe.placeLibre = function (S, poste) { const pl = B.equipe.place(poste); return !pl || B.equipe.occupes(S, pl) < pl.nombre; };
+B.equipe.effectif = function (S) {
+  const E = B.DATA.equipe.effectif, r = { n: 0, total: E.total, groupes: {} };
+  Object.keys(E.groupes).forEach(function (g) { r.groupes[g] = 0; });
+  E.places.forEach(function (pl) { const n = B.equipe.occupes(S, pl); r.groupes[pl.groupe] += n; r.n += n; });
+  return r;
+};
+
+/* ---------- Intérim : un remplaçant pour la journée, sur une place vide ---------- */
+B.equipe.placesVides = function (S, service) {
+  return B.DATA.equipe.effectif.places.reduce(function (s, pl) {
+    if (pl.groupe !== service || !B.equipe.placeRecrutable(pl)) return s;
+    return s + Math.max(0, pl.nombre - B.equipe.occupes(S, pl));
+  }, 0);
+};
+B.equipe.interimaires = function (S, service) { return S.equipe.filter(function (p) { return p.interim && !p.partant && (!service || p.service === service); }); };
+B.equipe.salaireInterim = function (S, service) {
+  return Math.round(B.equipe.minimum(S, B.DATA.equipe.interim.postes[service], B.DATA.equipe.interim.experience) * (1 + B.DATA.equipe.interim.majoration) * 100) / 100;
+};
+/* Renvoie null si on peut appeler un intérimaire pour ce service, sinon la clé du texte qui explique pourquoi. */
+B.equipe.interimPossible = function (S, service) {
+  if (!S.dejaOuvert) return 'interim_jour1';
+  if (B.equipe.placesVides(S, service) <= B.equipe.interimaires(S, service).length) return 'interim_complet_' + service;
+  return null;
+};
+B.equipe.appelerInterim = function (S, service, auto) {
+  if (B.equipe.interimPossible(S, service)) return null;
+  const I = B.DATA.equipe.interim, D = B.DATA.equipe, poste = I.postes[service];
+  const pr = D.prenoms[B.entier(S, 0, D.prenoms.length - 1)];
+  const noms = D.noms.concat(B.lieu(S.lieu).nomsClients);
+  const p = B.equipe.nouveauMembre(S, {
+    nom: pr[0] + ' ' + noms[B.entier(S, 0, noms.length - 1)], genre: pr[1], poste: poste, service: service,
+    note: I.note, vitesse: I.vitesse, qualite: I.qualite, amabilite: I.amabilite, experience: I.experience,
+    salaire: B.equipe.salaireInterim(S, service)
+  });
+  p.interim = true; p.jourInterim = S.jour;
+  B.equipe.replacer(S);
+  if (auto) B.message(S, 'msg_interim_auto', { nom: p.nom });
+  else B.message(S, 'msg_interim', { nom: p.nom, poste: B.equipe.nomPoste(p), salaire: B.equipe.euroHeure(p.salaire) });
+  return p;
+};
+/* Le matin : les intérimaires de la veille repartent ; si l'option est active et qu'il manque quelqu'un pour ouvrir,
+   un intérimaire est appelé automatiquement (dernier recours). */
+B.equipe.matin = function (S) {
+  const avant = S.equipe.length;
+  S.equipe = S.equipe.filter(function (p) { return !p.partant && !p.interim; });
+  if (S.equipe.length < avant) B.equipe.replacer(S);
+  if (S.interimAuto && S.dejaOuvert) {
+    ['salle', 'cuisine'].forEach(function (sv) {
+      if (!B.equipe.actifs(S, sv).length) B.equipe.appelerInterim(S, sv, true);
+    });
+  }
+};
+
+/* ---------- Renvoyer un employé ---------- */
+B.equipe.enService = function (S) { return !!S.ouvert && !S.finJour; };
+/* Renvoie null si c'est possible, sinon la clé du texte qui explique pourquoi. */
+B.equipe.peutRenvoyer = function (S, p) {
+  if (!p || p.patron) return 'renvoi_patron';
+  if (p.partant) return 'renvoi_deja';
+  if (B.equipe.enService(S) && (p.service === 'salle' || p.service === 'cuisine') &&
+      B.equipe.actifs(S, p.service).length <= 1) return p.service === 'salle' ? 'renvoi_salle_vide' : 'renvoi_cuisine_vide';
+  return null;
+};
+/* Hors service, il part tout de suite. En plein service, il finit sa tâche en cours puis part. */
+B.equipe.renvoyer = function (S, p) {
+  if (B.equipe.peutRenvoyer(S, p)) return false;
+  p.partant = true;
+  B.message(S, 'msg_renvoi', { nom: p.nom, e: p.genre === 'f' ? 'e' : '' });
+  if (!B.equipe.enService(S) || !B.equipe.occupe(S, p)) B.equipe.retirer(S, p, false);
+  return true;
+};
+B.equipe.occupe = function (S, p) {
+  if (p.service === 'salle') return !!p.tache;
+  if (p.service === 'cuisine') return S.groupes.some(function (g) { return g.etat === 'cuisine' && g.cuisinier === p.id; });
+  return false;
+};
+B.equipe.retirer = function (S, p, apresTache) {
+  B.equipe.liberer(S, p);
+  S.equipe = S.equipe.filter(function (x) { return x.id !== p.id; });
+  B.equipe.replacer(S);
+  if (apresTache) B.message(S, 'msg_renvoi_parti', { nom: p.nom });
+};
+/* Appelé à chaque pas : les personnes renvoyées qui ont fini leur tâche s'en vont. */
+B.equipe.departs = function (S) {
+  S.equipe.filter(function (p) { return p.partant && !B.equipe.occupe(S, p); })
+    .forEach(function (p) { B.equipe.retirer(S, p, true); });
 };
 
 /* Quand quelqu'un quitte son poste : ce qu'il faisait est repris par les autres. */
@@ -134,7 +232,8 @@ B.equipe.genererDepart = function (S) {
 B.equipe.nouveauxCandidats = function (S) {
   const N = B.DATA.equipe.nouveauxCandidatsParJour;
   let n = Math.min(B.entier(S, N.min, N.max), Math.max(0, N.plafond - S.candidats.length));
-  const postes = Object.keys(B.DATA.equipe.postes).filter(function (k) { return B.DATA.equipe.postes[k].recrutable; });
+  const postes = Object.keys(B.DATA.equipe.postes).filter(function (k) { return B.DATA.equipe.postes[k].recrutable && B.equipe.placeLibre(S, k); });
+  if (!postes.length) n = 0;
   for (let i = 0; i < n; i++) S.candidats.push(B.equipe.candidat(S, postes[B.entier(S, 0, postes.length - 1)]));
   if (n > 0) B.message(S, 'msg_nouveaux_candidats', { n: n });
 };
@@ -174,6 +273,7 @@ B.equipe.repondre = function (S, c, q) {
 
 /* Le joueur propose un salaire horaire. Réponse : accepte, contre-proposition ou refus. */
 B.equipe.proposer = function (S, c, offre) {
+  if (!B.equipe.placeLibre(S, c.poste)) { c.dernierMot = B.t('entretien_complet'); return { r: 'complet' }; }
   offre = Math.max(c.minimum, Math.round(offre * 100) / 100);
   c.offre = offre;
   const perso = B.equipe.perso(c.perso);

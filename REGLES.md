@@ -1,7 +1,7 @@
 # Règles du jeu Bistrot
 
 Ce document est **la référence unique** des règles. Il est tenu à jour à chaque version.
-Version décrite : **0.2 (étape 1 + retours de Yann : placement manuel, équipe de départ)**.
+Version décrite : **0.3 (étape 1 + retours de Yann : placement manuel, équipe de départ, effectif de 16, intérim, renvoi)**.
 
 ---
 
@@ -61,7 +61,30 @@ Version décrite : **0.2 (étape 1 + retours de Yann : placement manuel, équipe
 
 ### Démarrage (comme dans Chez YaYa)
 - Tu démarres **seul, avec le patron**, et tu recrutes ton équipe dès le premier jour, avant d'ouvrir.
-- **8 candidats** t'attendent : 3 serveurs, 1 commis de salle, 2 commis de cuisine, 2 chefs de cuisine. Chaque matin, 1 ou 2 nouveaux candidats arrivent (6 au plus en attente).
+- **10 candidats** t'attendent : 3 serveurs, 1 commis de salle, 1 responsable de salle, 2 chefs de cuisine, 1 second de cuisine, 1 commis de cuisine, 1 aide de cuisine. Chaque matin, 1 ou 2 nouveaux candidats arrivent (6 au plus en attente), seulement pour des postes qui ont encore une place.
+
+### L'effectif : 16 employés, comme dans Chez YaYa
+- Source : l'équipe que Yann avait fixée dans Chez YaYa (cahier des charges v6, §1, et v6b, point 7 ; constantes `SLOTS` et `DEPS` de l'ancien jeu). Fichier : `donnees/equipe.json` (`effectif`).
+- **16 employés : salle 8, cuisine 6, nettoyage 2.** Le patron est en plus, les intérimaires aussi.
+
+| Groupe | Places |
+|---|---|
+| Salle (8) | 1 responsable de salle · 5 serveurs (un commis de salle peut prendre une place de serveur) · 2 barmans |
+| Cuisine (6) | 1 chef · 1 second · 1 commis (ou aide de cuisine) · 1 apprenti · 2 plongeurs |
+| Nettoyage (2) | 2 agents de nettoyage |
+
+- Quand une place est prise, on ne peut plus embaucher à ce poste : le candidat affiche « Poste complet » et n'a plus de bouton Entretien. Renvoyer quelqu'un libère sa place.
+- **Recrutables dès maintenant** : responsable de salle, serveur, commis de salle, chef, second, commis et aide de cuisine. Les places d'apprenti, de barman, de plongeur et de nettoyage sont affichées mais se recruteront à l'étape « Équipe », quand ces métiers auront un rôle.
+- Le volet Équipe affiche l'effectif (« Effectif : 3 / 16… ») et le détail des places.
+- Une ancienne partie peut dépasser une place (l'ancien jeu le permettait) : tout le monde est gardé, mais on ne peut plus embaucher à ce poste tant qu'il est au-dessus.
+
+### L'intérim (comme dans Chez YaYa, version simple)
+- Un intérimaire **remplace une place vide pour la journée**. Il repart le lendemain matin et ne compte pas dans les 16.
+- Bouton « Appeler un serveur intérimaire » (salle) ou « Appeler un commis intérimaire » (cuisine) dans le volet Équipe. Il y a au plus autant d'intérimaires que de places vides **recrutables** dans ce groupe (salle : responsable + 5 serveurs ; cuisine : chef + second + commis).
+- **Pas avant ta première ouverture** : le premier jour, tu recrutes toi-même.
+- Salaire : minimum de la grille (3 ans d'expérience) **+ 30 %**, comme dans l'ancien jeu. Il est affiché mais pas encore payé, comme les autres salaires.
+- Intérimaire « moyen » : note 5, vitesse 5. Il peut être renvoyé comme les autres.
+- **Intérim automatique** (option dans le volet Équipe) : le matin, s'il manque quelqu'un en salle ou en cuisine pour ouvrir, un intérimaire est appelé tout seul (dernier recours, comme dans l'ancien jeu). **Activé par défaut en Facile, coupé par défaut en Normal et Difficile** (ces difficultés viendront plus tard).
 - Pour ouvrir, il faut **au moins une personne en salle et une en cuisine**. Le patron compte pour l'une des deux : il est en salle au départ, et tu peux le passer en cuisine (bouton dans Équipe), sauf s'il laisserait son poste vide.
 - La v0.1 avait une serveuse automatique (Léa) : elle est supprimée.
 
@@ -90,12 +113,25 @@ Version décrite : **0.2 (étape 1 + retours de Yann : placement manuel, équipe
 | Échelon 2 | 12,37 € | 12,80 € | 13,81 € | 15,07 € | 22,22 € |
 | Échelon 3 | 12,47 € | 13,43 € | 14,28 € | 15,71 € | 28,68 € |
 
-- Niveau de chaque poste (choix du jeu) : commis de salle **I**, serveur **II**, commis de cuisine **II**, chef de cuisine **IV**. Pour les employés repris de l'ancien jeu : responsable de salle III, second III, aide de cuisine I, barman II, plongeur I, nettoyage I, apprenti 53 % du niveau I-1.
+- Niveau de chaque poste (choix du jeu) : commis de salle **I**, aide de cuisine **I**, serveur **II**, commis de cuisine **II**, responsable de salle **III**, second de cuisine **III**, chef de cuisine **IV**. Pour les employés repris de l'ancien jeu : barman II, plongeur I, nettoyage I, apprenti 53 % du niveau I-1.
 - Échelon selon l'expérience : jusqu'à 2 ans → échelon 1 ; 3 à 7 ans → échelon 2 ; 8 ans et plus → échelon 3.
 - Le coefficient « salaires » du lieu s'applique par-dessus (Paris × 1,15). Il ne descend jamais sous 1, donc jamais sous la grille.
 - Le candidat demande entre le minimum et environ 35 % de plus, selon sa note et sa personnalité.
 - Salaire mensuel affiché : taux horaire × 170,73 h (39 h par semaine, dont 4 h majorées de 10 %).
-- **Les salaires ne sont pas encore payés** : l'argent ne bouge pas avant l'étape « Argent ». Le coût mensuel de l'équipe est affiché dans le volet Équipe.
+- **Les salaires ne sont pas encore payés** (décision de Yann) : ils seront payés avec l'étape « Argent ». D'ici là, l'argent ne bouge pas. Le coût mensuel de l'équipe est affiché dans le volet Équipe (sans les intérimaires).
+
+### Renvoyer un employé
+- Chaque employé (intérimaires compris) a un bouton **« Renvoyer »** dans le volet Équipe. **Le patron ne peut pas être renvoyé** : il n'a pas ce bouton.
+- Toucher « Renvoyer » ouvre une **confirmation** : « Veux-tu vraiment renvoyer … ? », avec ce qui va se passer et deux boutons, « Oui, renvoyer … » et « Non, garder … ».
+- **Pendant le service** (restaurant ouvert, journée pas finie), il est **impossible de laisser la salle ou la cuisine vide**. Si c'est la dernière personne de son poste (le patron compte), un message court l'explique : « Impossible de renvoyer … : la cuisine serait vide pendant le service. Recrute quelqu'un ou passe le patron en cuisine d'abord. »
+- **Hors service** (avant la première ouverture, ou restaurant fermé faute d'équipe), on peut renvoyer n'importe quel employé. Si un poste se retrouve vide, le restaurant reste fermé jusqu'au prochain recrutement (ou jusqu'à un intérimaire).
+- **En plein service**, la personne renvoyée **finit sa tâche en cours, puis part** :
+  - en salle, elle termine ce qu'elle fait (commande, plat, addition ou table à débarrasser) et ne prend plus rien d'autre ;
+  - en cuisine, elle termine les commandes qu'elle a sur le feu et n'en prend plus de nouvelles ;
+  - si elle n'a rien en cours, elle part tout de suite.
+- Le volet affiche « Renvoyé(e) : finit sa tâche en cours, puis part. » Le journal note le renvoi, puis le départ.
+- Une personne renvoyée ne compte plus pour tenir un poste, ni dans l'effectif, ni dans le coût des salaires. Elle ne revient pas parmi les candidats.
+- **Pas d'indemnité pour l'instant** : ce sera vu avec l'étape « Argent ».
 
 ### Le travail en salle
 - Les personnes en salle (patron compris) choisissent seules quoi faire, dans cet ordre : 1) apporter un plat prêt, 2) apporter l'addition, 3) prendre une commande, 4) débarrasser. À priorité égale, elles servent celui qui attend depuis le plus longtemps.
@@ -110,7 +146,8 @@ Version décrite : **0.2 (étape 1 + retours de Yann : placement manuel, équipe
 
 ### Pas encore là (étape « Équipe »)
 - Le sens du service, la qualité, la personnalité, la motivation, les plannings, les jours de repos, les contrats, les formations et le départ d'un employé n'ont pas encore d'effet.
-- Bar, plonge et nettoyage existent seulement pour les employés repris de l'ancien jeu : ils sont gardés dans l'équipe, mais leur rôle viendra plus tard.
+- Bar, plonge, nettoyage et apprentis existent seulement pour les employés repris de l'ancien jeu : ils sont gardés dans l'équipe et comptent dans les 16, mais leur rôle (et leur recrutement) viendra plus tard.
+- L'intérim ne remplace pas encore les absences (il n'y a pas encore de jours de repos).
 
 ## 5. Les lieux
 
@@ -132,7 +169,8 @@ Version décrite : **0.2 (étape 1 + retours de Yann : placement manuel, équipe
 
 - La partie est **enregistrée toute seule** : toutes les 5 minutes de jeu, quand on ouvre un volet, en fin de journée, et quand on quitte l'appli.
 - L'avant-dernière sauvegarde est gardée en secours. Si la dernière est abîmée, le jeu reprend la précédente.
-- Chaque sauvegarde porte un **numéro de version** (actuellement 2). Quand une version change le format, elle sait convertir les anciennes sauvegardes.
+- Chaque sauvegarde porte un **numéro de version** (actuellement 3). Quand une version change le format, elle sait convertir les anciennes sauvegardes.
+- **Format 2 → 3 (Bistrot 0.3)** : une partie de la v0.2 reprend là où elle était. L'option d'intérim automatique prend la valeur par défaut (activée en Facile). Un employé nommé « Intérimaire » repris par erreur de l'ancien jeu (remplaçant d'un jour) est retiré.
 - **Format 1 → 2 (Bistrot 0.2)** : une partie de la v0.1 est relue ainsi : le patron reste seul (Léa part), 8 candidats arrivent, et la journée en cours repart au matin, restaurant fermé jusqu'au recrutement. Le nom, le lieu, le jour, l'argent et le journal sont gardés. Une sauvegarde venant d'une version plus récente n'est jamais écrasée sans prévenir : un message demande de mettre le jeu à jour.
 - **Cases séparées** sur le téléphone :
   - lien TEST : `bistrotjeu.test.partie` (+ `bistrotjeu.test.partie-precedente`, `bistrotjeu.test.reglages`) ;
@@ -143,9 +181,9 @@ Version décrite : **0.2 (étape 1 + retours de Yann : placement manuel, équipe
 - L'ancien jeu et Bistrot sont sur la même adresse (yanndom61.github.io). Bistrot peut donc **lire** les parties de l'ancien jeu sur le même téléphone : les 5 emplacements (`bistrot_slot1` à `bistrot_slot5`) et la sauvegarde principale (`bistrot_save_v1`).
 - Bistrot **ne modifie jamais et n'efface jamais** ces cases. Il fait une copie dans ses propres cases (`bistrotjeu.test.copie-ancien-jeu`).
 - Bistrot reprend : le **nom** du restaurant, le **lieu**, le **jour**, l'**argent**, la **note** et **l'équipe**. La partie repart au matin de ce jour.
-- **Équipe reprise** : chaque employé lisible garde son nom, son poste, sa note, sa vitesse, son sens du service, sa qualité, son expérience et sa personnalité. Les serveurs, commis de salle et responsables vont en salle ; les chefs, seconds, commis, aides et apprentis vont en cuisine. Les barmans, plongeurs et agents de nettoyage sont gardés en attente de leur rôle. Le genre est déduit du prénom.
+- **Équipe reprise** : chaque employé lisible garde son nom, son poste, sa note, sa vitesse, son sens du service, sa qualité, son expérience et sa personnalité. Les serveurs, commis de salle et responsables vont en salle ; les chefs, seconds, commis, aides et apprentis vont en cuisine. Les barmans, plongeurs et agents de nettoyage sont gardés en attente de leur rôle. Le genre est déduit du prénom. Les intérimaires d'un jour de l'ancien jeu ne sont pas repris.
 - Le salaire est **recalculé sur la grille officielle** (poste + expérience), car l'ancien jeu comptait autrement.
-- Si l'ancienne équipe n'a personne en cuisine, le patron y passe. Si elle est vide, le restaurant reste fermé jusqu'au recrutement. La carte, les stocks, l'équipe et le plan seront repris aux étapes suivantes, à partir de la copie.
+- Si l'ancienne équipe n'a personne en cuisine, le patron y passe. Si elle est vide, le restaurant reste fermé jusqu'au recrutement. La carte, les stocks, les plannings et le plan seront repris aux étapes suivantes, à partir de la copie.
 - Les anciennes sauvegardes testées vont de la version 9 à la version 11 de l'ancien format (Chez YaYa v8 à v10.2), dont une partie au « Jour 0 » sans équipe, et une partie à Tokyo.
 
 ## 9. Affichage sur téléphone
@@ -168,21 +206,21 @@ Tailles de référence testées (en pixels « CSS », téléphone en paysage) :
 
 | Lieu | Clients par jour | Servis | Repartis faute de place |
 |---|---|---|---|
-| Mayotte | 38 | 38 | 0 % |
-| La Réunion | 63 | 62 | 3 % |
-| Île-de-France | 81 | 78 | 4 % |
-| Bretagne | 72 | 68 | 6 % |
-| Paris | 98 | 89 | 10 % |
-| Tokyo | 114 | 99 | 13 % |
-| New York | 117 | 100 | 15 % |
+| Mayotte | 39 | 38 | 1 % |
+| La Réunion | 64 | 62 | 3 % |
+| Île-de-France | 82 | 78 | 5 % |
+| Bretagne | 71 | 68 | 4 % |
+| Paris | 100 | 91 | 9 % |
+| Tokyo | 113 | 98 | 13 % |
+| New York | 117 | 101 | 14 % |
 
 Selon l'équipe, à Paris (moyenne par jour) :
 
 | Équipe | Servis | Repartis | Attente avant la commande |
 |---|---|---|---|
-| Patron seul en salle + 1 commis | 83 | 14 % | 5 min |
-| Patron + 1 serveur + 1 commis | 86 | 11 % | 3 min |
-| Patron + 2 serveurs + chef + commis | 89 | 7 % | 3 min |
+| Patron seul en salle + 1 commis | 81 | 15 % | 5 min |
+| Patron + 1 serveur + 1 commis | 88 | 10 % | 3 min |
+| Patron + 2 serveurs + chef + commis | 89 | 8 % | 3 min |
 
 Avec 10 tables, c'est surtout le nombre de tables qui limite les clients. L'équipe joue sur l'attente.
 Aucune valeur impossible, et toutes les journées se terminent. Détail complet : `tests/resultat-simulation-30-jours.txt`.

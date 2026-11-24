@@ -92,19 +92,34 @@
       "nom": "Responsable de salle",
       "nomF": "Responsable de salle",
       "service": "salle",
-      "niveauHCR": "III"
+      "niveauHCR": "III",
+      "niveauJeu": [
+        5,
+        9
+      ],
+      "recrutable": true
     },
     "second": {
       "nom": "Second de cuisine",
       "nomF": "Seconde de cuisine",
       "service": "cuisine",
-      "niveauHCR": "III"
+      "niveauHCR": "III",
+      "niveauJeu": [
+        4,
+        8
+      ],
+      "recrutable": true
     },
     "aide": {
       "nom": "Aide de cuisine",
       "nomF": "Aide de cuisine",
       "service": "cuisine",
-      "niveauHCR": "I"
+      "niveauHCR": "I",
+      "niveauJeu": [
+        2,
+        6
+      ],
+      "recrutable": true
     },
     "appr": {
       "nom": "Apprenti cuisine",
@@ -137,10 +152,12 @@
     "serv",
     "serv",
     "csalle",
+    "resp",
     "commis",
-    "commis",
+    "aide",
     "chef",
-    "chef"
+    "chef",
+    "second"
   ],
   "nouveauxCandidatsParJour": {
     "min": 1,
@@ -372,5 +389,117 @@
     "Alice",
     "Yasmine",
     "Margaux"
-  ]
+  ],
+  "effectif": {
+    "_source": "Équipe fixée par Yann dans Chez YaYa : cahier des charges v6 (§1) et v6b (point 7), et constantes SLOTS/DEPS de l'ancien jeu (bistrot.html) : 16 employés = salle 8, cuisine 6, nettoyage 2. Le patron est en plus.",
+    "total": 16,
+    "groupes": {
+      "salle": 8,
+      "cuisine": 6,
+      "nettoyage": 2
+    },
+    "places": [
+      {
+        "id": "resp",
+        "nom": "Responsable de salle",
+        "postes": [
+          "resp"
+        ],
+        "nombre": 1,
+        "groupe": "salle"
+      },
+      {
+        "id": "serv",
+        "nom": "Serveurs ou commis de salle",
+        "postes": [
+          "serv",
+          "csalle"
+        ],
+        "nombre": 5,
+        "groupe": "salle"
+      },
+      {
+        "id": "bar",
+        "nom": "Barmans",
+        "postes": [
+          "barman"
+        ],
+        "nombre": 2,
+        "groupe": "salle"
+      },
+      {
+        "id": "chef",
+        "nom": "Chef de cuisine",
+        "postes": [
+          "chef"
+        ],
+        "nombre": 1,
+        "groupe": "cuisine"
+      },
+      {
+        "id": "second",
+        "nom": "Second de cuisine",
+        "postes": [
+          "second"
+        ],
+        "nombre": 1,
+        "groupe": "cuisine"
+      },
+      {
+        "id": "commis",
+        "nom": "Commis ou aide de cuisine",
+        "postes": [
+          "commis",
+          "aide"
+        ],
+        "nombre": 1,
+        "groupe": "cuisine"
+      },
+      {
+        "id": "appr",
+        "nom": "Apprenti",
+        "postes": [
+          "appr"
+        ],
+        "nombre": 1,
+        "groupe": "cuisine"
+      },
+      {
+        "id": "plong",
+        "nom": "Plongeurs",
+        "postes": [
+          "plong"
+        ],
+        "nombre": 2,
+        "groupe": "cuisine"
+      },
+      {
+        "id": "nett",
+        "nom": "Nettoyage",
+        "postes": [
+          "nett"
+        ],
+        "nombre": 2,
+        "groupe": "nettoyage"
+      }
+    ]
+  },
+  "interim": {
+    "_explication": "Comme dans Chez YaYa : un intérimaire remplace une place vide pour la journée, environ 30 % plus cher. Il ne compte pas dans les 16.",
+    "majoration": 0.3,
+    "postes": {
+      "salle": "serv",
+      "cuisine": "commis"
+    },
+    "note": 5,
+    "vitesse": 5,
+    "qualite": 5,
+    "amabilite": 5,
+    "experience": 3,
+    "autoParDefaut": {
+      "facile": true,
+      "normal": false,
+      "difficile": false
+    }
+  }
 }

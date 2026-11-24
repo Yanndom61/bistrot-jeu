@@ -71,6 +71,7 @@ B.service.avancer = function (S, h) {
     let garde = 0;
     while (reste > 1e-9 && garde++ < 20) {
       if (!w.tache) {
+        if (w.partant) return;
         const t = B.service.choisir(S, w);
         if (t) B.service.preparer(S, w, t);
         else {

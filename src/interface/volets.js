@@ -6,7 +6,7 @@ UI.ouvrirVolet = function (quoi) {
   UI.voletOuvert = quoi;
   const v = UI.$('volet');
   v.classList.toggle('large', quoi === 'equipe');
-  if (quoi === 'equipe') { UI.candidatCourant = null; UI.rafraichirEquipe(true); }
+  if (quoi === 'equipe') { UI.candidatCourant = null; UI.renvoiCourant = null; UI.renvoiRefus = null; UI.rafraichirEquipe(true); }
   else {
     UI.$('volet-titre').textContent = B.t(quoi === 'journal' ? 'journal_titre' : 'menu_titre');
     UI.$('volet-corps').innerHTML = quoi === 'journal' ? UI.htmlJournal() : UI.htmlMenu();
@@ -25,6 +25,8 @@ UI.fermerVolet = function () {
   setTimeout(function () { if (!v.classList.contains('ouvert')) v.hidden = true; }, 220);
   UI.voletOuvert = null;
   UI.candidatCourant = null;
+  UI.renvoiCourant = null;
+  UI.renvoiRefus = null;
   UI.pause('volet', false);
   UI.majDetail();
 };

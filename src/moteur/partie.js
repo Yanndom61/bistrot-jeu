@@ -28,6 +28,8 @@ B.nouvellePartie = function (o) {
     candidats: [],
     ouvert: false,
     placement: 'auto',
+    dejaOuvert: false,
+    interimAuto: !!B.DATA.equipe.interim.autoParDefaut.facile,
     equipeReprise: 0,
     stats: { jour: B.statsVides(), totalServis: 0, joursJoues: 0 },
     journal: [],
@@ -48,6 +50,7 @@ B.creerPartie = function (o) {
 B.ouvrir = function (S) {
   if (S.ouvert || !B.equipe.peutOuvrir(S)) return false;
   S.ouvert = true;
+  S.dejaOuvert = true;
   B.message(S, 'msg_ouverture');
   return true;
 };
@@ -73,6 +76,7 @@ B.pas = function (S, h) {
   B.clients.avancer(S, h);
   B.cuisine.avancer(S);
   B.service.avancer(S, h);
+  B.equipe.departs(S);
   B.finDeJournee(S);
 };
 
@@ -107,6 +111,7 @@ B.jourSuivant = function (S) {
   S.finJour = false;
   S.bilan = null;
   S.groupes = [];
+  B.equipe.matin(S);
   S.tables.forEach(function (t) { t.groupe = null; t.sale = false; t.serveur = null; });
   S.equipe.forEach(function (w) { const b = B.equipe.base(S, w); w.x = b.x; w.y = b.y; w.chemin = []; w.tache = null; });
   B.equipe.nouveauxCandidats(S);

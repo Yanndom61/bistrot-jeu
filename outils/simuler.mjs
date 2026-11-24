@@ -113,6 +113,112 @@ for (const [nom, postes] of equipes) {
   void t1;
 }
 
+// Renvoyer un employé : jamais le patron, jamais la salle ou la cuisine vide en service,
+// en plein service il finit sa tâche puis part.
+{
+  const S0 = B.creerPartie({ nom: 'Test', lieu: 'paris', graine: 77 });
+  recruter(S0, ['serv', 'commis']);
+  const serv0 = S0.equipe.find((p) => p.poste === 'serv');
+  if (B.equipe.peutRenvoyer(S0, B.equipe.patron(S0)) !== 'renvoi_patron') probleme('renvoi : le patron ne doit pas pouvoir être renvoyé');
+  if (!B.equipe.renvoyer(S0, serv0) || S0.equipe.some((p) => p.id === serv0.id)) probleme('renvoi : avant l’ouverture, il devrait partir tout de suite');
+  const commis0 = S0.equipe.find((p) => p.poste === 'commis');
+  if (B.equipe.peutRenvoyer(S0, commis0)) probleme('renvoi : avant l’ouverture, on peut renvoyer même le seul cuisinier');
+
+  let S = B.creerPartie({ nom: 'Test', lieu: 'paris', graine: 78 });
+  recruter(S, ['serv', 'serv', 'commis', 'chef']);
+  B.ouvrir(S);
+  B.avancer(S, 95);
+  const servs = S.equipe.filter((p) => p.poste === 'serv'), cuis = S.equipe.filter((p) => p.poste === 'commis' || p.poste === 'chef');
+  // Serveur occupé : il finit sa tâche.
+  let w = servs.find((p) => p.tache);
+  for (let i = 0; !w && i < 200; i++) { B.avancer(S, 0.2); w = servs.find((p) => p.tache); }
+  const tacheAvant = w && w.tache.type;
+  B.equipe.renvoyer(S, w);
+  if (!S.equipe.some((p) => p.id === w.id)) probleme('renvoi en service : le serveur aurait dû finir sa tâche avant de partir');
+  // Cuisinier occupé : il finit ses commandes, n'en prend pas de nouvelles.
+  let k = cuis.find((p) => B.equipe.occupe(S, p));
+  for (let i = 0; !k && i < 200; i++) { B.avancer(S, 0.2); k = cuis.find((p) => B.equipe.occupe(S, p)); }
+  const commandesAvant = S.groupes.filter((g) => g.etat === 'cuisine' && g.cuisinier === k.id).map((g) => g.id);
+  B.equipe.renvoyer(S, k);
+  const autreK = cuis.find((p) => p.id !== k.id);
+  if (B.equipe.peutRenvoyer(S, autreK) !== 'renvoi_cuisine_vide') probleme('renvoi : on ne doit pas pouvoir vider la cuisine en service');
+  const autreW = servs.find((p) => p.id !== w.id);
+  let nouvelles = 0, sauvegardeOk = true, minutesServeur = null, minutesCuisinier = null;
+  const t0 = S.minute;
+  for (let i = 0; i < 400 && (S.equipe.some((p) => p.partant)); i++) {
+    B.avancer(S, 0.25);
+    S.groupes.forEach((g) => { if (g.cuisinier === k.id && commandesAvant.indexOf(g.id) < 0) nouvelles++; });
+    if (minutesServeur == null && !S.equipe.some((p) => p.id === w.id)) minutesServeur = S.minute - t0;
+    if (minutesCuisinier == null && !S.equipe.some((p) => p.id === k.id)) minutesCuisinier = S.minute - t0;
+    if (i === 3) { const r = B.relire(B.serialiser(S)); if (!r.partie) sauvegardeOk = false; else S = r.partie; }
+    B.verifier(S).forEach((pb) => probleme('renvoi : ' + pb));
+  }
+  if (nouvelles) probleme('renvoi : le cuisinier renvoyé a reçu de nouvelles commandes');
+  if (!sauvegardeOk) probleme('renvoi : sauvegarde illisible pendant un départ');
+  if (S.equipe.some((p) => p.partant)) probleme('renvoi : une personne renvoyée ne part jamais');
+  if (B.equipe.peutRenvoyer(S, S.equipe.find((p) => p.poste === 'serv')) !== null) probleme('renvoi : on devrait pouvoir renvoyer un serveur quand le patron est en salle');
+  void autreW;
+  let pas = 0;
+  while (!S.finJour && pas++ < 4000) B.avancer(S, 0.5);
+  if (!S.finJour) probleme('renvoi : la journée ne se termine pas après les renvois');
+  if (S.stats.jour.servis + S.stats.jour.repartis !== S.stats.jour.arrives) probleme('renvoi : des clients perdus après les renvois');
+  const msgs = S.journal.filter((m) => /renvoyé|quitte le restaurant/.test(m.texte)).map((m) => m.texte);
+  console.log(`\nRenvoi : serveur (${tacheAvant}) parti ${minutesServeur?.toFixed(1)} min après, cuisinier parti ${minutesCuisinier?.toFixed(1)} min après (${commandesAvant.length} commande(s) finie(s)), cuisine vide refusée, patron protégé.`);
+  msgs.forEach((m) => console.log('  journal : ' + m));
+}
+
+// Effectif de 16 (Chez YaYa) : un poste complet n'embauche plus ; intérim sur place vide, pour la journée.
+{
+  const S = B.creerPartie({ nom: 'Test', lieu: 'paris', graine: 91 });
+  recruter(S, ['chef', 'commis']);
+  const chef2 = S.candidats.find((c) => c.poste === 'chef');
+  B.equipe.repondre(S, chef2, 'salaire');
+  if (B.equipe.proposer(S, chef2, chef2.demande + 5).r !== 'complet') probleme('effectif : un 2e chef ne devrait pas pouvoir être embauché');
+  if (B.equipe.interimPossible(S, 'salle') !== 'interim_jour1') probleme('intérim : pas possible avant la première ouverture');
+  B.ouvrir(S);
+  if (B.equipe.interimPossible(S, 'cuisine') !== null) probleme('intérim : il reste la place du second, il devrait être possible');
+  const i1 = B.equipe.appelerInterim(S, 'cuisine');
+  if (!i1 || B.equipe.interimPossible(S, 'cuisine') !== 'interim_complet_cuisine') probleme('intérim : une seule place vide en cuisine → un seul intérimaire');
+  const vS = B.equipe.placesVides(S, 'salle');
+  let n = 0; while (B.equipe.appelerInterim(S, 'salle')) n++;
+  if (n !== vS) probleme(`intérim : ${n} intérimaires en salle au lieu de ${vS}`);
+  const ef = B.equipe.effectif(S);
+  let pas = 0; while (!S.finJour && pas++ < 4000) B.avancer(S, 0.5);
+  B.verifier(S).forEach((pb) => probleme('intérim : ' + pb));
+  B.jourSuivant(S);
+  if (S.equipe.some((p) => p.interim)) probleme('intérim : les intérimaires devraient repartir le lendemain');
+  console.log(`\nEffectif : ${ef.n}/${ef.total} titulaires (2e chef refusé : poste complet), intérim : 1 en cuisine + ${n} en salle pour la journée, repartis le lendemain.`);
+  // Intérim automatique : seulement si l'option est active et qu'il manque quelqu'un pour ouvrir.
+  const T = B.creerPartie({ nom: 'Test', lieu: 'paris', graine: 92 });
+  recruter(T, ['commis']); B.ouvrir(T);
+  T.finJour = true; const commis = T.equipe.find((p) => p.poste === 'commis');
+  T.interimAuto = false;
+  B.equipe.renvoyer(T, commis);
+  B.jourSuivant(T);
+  if (T.ouvert || T.equipe.some((p) => p.interim)) probleme('intérim auto coupé : personne ne doit être appelé');
+  T.interimAuto = true; T.finJour = true; B.jourSuivant(T);
+  if (!T.ouvert || !T.equipe.some((p) => p.interim && p.service === 'cuisine')) probleme('intérim auto : un commis intérimaire aurait dû être appelé');
+  console.log(`Intérim automatique : coupé → restaurant fermé ; activé → ${T.equipe.find((p) => p.interim).nom} appelé en cuisine, restaurant ouvert.`);
+}
+
+// Sauvegarde Bistrot 0.2 (format 2) : relue, option d'intérim ajoutée, « Intérimaire » de l'ancien jeu retiré.
+{
+  const S = B.creerPartie({ nom: 'Test', lieu: 'paris', graine: 93 });
+  recruter(S, ['serv', 'commis']); B.ouvrir(S); B.avancer(S, 60);
+  B.equipe.nouveauMembre(S, { nom: 'Intérimaire', poste: 'plong', service: 'autre', note: 5, vitesse: 5 });
+  const o = JSON.parse(B.serialiser(S)); o.version = 2; delete o.dejaOuvert; delete o.interimAuto;
+  const r = B.relire(JSON.stringify(o));
+  if (!r.partie) probleme('sauvegarde 0.2 illisible : ' + r.erreur);
+  else {
+    const T = r.partie;
+    if (T.version !== 3 || !T.dejaOuvert || T.interimAuto !== true || T.equipe.some((p) => p.nom === 'Intérimaire')) probleme('sauvegarde 0.2 mal convertie');
+    B.verifier(T).forEach((pb) => probleme('sauvegarde 0.2 : ' + pb));
+    let pas = 0; while (!T.finJour && pas++ < 4000) B.avancer(T, 0.5);
+    if (!T.finJour) probleme('sauvegarde 0.2 : la journée ne se termine pas');
+    console.log(`\nSauvegarde Bistrot 0.2 relue : format ${T.version}, équipe de ${T.equipe.length} (patron compris), service repris là où il était, journée terminée.`);
+  }
+}
+
 // Entretiens : réponses variées, accords corrects.
 {
   const S = B.creerPartie({ nom: 'Test', lieu: 'paris', graine: 4242 });

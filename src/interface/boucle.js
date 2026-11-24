@@ -24,6 +24,7 @@ UI.majFin = function () {
     el.hidden = true;
     UI.sauver();
     UI.majBarre();
+    if (!UI.S.ouvert) UI.ouvrirVolet('equipe');
   });
 };
 

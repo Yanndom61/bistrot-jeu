@@ -1,7 +1,7 @@
 /* sauvegarde.js — enregistrer et relire une partie. Chaque sauvegarde porte un numéro de version.
    Quand le format change, on ajoute une étape dans B.MIGRATIONS (de la version n à n+1) :
    ainsi chaque nouvelle version du jeu sait relire toutes les anciennes. */
-B.VERSION_SAUVEGARDE = 2;
+B.VERSION_SAUVEGARDE = 3;
 
 B.MIGRATIONS = {
   /* v1 → v2 (Bistrot 0.2) : l'équipe arrive. Le patron démarre seul (Léa n'est plus là), avec des candidats.
@@ -19,6 +19,22 @@ B.MIGRATIONS = {
     S.ouvert = false;
     B.message(S, 'msg_lea_partie');
     S.version = 2;
+    return S;
+  },
+  /* v2 → v3 (Bistrot 0.3) : effectif de 16, intérim et renvoi. L'option d'intérim automatique prend la valeur
+     par défaut de la difficulté. Les « Intérimaire » repris par erreur de l'ancien jeu (remplaçants d'un jour) partent. */
+  2: function (S) {
+    S.dejaOuvert = !!S.ouvert || S.jour > 1;
+    S.interimAuto = !!B.DATA.equipe.interim.autoParDefaut[S.difficulte || 'facile'];
+    const avant = S.equipe.length;
+    S.equipe = S.equipe.filter(function (p) { return p.patron || p.nom !== 'Intérimaire'; });
+    if (S.equipe.length < avant) {
+      B.equipe.replacer(S);
+      S.groupes.forEach(function (g) { if (g.cuisinier && !S.equipe.some(function (p) { return p.id === g.cuisinier; })) { g.cuisinier = null; g.pret = null; } if (g.serveur && !S.equipe.some(function (p) { return p.id === g.serveur; })) g.serveur = null; });
+      S.tables.forEach(function (t) { if (t.serveur && !S.equipe.some(function (p) { return p.id === t.serveur; })) t.serveur = null; });
+      S.ouvert = S.ouvert && B.equipe.peutOuvrir(S);
+    }
+    S.version = 3;
     return S;
   }
 };

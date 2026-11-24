@@ -2,237 +2,248 @@ Simulation : 30 jours × 7 lieux (difficulté Facile)
 
 Équipe : patron en salle + 1 serveur + 1 commis de cuisine
 lieu                       jour  groupes  arrivés  servis  repartis  file max  attente cmd  fin
-paris                         1       36       92      84         8         2         3 min  22:35
-paris                         2       37       95      88         7         3         3 min  22:56
-paris                         3       36       95      95         0         1         3 min  22:37
-paris                         4       28       78      78         0         2         3 min  23:17
-paris                         5       42      109      94        15         5         3 min  22:30
-paris                         6       33       83      80         3         2         3 min  22:30
-paris                         7       39      101      95         6         1         3 min  22:52
-paris                         8       37      106     100         6         2         3 min  22:36
-paris                         9       43      114      98        16         6         3 min  23:01
-paris                        10       31       83      83         0         0         3 min  22:45
-paris                        11       39      102      84        18         3         3 min  22:30
-paris                        12       47      147     110        37         4         3 min  23:19
-paris                        13       41      103      99         4         1         3 min  23:15
-paris                        14       39      104      96         8         4         3 min  22:35
-paris                        15       43      114      87        27         3         3 min  22:57
-paris                        16       39      104      90        14         4         3 min  22:54
-paris                        17       34       88      80         8         1         3 min  22:47
-paris                        18       43      128     109        19         2         3 min  22:50
-paris                        19       34       95      85        10         2         3 min  22:30
-paris                        20       39      102      92        10         4         3 min  22:51
-paris                        21       40      115     100        15         4         3 min  22:36
-paris                        22       41      116      91        25         6         3 min  22:53
-paris                        23       30       93      93         0         1         3 min  22:53
-paris                        24       34       98      95         3         2         3 min  23:02
-paris                        25       36       90      79        11         2         3 min  22:37
-paris                        26       31       87      81         6         1         3 min  23:01
-paris                        27       28       77      66        11         2         3 min  22:57
-paris                        28       33       81      79         2         2         3 min  22:30
-paris                        29       30       83      83         0         1         3 min  23:18
-paris                        30       32       70      70         0         1         3 min  22:30
-idf                           1       33       83      83         0         1         3 min  23:17
-idf                           2       20       58      58         0         0         3 min  22:30
-idf                           3       30       85      85         0         0         3 min  22:30
-idf                           4       24       62      62         0         0         3 min  23:04
-idf                           5       27       80      80         0         0         3 min  22:53
-idf                           6       31       79      79         0         1         3 min  22:55
-idf                           7       40      103      93        10         5         3 min  22:36
-idf                           8       41      115     109         6         1         3 min  22:49
-idf                           9       32       78      78         0         0         3 min  22:50
-idf                          10       43      111     104         7         2         3 min  22:45
-idf                          11       20       64      58         6         1         3 min  22:50
-idf                          12       34       86      86         0         0         3 min  22:30
+paris                         1       37       91      89         2         1         3 min  23:00
+paris                         2       37       96      84        12         3         3 min  22:45
+paris                         3       36       95      95         0         1         3 min  22:30
+paris                         4       29       80      80         0         2         3 min  22:54
+paris                         5       43      114      99        15         5         3 min  22:41
+paris                         6       36       93      78        15         4         3 min  22:46
+paris                         7       38      105     105         0         1         3 min  23:01
+paris                         8       34       95      95         0         1         3 min  22:30
+paris                         9       43      118     100        18         5         3 min  22:45
+paris                        10       32       91      87         4         1         3 min  22:34
+paris                        11       38      102      85        17         4         3 min  22:30
+paris                        12       45      141     111        30         6         3 min  23:16
+paris                        13       38       97      97         0         0         3 min  23:03
+paris                        14       37       98      89         9         5         3 min  22:36
+paris                        15       40      105      95        10         2         3 min  22:54
+paris                        16       35       98      85        13         2         3 min  22:53
+paris                        17       36       99      90         9         2         3 min  23:04
+paris                        18       42      129     114        15         2         3 min  22:57
+paris                        19       36       99      88        11         2         3 min  22:30
+paris                        20       36       98      87        11         3         3 min  22:43
+paris                        21       40      113     102        11         2         3 min  22:30
+paris                        22       41      116      97        19         5         3 min  22:55
+paris                        23       35      104     100         4         3         3 min  22:57
+paris                        24       36      105     101         4         3         3 min  23:11
+paris                        25       39      102      85        17         3         3 min  22:41
+paris                        26       32       91      74        17         2         3 min  22:37
+paris                        27       32       88      77        11         2         3 min  22:36
+paris                        28       34       82      82         0         1         3 min  22:58
+paris                        29       30       86      80         6         1         3 min  22:42
+paris                        30       29       67      67         0         0         3 min  22:30
+idf                           1       35       88      83         5         1         3 min  23:02
+idf                           2       21       61      61         0         0         3 min  22:30
+idf                           3       29       78      78         0         0         3 min  22:30
+idf                           4       28       74      74         0         0         3 min  22:47
+idf                           5       32       96      93         3         1         3 min  22:55
+idf                           6       29       71      66         5         1         3 min  22:51
+idf                           7       40      100      93         7         3         3 min  22:37
+idf                           8       38      103      93        10         1         3 min  23:04
+idf                           9       28       61      61         0         0         3 min  22:43
+idf                          10       42      109      98        11         2         3 min  22:55
+idf                          11       21       66      60         6         1         3 min  22:53
+idf                          12       33       83      83         0         0         3 min  22:30
 idf                          13       29       76      76         0         0         3 min  22:30
-idf                          14       29       82      82         0         1         3 min  22:36
-idf                          15       28       65      65         0         0         3 min  22:51
-idf                          16       22       64      64         0         0         3 min  22:39
-idf                          17       31       83      83         0         1         3 min  22:55
-idf                          18       30       74      74         0         0         3 min  22:30
-idf                          19       26       73      73         0         0         3 min  22:30
-idf                          20       35      101      85        16         2         3 min  22:33
-idf                          21       33       79      76         3         2         3 min  22:30
-idf                          22       31       93      80        13         3         3 min  22:58
-idf                          23       33       86      77         9         1         3 min  22:30
-idf                          24       34       95      90         5         1         3 min  22:58
-idf                          25       31       82      67        15         3         3 min  22:30
-idf                          26       27       75      75         0         0         3 min  22:46
-idf                          27       28       79      74         5         1         3 min  22:46
-idf                          28       21       57      57         0         0         3 min  22:32
-idf                          29       31       81      81         0         1         3 min  22:30
-idf                          30       35       95      92         3         3         3 min  22:30
-bretagne                      1       30       76      76         0         0         3 min  22:30
-bretagne                      2       20       50      50         0         0         3 min  22:30
-bretagne                      3       24       69      69         0         0         3 min  22:49
-bretagne                      4       23       59      55         4         1         3 min  22:30
+idf                          14       30       84      78         6         1         3 min  23:03
+idf                          15       28       67      67         0         1         3 min  23:17
+idf                          16       22       64      64         0         0         3 min  22:37
+idf                          17       33       87      81         6         1         3 min  22:58
+idf                          18       26       63      63         0         0         3 min  22:30
+idf                          19       25       71      71         0         0         3 min  22:30
+idf                          20       38      111      84        27         2         3 min  22:35
+idf                          21       35       88      83         5         1         3 min  22:30
+idf                          22       30       90      90         0         2         3 min  22:58
+idf                          23       31       80      77         3         1         3 min  22:30
+idf                          24       36      101      96         5         2         3 min  22:45
+idf                          25       31       84      84         0         3         3 min  23:05
+idf                          26       28       81      74         7         1         3 min  22:38
+idf                          27       31       90      84         6         1         3 min  22:58
+idf                          28       20       55      55         0         0         3 min  22:33
+idf                          29       33       94      89         5         1         3 min  22:35
+idf                          30       37       98      86        12         2         3 min  22:30
+bretagne                      1       28       70      70         0         0         3 min  22:30
+bretagne                      2       21       52      52         0         0         3 min  22:30
+bretagne                      3       23       68      68         0         0         3 min  22:42
+bretagne                      4       23       59      59         0         1         3 min  22:30
 bretagne                      5       22       62      62         0         0         3 min  22:30
-bretagne                      6       33       97      91         6         1         3 min  22:41
-bretagne                      7       31      101      87        14         3         3 min  22:48
-bretagne                      8       26       65      63         2         2         3 min  22:45
-bretagne                      9       31       80      58        22         2         3 min  22:30
-bretagne                     10       21       53      53         0         0         3 min  22:36
-bretagne                     11       22       68      63         5         1         3 min  22:35
-bretagne                     12       32       93      87         6         1         3 min  22:55
-bretagne                     13       31       83      83         0         0         3 min  22:39
-bretagne                     14       32       95      88         7         1         3 min  23:17
-bretagne                     15       29       67      67         0         0         3 min  22:30
-bretagne                     16       25       70      70         0         0         3 min  23:05
-bretagne                     17       22       55      49         6         1         3 min  22:45
-bretagne                     18       37      107      99         8         1         3 min  22:36
-bretagne                     19       27       69      69         0         0         3 min  22:53
-bretagne                     20       18       50      50         0         0         3 min  22:32
-bretagne                     21       25       65      62         3         1         3 min  23:01
-bretagne                     22       32       85      68        17         4         3 min  22:30
-bretagne                     23       21       53      53         0         0         3 min  22:58
-bretagne                     24       31       88      80         8         2         3 min  22:30
-bretagne                     25       31       80      80         0         0         3 min  22:40
-bretagne                     26       22       60      60         0         0         3 min  23:14
-bretagne                     27       25       74      68         6         1         3 min  22:49
-bretagne                     28       24       68      63         5         1         3 min  22:39
-bretagne                     29       23       59      59         0         0         3 min  22:59
-bretagne                     30       22       54      54         0         0         3 min  22:58
-reunion                       1       32       76      73         3         2         3 min  22:57
+bretagne                      6       36      104      98         6         1         3 min  22:30
+bretagne                      7       31      101      87        14         3         3 min  22:33
+bretagne                      8       23       56      56         0         0         3 min  22:42
+bretagne                      9       31       80      64        16         2         3 min  22:30
+bretagne                     10       23       59      59         0         0         3 min  22:57
+bretagne                     11       21       65      65         0         1         3 min  22:31
+bretagne                     12       31       91      82         9         2         3 min  22:49
+bretagne                     13       30       81      81         0         0         3 min  22:33
+bretagne                     14       32       97      87        10         1         3 min  23:14
+bretagne                     15       28       65      65         0         0         3 min  22:30
+bretagne                     16       24       66      66         0         0         3 min  22:50
+bretagne                     17       21       53      47         6         1         3 min  22:43
+bretagne                     18       37      101      93         8         2         3 min  22:40
+bretagne                     19       29       72      72         0         0         3 min  22:49
+bretagne                     20       18       50      50         0         0         3 min  22:37
+bretagne                     21       24       63      60         3         1         3 min  22:50
+bretagne                     22       31       82      69        13         3         3 min  22:30
+bretagne                     23       21       53      53         0         0         3 min  22:54
+bretagne                     24       32       91      83         8         3         3 min  22:30
+bretagne                     25       31       81      81         0         0         3 min  22:32
+bretagne                     26       24       68      68         0         0         3 min  22:57
+bretagne                     27       26       78      78         0         1         3 min  23:18
+bretagne                     28       22       56      56         0         0         3 min  22:39
+bretagne                     29       26       66      66         0         0         3 min  22:49
+bretagne                     30       22       53      53         0         0         3 min  22:59
+reunion                       1       29       69      69         0         0         3 min  22:59
 reunion                       2       22       55      55         0         0         3 min  22:30
-reunion                       3       26       71      66         5         1         3 min  22:59
-reunion                       4       24       56      56         0         0         3 min  22:39
+reunion                       3       28       77      72         5         1         3 min  22:50
+reunion                       4       26       64      64         0         0         3 min  22:30
 reunion                       5       17       41      41         0         0         3 min  22:30
-reunion                       6       18       49      49         0         0         3 min  22:50
-reunion                       7       24       62      58         4         1         3 min  22:30
-reunion                       8       28       78      72         6         1         3 min  22:48
-reunion                       9       25       70      70         0         0         3 min  22:57
-reunion                      10       32       86      86         0         1         3 min  22:41
+reunion                       6       19       52      52         0         0         3 min  22:40
+reunion                       7       23       61      61         0         0         3 min  23:00
+reunion                       8       26       69      63         6         1         3 min  22:30
+reunion                       9       25       69      69         0         0         3 min  22:42
+reunion                      10       29       76      76         0         0         3 min  22:30
 reunion                      11       26       73      73         0         0         3 min  22:30
 reunion                      12       16       44      44         0         0         3 min  22:58
-reunion                      13       24       70      59        11         1         3 min  22:50
-reunion                      14       26       70      70         0         0         3 min  23:07
-reunion                      15       18       53      53         0         0         3 min  22:30
-reunion                      16       23       53      53         0         0         3 min  22:48
-reunion                      17       28       70      67         3         1         3 min  23:01
-reunion                      18       17       55      51         4         1         3 min  22:52
-reunion                      19       29       70      70         0         0         3 min  22:53
-reunion                      20       25       67      67         0         1         3 min  22:33
-reunion                      21       34       98      90         8         2         3 min  22:34
-reunion                      22       21       58      58         0         1         3 min  22:36
-reunion                      23       21       58      58         0         2         3 min  22:39
+reunion                      13       24       70      59        11         1         3 min  22:49
+reunion                      14       26       70      70         0         0         3 min  23:05
+reunion                      15       20       61      55         6         1         3 min  22:30
+reunion                      16       26       60      60         0         0         3 min  22:50
+reunion                      17       27       68      65         3         1         3 min  22:49
+reunion                      18       18       60      56         4         1         3 min  22:43
+reunion                      19       25       59      59         0         0         3 min  22:40
+reunion                      20       25       67      67         0         1         3 min  22:34
+reunion                      21       33       95      87         8         2         3 min  22:33
+reunion                      22       21       58      58         0         1         3 min  22:39
+reunion                      23       21       58      58         0         1         3 min  22:52
 reunion                      24       19       56      56         0         0         3 min  22:30
-reunion                      25       23       66      66         0         0         3 min  23:17
-reunion                      26       27       69      66         3         1         3 min  22:46
-reunion                      27       22       53      53         0         0         3 min  22:30
-reunion                      28       19       44      44         0         0         3 min  22:34
-reunion                      29       25       58      58         0         0         3 min  22:35
-reunion                      30       25       74      66         8         2         3 min  23:04
-new-york                      1       45      113     100        13         3         3 min  23:02
-new-york                      2       42      114      98        16         5         3 min  22:33
-new-york                      3       45      109     106         3         3         3 min  23:07
-new-york                      4       44      112     101        11         2         3 min  23:05
-new-york                      5       49      138      99        39         4         3 min  22:59
-new-york                      6       46      118      91        27         3         3 min  22:56
-new-york                      7       40      111     106         5         1         3 min  22:44
-new-york                      8       49      133     106        27         4         3 min  22:51
-new-york                      9       59      152     104        48         9         3 min  23:14
-new-york                     10       53      146     123        23         3         3 min  23:10
-new-york                     11       39       97      84        13         3         3 min  22:53
-new-york                     12       48      141     103        38         5         3 min  22:57
-new-york                     13       33       97      83        14         2         3 min  23:02
-new-york                     14       36      109     109         0         2         3 min  23:01
-new-york                     15       51      144     116        28         3         3 min  23:11
-new-york                     16       41      104     100         4         1         3 min  22:30
-new-york                     17       41      103      92        11         3         3 min  22:56
-new-york                     18       45      129     119        10         2         3 min  22:48
-new-york                     19       28       81      73         8         2         3 min  22:41
-new-york                     20       32       98      90         8         2         3 min  22:40
-new-york                     21       45      111      91        20         4         3 min  22:51
-new-york                     22       48      132     114        18         3         3 min  23:15
-new-york                     23       55      157     114        43         3         3 min  23:07
-new-york                     24       39       98      84        14         3         3 min  22:31
-new-york                     25       52      148     110        38         4         3 min  22:46
-new-york                     26       40      111      98        13         2         3 min  23:06
-new-york                     27       39       92      92         0         3         3 min  22:56
-new-york                     28       31       85      85         0         1         3 min  22:47
-new-york                     29       39      126     101        25         3         3 min  22:41
-new-york                     30       44      113     100        13         3         3 min  23:06
-tokyo                         1       43      128     106        22         2         3 min  22:59
-tokyo                         2       44      113      98        15         4         3 min  23:14
-tokyo                         3       46      120     107        13         2         3 min  23:06
-tokyo                         4       33       89      75        14         2         3 min  22:30
-tokyo                         5       47      110      96        14         5         3 min  22:30
-tokyo                         6       47      126      95        31         3         3 min  22:40
-tokyo                         7       47      127     105        22         4         3 min  23:30
-tokyo                         8       51      129      98        31         6         3 min  23:04
-tokyo                         9       36      103     100         3         3         3 min  22:49
-tokyo                        10       38      103      98         5         1         3 min  22:30
-tokyo                        11       33       95      89         6         4         3 min  22:45
-tokyo                        12       36       96      82        14         2         3 min  22:51
-tokyo                        13       39       93      81        12         3         3 min  23:12
-tokyo                        14       25       62      62         0         0         3 min  22:57
-tokyo                        15       55      152     120        32         6         3 min  23:00
-tokyo                        16       44      121      96        25         5         3 min  23:01
-tokyo                        17       52      133     124         9         4         3 min  22:30
-tokyo                        18       50      145     116        29         4         3 min  23:09
-tokyo                        19       42      113     106         7         3         3 min  23:10
-tokyo                        20       48      136     101        35         3         3 min  23:14
-tokyo                        21       32       77      77         0         0         3 min  22:58
-tokyo                        22       36      100      91         9         2         3 min  22:30
-tokyo                        23       43      121     106        15         2         3 min  22:45
-tokyo                        24       45      130     122         8         2         3 min  22:33
-tokyo                        25       33       92      87         5         3         3 min  22:59
-tokyo                        26       49      136     119        17         2         3 min  23:05
-tokyo                        27       39      112      96        16         3         3 min  22:52
-tokyo                        28       45      119     105        14         2         3 min  22:49
-tokyo                        29       47      120     102        18         6         3 min  22:49
-tokyo                        30       42      109     103         6         2         3 min  23:18
-mayotte                       1       10       31      31         0         0         3 min  22:49
-mayotte                       2       17       43      43         0         0         3 min  22:30
-mayotte                       3       15       43      43         0         0         3 min  22:57
+reunion                      25       26       73      73         0         0         3 min  23:06
+reunion                      26       29       72      69         3         2         3 min  22:38
+reunion                      27       21       53      53         0         0         3 min  22:30
+reunion                      28       21       54      54         0         0         3 min  23:06
+reunion                      29       24       55      55         0         0         3 min  22:30
+reunion                      30       25       73      67         6         1         3 min  22:53
+new-york                      1       50      132     116        16         4         3 min  23:12
+new-york                      2       40      107      90        17         2         3 min  22:53
+new-york                      3       50      125     107        18         3         3 min  23:17
+new-york                      4       40      101      90        11         1         3 min  22:56
+new-york                      5       43      120      96        24         4         3 min  23:08
+new-york                      6       48      121      95        26         4         3 min  22:53
+new-york                      7       37      102     102         0         0         3 min  22:41
+new-york                      8       48      132     113        19         4         3 min  22:56
+new-york                      9       58      153     110        43         9         3 min  23:18
+new-york                     10       54      150     129        21         3         3 min  23:12
+new-york                     11       43      113      94        19         2         3 min  22:43
+new-york                     12       44      127     103        24         3         3 min  22:35
+new-york                     13       33       97      83        14         2         3 min  22:54
+new-york                     14       39      121     108        13         2         3 min  22:58
+new-york                     15       47      133     113        20         3         3 min  22:56
+new-york                     16       41      108     101         7         3         3 min  22:30
+new-york                     17       41      104      95         9         3         3 min  23:08
+new-york                     18       46      141     119        22         4         3 min  22:49
+new-york                     19       31       88      80         8         2         3 min  22:38
+new-york                     20       32       96      88         8         2         3 min  22:38
+new-york                     21       43      105      92        13         2         3 min  22:59
+new-york                     22       44      124     110        14         2         3 min  22:59
+new-york                     23       54      152     129        23         4         3 min  23:26
+new-york                     24       41      104      86        18         3         3 min  22:30
+new-york                     25       53      152     114        38         4         3 min  22:43
+new-york                     26       40      107      90        17         3         3 min  22:54
+new-york                     27       36       81      81         0         1         3 min  23:08
+new-york                     28       32       85      85         0         1         3 min  22:40
+new-york                     29       38      119     104        15         3         3 min  22:30
+new-york                     30       43      114     104        10         3         3 min  22:32
+tokyo                         1       41      120      98        22         2         3 min  22:41
+tokyo                         2       43      111      96        15         3         3 min  23:01
+tokyo                         3       49      130     113        17         2         3 min  22:57
+tokyo                         4       32       82      73         9         3         3 min  22:30
+tokyo                         5       46      110      94        16         4         3 min  22:30
+tokyo                         6       49      123      95        28         3         3 min  22:30
+tokyo                         7       50      132     109        23         3         3 min  22:57
+tokyo                         8       50      130     107        23         4         3 min  22:52
+tokyo                         9       41      108      97        11         3         3 min  22:50
+tokyo                        10       39      113     102        11         1         3 min  22:43
+tokyo                        11       34       95      86         9         3         3 min  22:39
+tokyo                        12       34       90      86         4         2         3 min  22:41
+tokyo                        13       37       89      86         3         2         3 min  22:58
+tokyo                        14       30       78      78         0         0         3 min  22:56
+tokyo                        15       53      146     116        30         6         3 min  22:50
+tokyo                        16       49      134     115        19         4         3 min  23:01
+tokyo                        17       51      127     106        21         3         3 min  22:43
+tokyo                        18       51      150     121        29         5         3 min  22:49
+tokyo                        19       39      104      88        16         4         3 min  22:39
+tokyo                        20       50      142     106        36         4         3 min  23:06
+tokyo                        21       32       78      78         0         0         3 min  22:41
+tokyo                        22       33       93      88         5         1         3 min  22:30
+tokyo                        23       46      127     114        13         5         3 min  22:51
+tokyo                        24       43      129     119        10         3         3 min  22:59
+tokyo                        25       33       88      83         5         1         3 min  23:08
+tokyo                        26       46      125     105        20         2         3 min  22:37
+tokyo                        27       37      105      96         9         3         3 min  22:53
+tokyo                        28       39      107      98         9         3         3 min  22:36
+tokyo                        29       48      132     110        22         3         3 min  22:57
+tokyo                        30       41      104      91        13         4         3 min  22:30
+mayotte                       1       10       31      31         0         0         3 min  22:54
+mayotte                       2       19       51      51         0         0         3 min  22:57
+mayotte                       3       13       35      35         0         0         3 min  22:49
 mayotte                       4       15       47      47         0         0         3 min  22:30
-mayotte                       5       13       37      37         0         0         3 min  22:30
-mayotte                       6       14       38      38         0         0         3 min  22:30
+mayotte                       5       14       39      39         0         0         3 min  22:30
+mayotte                       6       15       43      43         0         0         3 min  22:30
 mayotte                       7       10       35      35         0         0         3 min  22:30
-mayotte                       8       14       40      40         0         0         3 min  22:51
-mayotte                       9       12       31      31         0         0         3 min  22:30
-mayotte                      10       18       46      46         0         0         3 min  22:46
-mayotte                      11       16       48      48         0         0         3 min  22:30
-mayotte                      12       12       24      24         0         0         3 min  22:48
-mayotte                      13       15       38      38         0         0         3 min  22:30
-mayotte                      14       14       39      39         0         1         3 min  22:39
-mayotte                      15       18       43      43         0         0         3 min  22:54
-mayotte                      16       11       36      36         0         0         3 min  22:30
-mayotte                      17       11       30      30         0         0         3 min  22:51
-mayotte                      18       14       46      46         0         0         3 min  22:31
-mayotte                      19       10       26      26         0         0         3 min  22:30
-mayotte                      20       15       49      49         0         0         3 min  22:50
-mayotte                      21       14       39      39         0         0         3 min  22:57
-mayotte                      22       15       42      42         0         0         3 min  23:05
-mayotte                      23       19       51      51         0         0         3 min  22:43
-mayotte                      24       17       39      39         0         0         3 min  22:54
-mayotte                      25       18       46      46         0         0         3 min  23:01
-mayotte                      26       11       29      29         0         0         3 min  22:30
-mayotte                      27       12       30      30         0         0         3 min  22:30
-mayotte                      28       18       47      47         0         0         3 min  22:30
+mayotte                       8       14       43      43         0         0         3 min  22:40
+mayotte                       9       11       28      28         0         0         3 min  22:30
+mayotte                      10       24       62      56         6         1         3 min  22:51
+mayotte                      11       14       42      42         0         0         3 min  22:30
+mayotte                      12       12       24      24         0         0         3 min  22:42
+mayotte                      13       15       37      37         0         0         3 min  22:30
+mayotte                      14       16       45      45         0         1         3 min  22:30
+mayotte                      15       20       48      48         0         0         3 min  22:49
+mayotte                      16        9       29      29         0         0         3 min  22:30
+mayotte                      17       10       25      25         0         0         3 min  22:32
+mayotte                      18       16       53      53         0         0         3 min  22:30
+mayotte                      19        9       19      19         0         0         3 min  22:30
+mayotte                      20       16       53      53         0         0         3 min  22:43
+mayotte                      21       14       37      37         0         0         3 min  22:30
+mayotte                      22       17       52      52         0         0         3 min  22:49
+mayotte                      23       18       49      49         0         0         3 min  22:30
+mayotte                      24       18       41      41         0         0         3 min  23:01
+mayotte                      25       14       36      36         0         0         3 min  22:38
+mayotte                      26       13       36      36         0         0         3 min  22:58
+mayotte                      27       13       34      29         5         1         3 min  22:52
+mayotte                      28       16       39      39         0         0         3 min  22:30
 mayotte                      29       11       27      27         0         0         3 min  22:30
-mayotte                      30       12       33      33         0         0         3 min  22:39
+mayotte                      30       10       26      26         0         0         3 min  22:30
 
 Comparaison des équipes à Paris (moyenne par jour) :
-  patron seul en salle + 1 commis        arrivés   96  servis   83  repartis  14 %  attente avant commande 5.0 min
-  patron + 1 serveur + 1 commis          arrivés   97  servis   86  repartis  11 %  attente avant commande 3.0 min
-  patron + 2 serveurs + chef + commis    arrivés   96  servis   89  repartis   7 %  attente avant commande 3.0 min
+  patron seul en salle + 1 commis        arrivés   96  servis   81  repartis  15 %  attente avant commande 5.1 min
+  patron + 1 serveur + 1 commis          arrivés   98  servis   88  repartis  10 %  attente avant commande 3.0 min
+  patron + 2 serveurs + chef + commis    arrivés   97  servis   89  repartis   8 %  attente avant commande 3.0 min
 
-Placement manuel : 1 groupe(s) placé(s) à la main, 0 essai(s) refusé(s) (table trop petite ou prise), aucun placement automatique.
-Entretiens : 192 réponses générées, 179 différentes (93 %).
+Placement manuel : 2 groupe(s) placé(s) à la main, 1 essai(s) refusé(s) (table trop petite ou prise), aucun placement automatique.
+
+Renvoi : serveur (addition) parti 1.8 min après, cuisinier parti 9.5 min après (1 commande(s) finie(s)), cuisine vide refusée, patron protégé.
+  journal : Zoé Garcia est renvoyée.
+  journal : Lina Vincent est renvoyée.
+  journal : Zoé Garcia a fini sa tâche et quitte le restaurant.
+  journal : Lina Vincent a fini sa tâche et quitte le restaurant.
+
+Effectif : 2/16 titulaires (2e chef refusé : poste complet), intérim : 1 en cuisine + 6 en salle pour la journée, repartis le lendemain.
+Intérim automatique : coupé → restaurant fermé ; activé → Lina Lefèvre appelé en cuisine, restaurant ouvert.
+
+Sauvegarde Bistrot 0.2 relue : format 3, équipe de 3 (patron compris), service repris là où il était, journée terminée.
+Entretiens : 200 réponses générées, 189 différentes (95 %).
   Zoé Garcia (Serveuse, stressée) : « Euh… alors… Je garde mon rythme, je ne suis pas la plus rapide mais je suis régulière. Désolée, je parle trop. »
   Aïcha Simon (Serveuse, blagueuse) : « Question piège ? Allez : c’est là que je suis la meilleure : plus ça va vite, plus j’accélère. »
   Lucas Muller (Serveur, discret) : « Je garde mon rythme, je ne suis pas le plus rapide mais je suis régulier. »
-Minimum de la grille à Paris (débutant, ×1,15) : Serveur 14,47 € · Commis de salle 14,16 € · Commis de cuisine 14,47 € · Chef de cuisine 16,89 €
+Minimum de la grille à Paris (débutant, ×1,15) : Serveur 14,47 € · Commis de salle 14,16 € · Commis de cuisine 14,47 € · Chef de cuisine 16,89 € · Responsable de salle 15,63 € · Second de cuisine 15,63 € · Aide de cuisine 14,16 €
 
-Sauvegarde Bistrot 0.1 relue : Chez YaYa, Bretagne, jour 1, équipe : Patron, 8 candidats, format 2.
+Sauvegarde Bistrot 0.1 relue : Chez YaYa, Bretagne, jour 1, équipe : Patron, 10 candidats, format 3.
 
 Reprise des anciennes parties (Chez YaYa) :
   ✓ save_v101_generated.json → Chez YaYa paris, Paris, jour 10, 593 545 €, note 3.3, 16 employés repris (salle 7 et cuisine 4, patron compris ; 6 en attente de rôle)
-  ✓ save_v10_service_generated.json → Chez YaYa paris, Paris, jour 9, 594 677 €, note 3.39, 17 employés repris (salle 8 et cuisine 4, patron compris ; 6 en attente de rôle)
+  ✓ save_v10_service_generated.json → Chez YaYa paris, Paris, jour 9, 594 677 €, note 3.39, 16 employés repris (salle 7 et cuisine 4, patron compris ; 6 en attente de rôle)
   ✓ save_v8_generated.json → Chez YaYa, Paris, jour 8, 594 038 €, note 3, 16 employés repris (salle 7 et cuisine 4, patron compris ; 6 en attente de rôle)
-  ✓ save_v93_generated.json → Chez YaYa, Paris, jour 8, 598 920 €, note 3, 22 employés repris (salle 8 et cuisine 7, patron compris ; 8 en attente de rôle)
-  ✓ save_v96_generated.json → Ancienne partie v96, Paris, jour 8, 598 385 €, note 3, 20 employés repris (salle 7 et cuisine 4, patron compris ; 10 en attente de rôle)
+  ✓ save_v93_generated.json → Chez YaYa, Paris, jour 8, 598 920 €, note 3, 16 employés repris (salle 7 et cuisine 4, patron compris ; 6 en attente de rôle)
+  ✓ save_v96_generated.json → Ancienne partie v96, Paris, jour 8, 598 385 €, note 3, 16 employés repris (salle 7 et cuisine 4, patron compris ; 6 en attente de rôle)
   ✓ save_v981_j0_generated.json → J0 test, Paris, jour 1, 600 000 €, note 3, 0 employés repris (salle 1 et cuisine 0, patron compris ; 0 en attente de rôle)
   ✓ save_v99_tokyo_generated.json → Chez YaYa tokyo, Tokyo, jour 17, 590 833 €, note 3.49, 16 employés repris (salle 7 et cuisine 4, patron compris ; 6 en attente de rôle)
 
