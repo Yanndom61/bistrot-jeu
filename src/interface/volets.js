@@ -1,0 +1,64 @@
+/* volets.js — panneaux qui s'ouvrent par-dessus la salle (Journal, Menu) et se ferment d'un geste.
+   Le jeu se met en pause pendant la lecture (réglage), et reprend à la fermeture. */
+UI.voletOuvert = null;
+
+UI.ouvrirVolet = function (quoi) {
+  UI.voletOuvert = quoi;
+  const v = UI.$('volet');
+  UI.$('volet-titre').textContent = B.t(quoi === 'journal' ? 'journal_titre' : 'menu_titre');
+  UI.$('volet-corps').innerHTML = quoi === 'journal' ? UI.htmlJournal() : UI.htmlMenu();
+  UI.$('voile').hidden = false;
+  v.hidden = false;
+  requestAnimationFrame(function () { v.classList.add('ouvert'); });
+  if (UI.reglages.pauseAuto) UI.pause('volet', true);
+  UI.sauver();
+};
+
+UI.fermerVolet = function () {
+  const v = UI.$('volet');
+  v.classList.remove('ouvert');
+  UI.$('voile').hidden = true;
+  setTimeout(function () { if (!v.classList.contains('ouvert')) v.hidden = true; }, 220);
+  UI.voletOuvert = null;
+  UI.pause('volet', false);
+};
+
+UI.htmlMenu = function () {
+  const S = UI.S;
+  let h = '<h3>' + UI.esc(B.t('menu_reglages')) + '</h3>';
+  h += '<div class="ligne-reglage"><span>' + UI.esc(B.t('menu_pause_auto')) + '</span>' +
+    '<button type="button" class="bascule' + (UI.reglages.pauseAuto ? ' on' : '') + '" data-action="pause-auto">' +
+    UI.esc(B.t(UI.reglages.pauseAuto ? 'menu_oui' : 'menu_non')) + '</button></div>';
+  h += '<h3>' + UI.esc(B.t('menu_partie')) + '</h3>';
+  if (UI.derniereSauvegarde != null) h += '<p>' + UI.esc(B.t('menu_sauve', { heure: B.heure(UI.derniereSauvegarde) })) + '</p>';
+  if (S && S.origine) h += '<p>' + UI.esc(B.t('menu_origine', { v: S.origine.versionSauvegarde })) + '</p>';
+  h += '<button type="button" class="gros" data-action="accueil">' + UI.esc(B.t('menu_accueil')) + '</button>';
+  h += '<p class="version">' + UI.esc(B.t('menu_version', { version: B.VERSION_JEU, canal: B.t('canal_' + B.CANAL) })) + '</p>';
+  return h;
+};
+
+UI.initVolets = function () {
+  UI.$('volet-fermer').textContent = B.t('btn_fermer');
+  UI.$('volet-fermer').addEventListener('click', UI.fermerVolet);
+  UI.$('voile').addEventListener('click', UI.fermerVolet);
+  UI.$('volet-corps').addEventListener('click', function (e) {
+    const b = e.target.closest('[data-action]');
+    if (!b) return;
+    if (b.dataset.action === 'pause-auto') {
+      UI.reglages.pauseAuto = !UI.reglages.pauseAuto;
+      UI.sauverReglages();
+      if (!UI.reglages.pauseAuto) UI.pause('volet', false);
+      UI.$('volet-corps').innerHTML = UI.htmlMenu();
+    } else if (b.dataset.action === 'accueil') {
+      UI.fermerVolet();
+      UI.sauver();
+      UI.montrerAccueil();
+    }
+  });
+  /* Glisser le volet vers la droite pour le fermer */
+  let x0 = null;
+  const v = UI.$('volet');
+  v.addEventListener('pointerdown', function (e) { x0 = e.clientX; });
+  v.addEventListener('pointerup', function (e) { if (x0 != null && e.clientX - x0 > 60) UI.fermerVolet(); x0 = null; });
+  v.addEventListener('pointercancel', function () { x0 = null; });
+};

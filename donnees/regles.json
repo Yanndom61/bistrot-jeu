@@ -1,0 +1,9 @@
+{
+  "_explication": "Réglages généraux. Une minute de jeu passe en une seconde à la vitesse 1×.",
+  "minutesParSeconde": 1,
+  "vitesses": [0, 1, 2, 4],
+  "difficultes": {
+    "facile": { "capitalDepart": 600000, "noteDepart": 3 }
+  },
+  "sauvegarde": { "toutesLesMinutesDeJeu": 5 }
+}

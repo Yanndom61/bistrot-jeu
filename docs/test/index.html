@@ -1,0 +1,1284 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<meta name="theme-color" content="#3a2a22">
+<meta name="mobile-web-app-capable" content="yes">
+<link rel="manifest" href="manifest.webmanifest">
+<link rel="icon" href="icone-192.png">
+<link rel="apple-touch-icon" href="icone-192.png">
+<title>Bistrot</title>
+<style>
+* { box-sizing: border-box; }
+html, body { margin: 0; height: 100%; overflow: hidden; background: #2b211c; }
+body { font-family: system-ui, -apple-system, "Segoe UI", Roboto, sans-serif; color: #2a211b; -webkit-tap-highlight-color: transparent; touch-action: manipulation; user-select: none; -webkit-user-select: none; }
+button { font: inherit; cursor: pointer; }
+#app { position: fixed; inset: 0; display: flex; flex-direction: column; }
+
+/* Barre du haut */
+#barre { flex: none; height: 46px; display: flex; align-items: center; gap: 6px; padding: 1px 8px; padding-left: max(8px, env(safe-area-inset-left)); padding-right: max(8px, env(safe-area-inset-right)); background: #3a2a22; color: #fff6e8; }
+.infos { flex: 1; min-width: 0; line-height: 1.25; }
+.infos .l1, .infos .l2 { white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+.infos .l1 { font-size: 14px; }
+.infos .l2 { font-size: 14px; color: #f6deb0; }
+#vitesses { display: flex; gap: 4px; flex: none; }
+#vitesses button { min-width: 50px; height: 44px; border: 0; border-radius: 9px; background: #5a463b; color: #fff6e8; font-size: 15px; font-weight: 600; }
+#vitesses button.actif { background: #f2c14e; color: #2a211b; }
+.btn-barre { flex: none; height: 44px; min-width: 64px; padding: 0 10px; border: 0; border-radius: 9px; background: #6d5546; color: #fff6e8; font-size: 14px; font-weight: 600; }
+
+/* Salle et colonne de droite */
+#jeu { flex: 1; display: flex; min-height: 0; }
+#salle-zone { flex: 1; min-width: 0; position: relative; background: #3a2a22; }
+#salle { position: absolute; inset: 0; width: 100%; height: 100%; display: block; }
+#cote { flex: none; width: 160px; display: flex; flex-direction: column; gap: 4px; padding: 4px; padding-right: max(4px, env(safe-area-inset-right)); background: #f3eadb; min-height: 0; }
+#messages { flex: 1 1 auto; min-height: 0; display: flex; flex-direction: column; gap: 4px; overflow: hidden; }
+.msg { font-size: 12px; line-height: 1.25; background: #fff; border-left: 4px solid #f2c14e; padding: 3px 6px; border-radius: 4px; display: -webkit-box; -webkit-line-clamp: 6; -webkit-box-orient: vertical; overflow: hidden; flex: none; animation: arrive .25s ease-out; }
+.msg .h, .journal .h { color: #8a6a50; font-weight: 600; }
+.msg-plus { font-size: 12px; color: #6d5546; padding: 0 4px; font-weight: 600; }
+@keyframes arrive { from { opacity: 0; transform: translateX(10px); } to { opacity: 1; transform: none; } }
+#detail { flex: none; background: #fff; border-radius: 6px; padding: 5px 7px; font-size: 12px; line-height: 1.35; min-height: 92px; }
+#detail b { font-size: 14px; }
+#detail .aide { color: #6d5546; margin-bottom: 2px; }
+#detail .vert { color: #2f8f55; font-weight: 600; } #detail .orange { color: #b8650c; font-weight: 600; } #detail .rouge { color: #c73a3a; font-weight: 600; }
+
+/* Dessin de la salle */
+#salle text { font-family: system-ui, -apple-system, "Segoe UI", Roboto, sans-serif; text-anchor: middle; pointer-events: none; }
+#salle .num { font-size: 30px; font-weight: 800; fill: #fff; stroke: #5a3a22; stroke-width: 1px; }
+#salle .etiq { font-size: 22px; font-weight: 700; fill: #fff; }
+#salle .petit-txt { font-size: 22px; font-weight: 700; fill: #5a4636; }
+#salle .gauche { text-anchor: start; }
+#salle .lieu-txt { font-size: 24px; font-weight: 700; fill: #57656b; }
+#touches rect { cursor: pointer; }
+
+/* Volets */
+#voile { position: fixed; inset: 0; background: rgba(20, 12, 8, .4); z-index: 20; }
+#volet { position: fixed; top: 0; right: 0; bottom: 0; width: min(460px, 78vw); background: #fffaf2; z-index: 21; display: flex; flex-direction: column; transform: translateX(100%); transition: transform .2s ease-out; box-shadow: -4px 0 18px rgba(0,0,0,.3); padding-right: env(safe-area-inset-right); }
+#volet.ouvert { transform: none; }
+.volet-tete { display: flex; align-items: center; justify-content: space-between; padding: 4px 8px 4px 14px; background: #3a2a22; color: #fff6e8; flex: none; }
+.volet-tete h2 { font-size: 17px; margin: 0; }
+#volet-fermer { height: 44px; min-width: 84px; border: 0; border-radius: 9px; background: #f2c14e; color: #2a211b; font-weight: 700; font-size: 15px; }
+#volet-corps { overflow-y: auto; padding: 8px 14px 16px; font-size: 14px; line-height: 1.4; user-select: text; -webkit-user-select: text; }
+#volet-corps h3 { font-size: 15px; margin: 10px 0 6px; }
+.journal { list-style: none; margin: 0; padding: 0; }
+.journal li { padding: 6px 0; border-bottom: 1px solid #eadfcd; }
+.journal .h { display: block; font-size: 12px; }
+.ligne-reglage { display: flex; align-items: center; justify-content: space-between; gap: 10px; }
+.bascule { min-width: 72px; height: 44px; border-radius: 22px; border: 2px solid #8a6a50; background: #fff; font-weight: 700; color: #6d5546; }
+.bascule.on { background: #2f8f55; border-color: #2f8f55; color: #fff; }
+.version { color: #8a6a50; font-size: 12px; margin-top: 14px; }
+
+/* Boutons communs */
+.gros { display: block; width: 100%; min-height: 48px; margin: 8px 0; padding: 8px 14px; border: 2px solid #8a6a50; border-radius: 12px; background: #fff; color: #3a2a22; font-size: 16px; font-weight: 700; }
+.gros.principal { background: #b8322a; border-color: #b8322a; color: #fff; }
+.rang { display: flex; gap: 10px; } .rang .gros { flex: 1; }
+
+/* Accueil */
+#accueil { position: fixed; inset: 0; z-index: 30; overflow-y: auto; background: radial-gradient(circle at 30% 20%, #6b3a2a, #2b1a14); display: flex; justify-content: center; align-items: flex-start; padding: 10px; }
+.carte-accueil { width: min(560px, 100%); background: #fffaf2; border-radius: 16px; padding: 10px 20px 12px; margin: auto 0; box-shadow: 0 8px 30px rgba(0,0,0,.4); }
+.carte-accueil h1 { font-family: Georgia, "Times New Roman", serif; font-size: 34px; margin: 0; color: #8e2a22; text-align: center; }
+.carte-accueil h2 { font-size: 18px; margin: 6px 0; }
+.carte-accueil .sous { text-align: center; margin: 0 0 6px; color: #6d5546; font-size: 14px; }
+.carte-accueil label { display: block; font-weight: 700; font-size: 14px; margin: 6px 0; }
+.carte-accueil input, .carte-accueil select { display: block; width: 100%; height: 44px; margin-top: 3px; font-size: 16px; padding: 0 10px; border: 2px solid #c9b59c; border-radius: 10px; background: #fff; }
+.carte-accueil p { font-size: 14px; margin: 6px 0; }
+.carte-accueil .petit { font-size: 13px; color: #6d5546; }
+.carte-accueil .rassure { background: #e7f4ea; border-radius: 8px; padding: 6px 10px; }
+.carte-accueil .alerte { background: #fbe6e3; border-radius: 8px; padding: 6px 10px; }
+.ancienne { display: flex; align-items: center; gap: 12px; border: 1px solid #e0d2bd; border-radius: 10px; padding: 4px 10px; margin: 6px 0; font-size: 14px; }
+.ancienne > div { flex: 1; }
+.ancienne .gros { width: auto; margin: 4px 0; }
+
+/* Fin de journée */
+#fin { position: fixed; inset: 0; z-index: 25; background: rgba(20, 12, 8, .55); display: flex; align-items: center; justify-content: center; padding: 10px; }
+#fin[hidden], #accueil[hidden], #voile[hidden], #volet[hidden] { display: none; }
+.carte-fin { background: #fffaf2; border-radius: 16px; padding: 12px 22px; width: min(520px, 100%); text-align: center; }
+.carte-fin h2 { margin: 0 0 8px; font-size: 20px; }
+.chiffres { display: flex; gap: 10px; }
+.chiffres div { flex: 1; background: #f3eadb; border-radius: 10px; padding: 6px; }
+.chiffres b { display: block; font-size: 28px; color: #8e2a22; }
+.chiffres span { font-size: 12px; }
+
+/* Portrait : on demande de tourner le téléphone */
+#portrait { display: none; position: fixed; inset: 0; z-index: 100; background: #2b1a14; color: #fff6e8; flex-direction: column; align-items: center; justify-content: center; text-align: center; padding: 30px; }
+#portrait h2 { font-size: 24px; margin: 24px 0 8px; }
+#portrait p { font-size: 17px; max-width: 300px; line-height: 1.4; }
+#portrait .tel { width: 70px; height: 120px; border: 6px solid #f2c14e; border-radius: 14px; animation: tourne 2.2s ease-in-out infinite; }
+@keyframes tourne { 0%, 25% { transform: rotate(0); } 55%, 100% { transform: rotate(-90deg); } }
+@media (orientation: portrait) { #portrait { display: flex; } }
+
+</style>
+</head>
+<body>
+<div id="app">
+  <header id="barre">
+    <div class="infos">
+      <div class="l1"><b id="b-nom"></b> · <span id="b-lieu"></span></div>
+      <div class="l2"><span id="b-heure"></span> · <b id="b-argent"></b></div>
+    </div>
+    <div id="vitesses" role="group"></div>
+    <button type="button" id="btn-journal" class="btn-barre"></button>
+    <button type="button" id="btn-menu" class="btn-barre"></button>
+  </header>
+  <main id="jeu">
+    <div id="salle-zone">
+      <svg id="salle" viewBox="0 0 1000 450" preserveAspectRatio="xMidYMid meet" aria-label="Salle">
+        <g id="fond"></g><g id="dyn"></g><g id="touches"></g>
+      </svg>
+    </div>
+    <aside id="cote">
+      <section id="messages" aria-live="polite"></section>
+      <section id="detail"></section>
+    </aside>
+  </main>
+</div>
+<div id="voile" hidden></div>
+<div id="volet" hidden role="dialog">
+  <div class="volet-tete"><h2 id="volet-titre"></h2><button type="button" id="volet-fermer"></button></div>
+  <div id="volet-corps"></div>
+</div>
+<div id="fin" hidden></div>
+<div id="accueil" hidden></div>
+<div id="portrait"></div>
+<script>
+(function () {
+"use strict";
+var B = {};
+B.DATA = {"lieux":{"source":"Repris de Chez YaYa v10.2 (liste des 44 lieux), novembre 2026","lieux":[{"id":"paris","nom":"Paris","repere":"🗼","groupe":"france","affluence":1.3,"salaires":1.15,"prix":1.2,"travaux":1.25,"valeurLocal":1500000,"calendrier":"Zone C · fériés FR","meteo":"Océanique doux","tourisme":"Toute l'année, pic été","specialites":["Soupe à l'oignon","Croque-monsieur","Paris-Brest"],"nomsClients":["Martin","Bernard","Dubois","Lefèvre"],"latitude":48.86,"longitude":2.35,"hemisphereSud":false},{"id":"idf","nom":"Île-de-France (hors Paris)","repere":"🏘️","groupe":"france","affluence":1.05,"salaires":1.08,"prix":1.05,"travaux":1.1,"valeurLocal":700000,"calendrier":"Zone C","meteo":"Océanique","tourisme":"Faible","specialites":["Brie de Meaux","Potage Saint-Germain"],"nomsClients":["Moreau","Laurent","Simon","Michel"],"latitude":48.8,"longitude":2.5,"hemisphereSud":false},{"id":"ara","nom":"Auvergne-Rhône-Alpes","repere":"🏔️","groupe":"france","affluence":1,"salaires":1,"prix":1,"travaux":1,"valeurLocal":450000,"calendrier":"Zone A","meteo":"Continental, hiver neigeux","tourisme":"Pic hiver (ski) + été","specialites":["Tartiflette","Quenelles","Saint-Marcellin"],"nomsClients":["Garnier","Faure","Rousset","Chabert"],"latitude":45.76,"longitude":4.84,"hemisphereSud":false},{"id":"bfc","nom":"Bourgogne-Franche-Comté","repere":"🍷","groupe":"france","affluence":0.8,"salaires":0.95,"prix":0.98,"travaux":0.92,"valeurLocal":300000,"calendrier":"Zone A","meteo":"Continental","tourisme":"Vendanges (sept.)","specialites":["Bœuf bourguignon","Œufs en meurette","Comté"],"nomsClients":["Bonnot","Mercier","Guyot"],"latitude":47.32,"longitude":5.04,"hemisphereSud":false},{"id":"bretagne","nom":"Bretagne","repere":"⚓","groupe":"france","affluence":0.9,"salaires":0.95,"prix":0.95,"travaux":0.95,"valeurLocal":320000,"calendrier":"Zone B","meteo":"Océanique pluvieux","tourisme":"Fort été","specialites":["Galette complète","Kouign-amann","Moules"],"nomsClients":["Le Gall","Le Goff","Le Bihan","Tanguy"],"latitude":48.11,"longitude":-1.68,"hemisphereSud":false},{"id":"centre","nom":"Centre-Val de Loire","repere":"🏰","groupe":"france","affluence":0.75,"salaires":0.93,"prix":0.95,"travaux":0.9,"valeurLocal":280000,"calendrier":"Zone B","meteo":"Doux","tourisme":"Châteaux (printemps-été)","specialites":["Tarte Tatin","Rillettes de Tours"],"nomsClients":["Chevalier","Renard","Boucher"],"latitude":47.9,"longitude":1.9,"hemisphereSud":false},{"id":"corse","nom":"Corse","repere":"🏝️","groupe":"france","affluence":0.7,"salaires":0.97,"prix":1.05,"travaux":1.15,"valeurLocal":380000,"calendrier":"Zone A (Corse)","meteo":"Méditerranéen chaud","tourisme":"Très fort été, creux hiver","specialites":["Figatellu","Fiadone","Brocciu"],"nomsClients":["Santoni","Leca","Colonna","Pieri"],"latitude":41.92,"longitude":8.74,"hemisphereSud":false},{"id":"grand-est","nom":"Grand Est","repere":"🥨","groupe":"france","affluence":0.85,"salaires":0.95,"prix":0.97,"travaux":0.95,"valeurLocal":330000,"calendrier":"Zone B · Alsace-Moselle (+26/12, Vendredi saint)","meteo":"Continental froid","tourisme":"Marchés de Noël (déc.)","specialites":["Choucroute","Flammekueche","Quiche lorraine"],"nomsClients":["Muller","Schmitt","Meyer","Klein"],"latitude":48.58,"longitude":7.75,"hemisphereSud":false},{"id":"hauts","nom":"Hauts-de-France","repere":"🍟","groupe":"france","affluence":0.85,"salaires":0.93,"prix":0.92,"travaux":0.92,"valeurLocal":280000,"calendrier":"Zone B","meteo":"Océanique frais","tourisme":"Faible","specialites":["Carbonade flamande","Welsh","Maroilles"],"nomsClients":["Lefebvre","Leroy","Delattre","Wattel"],"latitude":50.63,"longitude":3.06,"hemisphereSud":false},{"id":"normandie","nom":"Normandie","repere":"🐄","groupe":"france","affluence":0.85,"salaires":0.94,"prix":0.97,"travaux":0.95,"valeurLocal":320000,"calendrier":"Zone B","meteo":"Océanique pluvieux","tourisme":"Été (plages, Mont-St-Michel)","specialites":["Teurgoule","Camembert","Sole normande"],"nomsClients":["Lemoine","Hébert","Lecomte"],"latitude":49.18,"longitude":-0.37,"hemisphereSud":false},{"id":"aquitaine","nom":"Nouvelle-Aquitaine","repere":"🦆","groupe":"france","affluence":0.95,"salaires":0.96,"prix":1,"travaux":0.98,"valeurLocal":400000,"calendrier":"Zone A","meteo":"Océanique chaud","tourisme":"Fort été (côte)","specialites":["Confit de canard","Cannelés","Huîtres"],"nomsClients":["Etcheverry","Dupuy","Lafitte"],"latitude":44.84,"longitude":-0.58,"hemisphereSud":false},{"id":"occitanie","nom":"Occitanie","repere":"☀️","groupe":"france","affluence":0.95,"salaires":0.95,"prix":0.98,"travaux":0.97,"valeurLocal":380000,"calendrier":"Zone C","meteo":"Méditerranéen","tourisme":"Fort été","specialites":["Cassoulet","Aligot","Brandade"],"nomsClients":["Fabre","Vidal","Roux","Marty"],"latitude":43.6,"longitude":1.44,"hemisphereSud":false},{"id":"loire","nom":"Pays de la Loire","repere":"🌊","groupe":"france","affluence":0.85,"salaires":0.95,"prix":0.97,"travaux":0.95,"valeurLocal":330000,"calendrier":"Zone B","meteo":"Océanique doux","tourisme":"Été (côte)","specialites":["Rillauds","Beurre blanc","Mâche nantaise"],"nomsClients":["Gautier","Brunet","Perrin"],"latitude":47.22,"longitude":-1.55,"hemisphereSud":false},{"id":"provence","nom":"Provence-Alpes-Côte d'Azur","repere":"🌻","groupe":"france","affluence":1.2,"salaires":1.02,"prix":1.12,"travaux":1.1,"valeurLocal":800000,"calendrier":"Zone B","meteo":"Méditerranéen ensoleillé","tourisme":"Très fort été","specialites":["Bouillabaisse","Ratatouille","Socca"],"nomsClients":["Giraud","Blanc","Martini","Olivier"],"latitude":43.3,"longitude":5.37,"hemisphereSud":false},{"id":"guadeloupe","nom":"Guadeloupe","repere":"🌴","groupe":"outre-mer","affluence":0.8,"salaires":0.98,"prix":1.15,"travaux":1.3,"valeurLocal":330000,"calendrier":"Calendrier Guadeloupe · 27/05 abolition","meteo":"Tropical, cyclones août-oct","tourisme":"Saison sèche déc.-avr.","specialites":["Colombo de poulet","Accras","Bokit"],"nomsClients":["Lubin","Jean-Baptiste","Célestin"],"latitude":16.24,"longitude":-61.53,"hemisphereSud":false},{"id":"martinique","nom":"Martinique","repere":"🌺","groupe":"outre-mer","affluence":0.8,"salaires":0.98,"prix":1.15,"travaux":1.3,"valeurLocal":340000,"calendrier":"Calendrier Martinique · 22/05 abolition","meteo":"Tropical, cyclones","tourisme":"Déc.-avr.","specialites":["Féroce d'avocat","Blaff","Ti-punch"],"nomsClients":["Rosier","Dorval","Théodose"],"latitude":14.61,"longitude":-61.07,"hemisphereSud":false},{"id":"guyane","nom":"Guyane","repere":"🦜","groupe":"outre-mer","affluence":0.55,"salaires":0.97,"prix":1.18,"travaux":1.4,"valeurLocal":220000,"calendrier":"Calendrier Guyane · 10/06","meteo":"Équatorial pluvieux","tourisme":"Très faible","specialites":["Bouillon d'awara","Couac"],"nomsClients":["Pierre-Louis","Atticot","Ho-A-Chuck"],"latitude":4.94,"longitude":-52.33,"hemisphereSud":false},{"id":"reunion","nom":"La Réunion","repere":"🌋","groupe":"outre-mer","affluence":0.85,"salaires":0.97,"prix":1.12,"travaux":1.3,"valeurLocal":320000,"calendrier":"Calendrier Réunion · 20/12 Fèt Kaf (été austral)","meteo":"Tropical, saisons inversées","tourisme":"Juil.-août + déc.","specialites":["Rougail saucisse","Cari","Samoussas"],"nomsClients":["Payet","Hoarau","Grondin","Técher"],"latitude":-20.88,"longitude":55.45,"hemisphereSud":true},{"id":"mayotte","nom":"Mayotte","repere":"🐢","groupe":"outre-mer","affluence":0.5,"salaires":0.9,"prix":1.1,"travaux":1.45,"valeurLocal":180000,"calendrier":"Calendrier Mayotte · 27/04","meteo":"Tropical","tourisme":"Très faible","specialites":["Mataba","Brochettes-manioc"],"nomsClients":["Abdallah","Madi","Soilihi"],"latitude":-12.78,"longitude":45.23,"hemisphereSud":true},{"id":"polynesie","nom":"Polynésie française","repere":"🌊","groupe":"outre-mer","affluence":0.7,"salaires":1.1,"prix":1.35,"travaux":1.5,"valeurLocal":500000,"calendrier":"Calendrier Polynésie · 29/06 autonomie","meteo":"Tropical, saisons inversées","tourisme":"Fort (lunes de miel), pic juil.-août","specialites":["Poisson cru au lait de coco","Firi firi"],"nomsClients":["Teriitehau","Tetuanui","Bambridge"],"latitude":-17.55,"longitude":-149.56,"hemisphereSud":true},{"id":"caledonie","nom":"Nouvelle-Calédonie","repere":"🦎","groupe":"outre-mer","affluence":0.65,"salaires":1.08,"prix":1.3,"travaux":1.45,"valeurLocal":450000,"calendrier":"Calendrier NC · 24/09","meteo":"Tropical tempéré, inversé","tourisme":"Moyen","specialites":["Bougna","Cerf en civet"],"nomsClients":["Wamytan","Gope","Tjibaou"],"latitude":-22.27,"longitude":166.45,"hemisphereSud":true},{"id":"londres","nom":"Londres","repere":"🇬🇧","groupe":"monde","affluence":1.4,"salaires":1.3,"prix":1.3,"travaux":1.4,"valeurLocal":2200000,"calendrier":"Royaume-Uni · bank holidays","meteo":"Océanique gris","tourisme":"Toute l'année","specialites":["Fish & chips","Sunday roast","Scones"],"nomsClients":["Smith","Jones","Taylor","Brown"],"latitude":51.51,"longitude":-0.13,"hemisphereSud":false},{"id":"berlin","nom":"Berlin","repere":"🇩🇪","groupe":"monde","affluence":1.15,"salaires":1.05,"prix":1,"travaux":1.05,"valeurLocal":900000,"calendrier":"Allemagne · 3/10 Unité","meteo":"Continental froid","tourisme":"Été + Noël","specialites":["Currywurst","Eisbein","Bretzel"],"nomsClients":["Müller","Schmidt","Fischer"],"latitude":52.52,"longitude":13.4,"hemisphereSud":false},{"id":"madrid","nom":"Madrid","repere":"🇪🇸","groupe":"monde","affluence":1.15,"salaires":0.85,"prix":0.95,"travaux":0.95,"valeurLocal":800000,"calendrier":"Espagne · 12/10 Hispanité","meteo":"Chaud et sec","tourisme":"Printemps-automne","specialites":["Cocido","Tortilla","Churros"],"nomsClients":["García","López","Martínez"],"latitude":40.42,"longitude":-3.7,"hemisphereSud":false},{"id":"rome","nom":"Rome","repere":"🇮🇹","groupe":"monde","affluence":1.25,"salaires":0.9,"prix":1,"travaux":1.05,"valeurLocal":1000000,"calendrier":"Italie · Ferragosto 15/08","meteo":"Méditerranéen","tourisme":"Très fort","specialites":["Carbonara","Supplì","Tiramisu"],"nomsClients":["Rossi","Russo","Bianchi"],"latitude":41.9,"longitude":12.5,"hemisphereSud":false},{"id":"lisbonne","nom":"Lisbonne","repere":"🇵🇹","groupe":"monde","affluence":1.1,"salaires":0.7,"prix":0.85,"travaux":0.85,"valeurLocal":600000,"calendrier":"Portugal · 13/06 St-Antoine","meteo":"Doux ensoleillé","tourisme":"Fort été","specialites":["Bacalhau à brás","Pastel de nata"],"nomsClients":["Silva","Santos","Ferreira"],"latitude":38.72,"longitude":-9.14,"hemisphereSud":false},{"id":"bruxelles","nom":"Bruxelles","repere":"🇧🇪","groupe":"monde","affluence":1.05,"salaires":1.08,"prix":1.02,"travaux":1.05,"valeurLocal":700000,"calendrier":"Belgique · 21/07","meteo":"Océanique pluvieux","tourisme":"Moyen","specialites":["Moules-frites","Gaufre","Carbonnade"],"nomsClients":["Peeters","Janssens","Maes"],"latitude":50.85,"longitude":4.35,"hemisphereSud":false},{"id":"amsterdam","nom":"Amsterdam","repere":"🇳🇱","groupe":"monde","affluence":1.2,"salaires":1.12,"prix":1.1,"travaux":1.15,"valeurLocal":1100000,"calendrier":"Pays-Bas · 27/04 Koningsdag","meteo":"Océanique venteux","tourisme":"Fort printemps (tulipes)","specialites":["Bitterballen","Stamppot","Stroopwafel"],"nomsClients":["De Jong","Jansen","Visser"],"latitude":52.37,"longitude":4.9,"hemisphereSud":false},{"id":"vienne","nom":"Vienne","repere":"🇦🇹","groupe":"monde","affluence":1.05,"salaires":1.05,"prix":1.05,"travaux":1.05,"valeurLocal":800000,"calendrier":"Autriche","meteo":"Continental","tourisme":"Noël + été","specialites":["Wiener Schnitzel","Sachertorte"],"nomsClients":["Gruber","Huber","Wagner"],"latitude":48.21,"longitude":16.37,"hemisphereSud":false},{"id":"athenes","nom":"Athènes","repere":"🇬🇷","groupe":"monde","affluence":1,"salaires":0.65,"prix":0.85,"travaux":0.85,"valeurLocal":450000,"calendrier":"Grèce · Pâques orthodoxe","meteo":"Chaud et sec","tourisme":"Très fort été","specialites":["Moussaka","Souvlaki","Baklava"],"nomsClients":["Papadopoulos","Nikolaou"],"latitude":37.98,"longitude":23.73,"hemisphereSud":false},{"id":"moscou","nom":"Moscou","repere":"🇷🇺","groupe":"monde","affluence":1.05,"salaires":0.7,"prix":0.95,"travaux":0.95,"valeurLocal":700000,"calendrier":"Russie · Noël 7/01","meteo":"Continental très froid","tourisme":"Faible hiver","specialites":["Bortsch","Blinis","Pelmeni"],"nomsClients":["Ivanov","Petrov","Smirnov"],"latitude":55.75,"longitude":37.62,"hemisphereSud":false},{"id":"new-york","nom":"New York","repere":"🇺🇸","groupe":"monde","affluence":1.5,"salaires":1.35,"prix":1.4,"travaux":1.45,"valeurLocal":2500000,"calendrier":"États-Unis · Thanksgiving, 4/07","meteo":"Continental contrasté","tourisme":"Toute l'année","specialites":["Burger","Cheesecake","Bagel"],"nomsClients":["Johnson","Williams","Miller"],"latitude":40.71,"longitude":-74,"hemisphereSud":false},{"id":"washington","nom":"Washington","repere":"🇺🇸","groupe":"monde","affluence":1.1,"salaires":1.25,"prix":1.25,"travaux":1.3,"valeurLocal":1400000,"calendrier":"États-Unis","meteo":"Humide","tourisme":"Printemps (cerisiers)","specialites":["Crab cakes","Half-smoke"],"nomsClients":["Davis","Wilson","Anderson"],"latitude":38.91,"longitude":-77.04,"hemisphereSud":false},{"id":"ottawa","nom":"Ottawa","repere":"🇨🇦","groupe":"monde","affluence":0.85,"salaires":1.1,"prix":1.1,"travaux":1.15,"valeurLocal":700000,"calendrier":"Canada · 1/07","meteo":"Hiver très froid","tourisme":"Faible","specialites":["Poutine","Queues de castor"],"nomsClients":["Tremblay","Gagnon","Roy"],"latitude":45.42,"longitude":-75.7,"hemisphereSud":false},{"id":"mexico","nom":"Mexico","repere":"🇲🇽","groupe":"monde","affluence":1.2,"salaires":0.45,"prix":0.7,"travaux":0.75,"valeurLocal":500000,"calendrier":"Mexique · 16/09, Día de Muertos","meteo":"Tempéré d'altitude","tourisme":"Moyen","specialites":["Tacos al pastor","Mole","Churros"],"nomsClients":["Hernández","González","Pérez"],"latitude":19.43,"longitude":-99.13,"hemisphereSud":false},{"id":"buenos-aires","nom":"Buenos Aires","repere":"🇦🇷","groupe":"monde","affluence":1.1,"salaires":0.5,"prix":0.75,"travaux":0.8,"valeurLocal":450000,"calendrier":"Argentine · saisons inversées","meteo":"Tempéré, inversé","tourisme":"Moyen","specialites":["Asado","Empanadas","Dulce de leche"],"nomsClients":["Fernández","Rodríguez","Gómez"],"latitude":-34.6,"longitude":-58.38,"hemisphereSud":true},{"id":"brasilia","nom":"Brasilia","repere":"🇧🇷","groupe":"monde","affluence":0.7,"salaires":0.5,"prix":0.75,"travaux":0.8,"valeurLocal":350000,"calendrier":"Brésil · Carnaval","meteo":"Tropical","tourisme":"Faible","specialites":["Feijoada","Pão de queijo"],"nomsClients":["Silva","Souza","Oliveira"],"latitude":-15.79,"longitude":-47.88,"hemisphereSud":true},{"id":"caire","nom":"Le Caire","repere":"🇪🇬","groupe":"monde","affluence":1.1,"salaires":0.35,"prix":0.6,"travaux":0.65,"valeurLocal":250000,"calendrier":"Égypte · Ramadan/Aïd","meteo":"Désertique","tourisme":"Hiver","specialites":["Koshari","Ful medames"],"nomsClients":["Mohamed","Hassan","Ibrahim"],"latitude":30.04,"longitude":31.24,"hemisphereSud":false},{"id":"dakar","nom":"Dakar","repere":"🇸🇳","groupe":"monde","affluence":0.85,"salaires":0.35,"prix":0.6,"travaux":0.7,"valeurLocal":220000,"calendrier":"Sénégal · Tabaski","meteo":"Tropical sec","tourisme":"Hiver","specialites":["Thiéboudienne","Yassa","Mafé"],"nomsClients":["Diop","Ndiaye","Fall","Sow"],"latitude":14.69,"longitude":-17.45,"hemisphereSud":false},{"id":"tokyo","nom":"Tokyo","repere":"🇯🇵","groupe":"monde","affluence":1.45,"salaires":1.1,"prix":1.25,"travaux":1.35,"valeurLocal":2000000,"calendrier":"Japon · Golden Week","meteo":"Tempéré humide","tourisme":"Printemps (sakura)","specialites":["Ramen","Tonkatsu","Mochi"],"nomsClients":["Sato","Suzuki","Takahashi"],"latitude":35.68,"longitude":139.69,"hemisphereSud":false},{"id":"pekin","nom":"Pékin","repere":"🇨🇳","groupe":"monde","affluence":1.3,"salaires":0.6,"prix":0.8,"travaux":0.85,"valeurLocal":900000,"calendrier":"Chine · Nouvel An lunaire","meteo":"Continental sec","tourisme":"Moyen","specialites":["Canard laqué","Jiaozi"],"nomsClients":["Wang","Li","Zhang"],"latitude":39.9,"longitude":116.4,"hemisphereSud":false},{"id":"seoul","nom":"Séoul","repere":"🇰🇷","groupe":"monde","affluence":1.25,"salaires":0.9,"prix":1.05,"travaux":1.05,"valeurLocal":1100000,"calendrier":"Corée · Chuseok","meteo":"Continental","tourisme":"Moyen","specialites":["Bibimbap","Bulgogi","Kimchi"],"nomsClients":["Kim","Lee","Park"],"latitude":37.57,"longitude":126.98,"hemisphereSud":false},{"id":"bangkok","nom":"Bangkok","repere":"🇹🇭","groupe":"monde","affluence":1.25,"salaires":0.4,"prix":0.65,"travaux":0.7,"valeurLocal":400000,"calendrier":"Thaïlande · Songkran","meteo":"Tropical","tourisme":"Fort nov.-mars","specialites":["Pad thaï","Tom yum","Mango sticky rice"],"nomsClients":["Saetang","Srisuk","Wongsa"],"latitude":13.76,"longitude":100.5,"hemisphereSud":false},{"id":"canberra","nom":"Canberra","repere":"🇦🇺","groupe":"monde","affluence":0.6,"salaires":1.2,"prix":1.2,"travaux":1.25,"valeurLocal":600000,"calendrier":"Australie · inversé","meteo":"Tempéré, inversé","tourisme":"Faible","specialites":["Meat pie","Pavlova"],"nomsClients":["Smith","Nguyen","Walker"],"latitude":-35.28,"longitude":149.13,"hemisphereSud":true}]},"salle":{"_explication":"Plan de la salle de départ, dessiné en largeur (unités du dessin : 1000 de large sur 430 de haut).","dessin":{"largeur":1000,"hauteur":450},"allee":220,"entree":{"x":22,"y":220},"dehors":{"x":-40,"y":220},"file":{"x":52,"y":306,"ecart":40},"passe":{"x":812,"y":220},"cuisine":{"x":856,"y":18,"largeur":132,"hauteur":414},"tables":[{"id":1,"x":165,"y":112,"places":2},{"id":2,"x":305,"y":112,"places":4},{"id":3,"x":445,"y":112,"places":4},{"id":4,"x":585,"y":112,"places":2},{"id":5,"x":725,"y":112,"places":4},{"id":6,"x":165,"y":328,"places":4},{"id":7,"x":305,"y":328,"places":2},{"id":8,"x":445,"y":328,"places":4},{"id":9,"x":585,"y":328,"places":4},{"id":10,"x":725,"y":328,"places":2}],"rallonges":[[2,3],[8,9]],"serveurs":[{"nom":"Patron","x":800,"y":196},{"nom":"Léa","x":800,"y":244}]},"clients":{"_explication":"Règles de l'étape 1 : arrivée des clients et durées. Les durées sont en minutes de jeu.","journee":{"ouverture":690,"fermeture":1350,"finForcee":1439},"affluence":[{"de":705,"a":720,"groupesParHeure":3},{"de":720,"a":810,"groupesParHeure":5},{"de":810,"a":855,"groupesParHeure":4},{"de":855,"a":1110,"groupesParHeure":1},{"de":1110,"a":1155,"groupesParHeure":3},{"de":1155,"a":1260,"groupesParHeure":5},{"de":1260,"a":1305,"groupesParHeure":3}],"annonces":[{"minute":705,"texte":"msg_premiers_clients"},{"minute":720,"texte":"msg_service_midi"},{"minute":855,"texte":"msg_apres_midi"},{"minute":1140,"texte":"msg_service_soir"},{"minute":1305,"texte":"msg_plus_d_arrivees"}],"types":[{"id":"solo","taille":[1,1],"poids":12,"repas":[20,30],"couleur":"#4f7fe0"},{"id":"couple","taille":[2,2],"poids":26,"repas":[30,45],"couleur":"#e0567f"},{"id":"amis","taille":[2,4],"poids":20,"repas":[35,50],"couleur":"#e8902a"},{"id":"famille","taille":[3,6],"poids":14,"repas":[40,55],"couleur":"#2f9e5c"},{"id":"affaires","taille":[2,4],"poids":14,"repas":[25,35],"couleur":"#7b55c9"},{"id":"touristes","taille":[2,4],"poids":14,"repas":[35,50],"couleur":"#1597a8"}],"durees":{"lireCarte":[4,7],"prendreCommande":1.5,"cuisine":[12,18],"prendrePlatPasse":0.3,"poserPlat":0.5,"addition":1.5,"debarrasserParTable":1,"patienceFile":[12,20]},"vitesses":{"clients":170,"serveurs":260},"alertes":{"attenteOrange":8,"attenteRouge":15}},"regles":{"_explication":"Réglages généraux. Une minute de jeu passe en une seconde à la vitesse 1×.","minutesParSeconde":1,"vitesses":[0,1,2,4],"difficultes":{"facile":{"capitalDepart":600000,"noteDepart":3}},"sauvegarde":{"toutesLesMinutesDeJeu":5}},"textes":{"_explication":"Tous les textes affichés au joueur. Les mots entre accolades {comme_ceci} sont remplacés par le jeu.","jeu_nom":"Bistrot","jeu_sous_titre":"Ton restaurant, en direct","canal_test":"Version de test","canal_officiel":"","btn_pause":"Pause","btn_1x":"1×","btn_2x":"2×","btn_4x":"4×","btn_journal":"Journal","btn_menu":"Menu","btn_fermer":"Fermer","aria_vitesse":"Vitesse du jeu","barre_jour_heure":"Jour {jour} · {heure}","barre_en_pause":"en pause","accueil_continuer":"Continuer : {nom} · {lieu} · jour {jour}","accueil_nouvelle":"Nouvelle partie","accueil_ancien":"Reprendre une partie de l’ancien jeu","accueil_retour":"Retour","nouvelle_titre":"Nouvelle partie","nouvelle_nom":"Nom de ton restaurant","nouvelle_nom_defaut":"Chez YaYa","nouvelle_lieu":"Où ouvres-tu ?","nouvelle_groupe_france":"France","nouvelle_groupe_outre-mer":"Outre-mer","nouvelle_groupe_monde":"Capitales du monde","nouvelle_difficulte":"Difficulté : Facile (tu es propriétaire, avec {capital} de départ).","nouvelle_ouvrir":"Ouvrir le restaurant","nouvelle_remplace":"Ta partie en cours ({nom}, jour {jour}) sera remplacée. Continuer ?","ancien_titre":"Reprendre une partie de l’ancien jeu","ancien_rassure":"Ton ancienne partie n’est ni effacée ni modifiée : Bistrot en fait seulement une copie.","ancien_contenu":"Pour l’instant, Bistrot reprend le nom, le lieu, le jour, l’argent et la note. La carte, les stocks et l’équipe seront repris aux prochaines étapes.","ancien_aucune":"Aucune partie de l’ancien jeu n’a été trouvée sur ce téléphone.","ancien_ligne":"{nom} · {lieu} · jour {jour} · {argent}","ancien_emplacement":"Emplacement {n}","ancien_derniere":"Dernière partie jouée","ancien_reprendre":"Reprendre","ancien_illisible":"Cette sauvegarde est illisible, elle est ignorée.","detail_aucune":"Touche une table pour voir ce qui s’y passe.","detail_en_salle":"En salle : {n} clients","detail_file":"À la porte : {n} groupes","detail_servis":"Servis aujourd’hui : {n}","detail_repartis":"Partis sans table : {n}","detail_table":"Table {num}","detail_libre":"Libre · {places} places","detail_a_debarrasser":"À débarrasser","detail_groupe":"{taille} · {groupe}","detail_attend":"attend depuis {min} min","detail_depuis":"depuis {min} min","pers_1":"1 pers.","pers_n":"{n} pers.","groupe_solo":"{nom}, client seul","groupe_couple":"couple {nom}","groupe_amis":"amis de {nom}","groupe_famille":"famille {nom}","groupe_affaires":"repas d’affaires de {nom}","groupe_touristes":"touristes ({nom})","etat_court_marche":"arrive","etat_court_carte":"carte","etat_court_commande":"commande","etat_court_cuisine":"cuisine","etat_court_pret":"plat prêt","etat_court_mange":"mange","etat_court_addition":"addition","etat_court_sale":"à nettoyer","etat_long_marche":"s’installe","etat_long_carte":"lit la carte","etat_long_commande":"veut commander","etat_long_cuisine":"plat en cuisine","etat_long_pret":"plat prêt à servir","etat_long_mange":"mange","etat_long_addition":"demande l’addition","salle_entree":"Entrée","salle_cuisine":"Cuisine","salle_passe":"Passe","salle_file":"File : {n}","serveur_libre":"{nom} : libre","msg_bienvenue":"Bienvenue {chez} ! Ouverture des portes à {heure}.","msg_reprise":"Partie reprise : {nom}, jour {jour}.","msg_import":"Ancienne partie reprise : {nom}, jour {jour}. L’ancien jeu n’a pas été modifié.","msg_premiers_clients":"Les portes sont ouvertes, les premiers clients arrivent.","msg_service_midi":"Le service du midi commence.","msg_apres_midi":"Le rush du midi est passé, la salle se calme.","msg_service_soir":"Le service du soir commence.","msg_plus_d_arrivees":"Plus de nouveaux clients ce soir, on finit le service.","msg_grand_groupe":"Un groupe de {taille} arrive : {groupe}.","msg_installe_rallonge":"Tables {num} rapprochées pour le groupe de {taille}.","msg_repart":"Pas de table libre : {taille} pers. sont reparties.","msg_fin_service":"Le dernier client est parti. Fin de la journée.","msg_fin_forcee":"Il est tard : les derniers clients sont partis.","msg_plus":"+{n} messages","journal_titre":"Journal","journal_vide":"Rien pour l’instant.","journal_ligne":"Jour {jour} · {heure}","menu_titre":"Menu","menu_reglages":"Réglages","menu_pause_auto":"Pause automatique quand un volet est ouvert","menu_oui":"Oui","menu_non":"Non","menu_partie":"Partie","menu_accueil":"Retour à l’écran d’accueil","menu_version":"Bistrot {version} · {canal}","menu_sauve":"Sauvegarde automatique : dernière à {heure}.","menu_origine":"Partie reprise de l’ancien jeu (sauvegarde n°{v}).","fin_titre":"Fin du jour {jour}","fin_servis":"clients servis","fin_repartis":"repartis faute de place","fin_attente":"min d’attente moyenne avant la commande","fin_suivant":"Commencer le jour {jour}","portrait_titre":"Tourne ton téléphone","portrait_texte":"Bistrot se joue en mode paysage. La partie est en pause.","erreur_sauvegarde_recente":"Cette sauvegarde vient d’une version plus récente de Bistrot. Mets le jeu à jour pour la relire.","erreur_sauvegarde_illisible":"La sauvegarde n’a pas pu être relue. Elle est gardée de côté, rien n’est effacé.","erreur_stockage":"Impossible d’enregistrer la partie sur ce téléphone (mémoire pleine ou navigation privée)."}};
+/* ==== src/moteur/outils.js ==== */
+/* outils.js — petites fonctions communes : hasard reproductible, textes, heures, euros. */
+B.VERSION_JEU = '0.1.0';
+
+/* Hasard reproductible : la graine est rangée dans la partie, donc une partie rechargée continue pareil. */
+B.hasard = function (S) {
+  let a = (S.graine | 0) + 0x6D2B79F5 | 0;
+  S.graine = a;
+  let t = Math.imul(a ^ (a >>> 15), 1 | a);
+  t = (t + Math.imul(t ^ (t >>> 7), 61 | t)) ^ t;
+  return ((t ^ (t >>> 14)) >>> 0) / 4294967296;
+};
+B.entre = function (S, a, b) { return a + (b - a) * B.hasard(S); };
+B.entier = function (S, a, b) { return Math.floor(a + (b - a + 1) * B.hasard(S)); };
+B.duree = function (S, v) { return Array.isArray(v) ? B.entre(S, v[0], v[1]) : v; };
+
+/* Textes : tous viennent de donnees/textes.json. */
+B.t = function (cle, vars) {
+  const s = B.DATA.textes[cle];
+  if (s == null) { B.textesManquants[cle] = true; return cle; }
+  return String(s).replace(/\{(\w+)\}/g, function (m, k) {
+    return vars && vars[k] != null ? vars[k] : m;
+  });
+};
+B.textesManquants = {};
+
+B.heure = function (minute) {
+  const m = Math.floor(minute) % 1440;
+  return String(Math.floor(m / 60)).padStart(2, '0') + ':' + String(m % 60).padStart(2, '0');
+};
+B.euros = function (n) {
+  const r = Math.round(n);
+  const s = String(Math.abs(r)).replace(/\B(?=(\d{3})+(?!\d))/g, '\u202F');
+  return (r < 0 ? '-' : '') + s + '\u00A0€';
+};
+
+/* « Bienvenue chez YaYa », « Bienvenue au Petit Zinc », « Bienvenue à la Brasserie »… */
+B.chezNom = function (nom) {
+  const n = String(nom || '').trim();
+  if (/^chez\s+/i.test(n)) return 'chez ' + n.replace(/^chez\s+/i, '');
+  if (/^le\s+/i.test(n)) return 'au ' + n.replace(/^le\s+/i, '');
+  if (/^les\s+/i.test(n)) return 'aux ' + n.replace(/^les\s+/i, '');
+  if (/^la\s+/i.test(n)) return 'à la ' + n.replace(/^la\s+/i, '');
+  if (/^l['’]\s*/i.test(n)) return 'à l’' + n.replace(/^l['’]\s*/i, '');
+  return 'chez ' + n;
+};
+
+B.lieu = function (id) {
+  const L = B.DATA.lieux.lieux;
+  return L.find(function (l) { return l.id === id; }) || L[0];
+};
+
+/* Messages : rangés dans le journal de la partie, et transmis à l'écran (B.flux). */
+B.flux = [];
+B.message = function (S, cle, vars) {
+  const m = { jour: S.jour, minute: Math.floor(S.minute), texte: B.t(cle, vars) };
+  S.journal.push(m);
+  if (S.journal.length > 300) S.journal.splice(0, S.journal.length - 300);
+  B.flux.push(m);
+};
+
+/* ==== src/moteur/salle.js ==== */
+/* salle.js — le plan de la salle : tables, places, rallonges, chemins. */
+B.salle = {};
+
+B.salle.plan = function () { return B.DATA.salle; };
+B.salle.geo = function (id) {
+  return B.DATA.salle.tables.find(function (t) { return t.id === id; });
+};
+B.salle.taille = function (places) { return places <= 2 ? 60 : 84; };
+
+/* Places autour d'une table : sur les côtés pour 2, dessus/dessous pour 4. */
+B.salle.places = function (id) {
+  const g = B.salle.geo(id), d = B.salle.taille(g.places) / 2 + 16;
+  if (g.places <= 2) return [{ x: g.x - d, y: g.y }, { x: g.x + d, y: g.y }];
+  return [
+    { x: g.x - 21, y: g.y - d }, { x: g.x + 21, y: g.y - d },
+    { x: g.x - 21, y: g.y + d }, { x: g.x + 21, y: g.y + d }
+  ];
+};
+
+/* Centre d'un groupe de tables (une table seule, ou deux tables rapprochées). */
+B.salle.centre = function (ids) {
+  let x = 0, y = 0;
+  ids.forEach(function (id) { const g = B.salle.geo(id); x += g.x; y += g.y; });
+  return { x: x / ids.length, y: y / ids.length };
+};
+B.salle.nomTables = function (ids) { return ids.slice().sort(function (a, b) { return a - b; }).join('-'); };
+
+/* Chemin simple : on rejoint l'allée centrale, on la longe, puis on va au but. */
+B.salle.chemin = function (de, vers) {
+  const A = B.DATA.salle.allee, pts = [];
+  if (Math.abs(de.y - A) > 1) pts.push({ x: de.x, y: A });
+  pts.push({ x: vers.x, y: A });
+  if (Math.abs(vers.y - A) > 1) pts.push({ x: vers.x, y: vers.y });
+  return pts;
+};
+
+/* Fait avancer une personne le long de son chemin. Renvoie vrai quand elle est arrivée. */
+B.salle.bouger = function (p, dist) {
+  while (dist > 0 && p.chemin.length) {
+    const c = p.chemin[0], dx = c.x - p.x, dy = c.y - p.y, d = Math.hypot(dx, dy);
+    if (d <= dist) { p.x = c.x; p.y = c.y; p.chemin.shift(); dist -= d; }
+    else { p.x += dx / d * dist; p.y += dy / d * dist; dist = 0; }
+  }
+  return p.chemin.length === 0;
+};
+
+/* Cherche une table libre : la plus petite qui suffit, sinon deux tables rapprochées. */
+B.salle.chercher = function (S, taille) {
+  const libre = function (id) {
+    const t = S.tables.find(function (x) { return x.id === id; });
+    return t && !t.groupe && !t.sale;
+  };
+  const seules = S.tables.filter(function (t) { return libre(t.id) && t.places >= taille; })
+    .sort(function (a, b) { return a.places - b.places || a.id - b.id; });
+  if (seules.length) return [seules[0].id];
+  for (const r of B.DATA.salle.rallonges) {
+    const total = r.reduce(function (s, id) { return s + B.salle.geo(id).places; }, 0);
+    if (total >= taille && r.every(libre)) return r.slice();
+  }
+  return null;
+};
+B.salle.tableDe = function (S, id) { return S.tables.find(function (t) { return t.id === id; }); };
+
+/* ==== src/moteur/clients.js ==== */
+/* clients.js — arrivée des groupes, file à la porte, repas, départ. */
+B.clients = {};
+
+B.clients.type = function (id) {
+  return B.DATA.clients.types.find(function (t) { return t.id === id; });
+};
+
+/* Nombre moyen de groupes qui arrivent par heure à cette minute de la journée. */
+B.clients.affluence = function (S, minute) {
+  const tr = B.DATA.clients.affluence.find(function (a) { return minute >= a.de && minute < a.a; });
+  if (!tr) return 0;
+  return tr.groupesParHeure * B.lieu(S.lieu).affluence;
+};
+
+B.clients.tirerType = function (S) {
+  const T = B.DATA.clients.types;
+  let tot = 0; T.forEach(function (t) { tot += t.poids; });
+  let r = B.hasard(S) * tot;
+  for (const t of T) { r -= t.poids; if (r < 0) return t; }
+  return T[T.length - 1];
+};
+
+B.clients.arrivee = function (S) {
+  const type = B.clients.tirerType(S);
+  const taille = B.entier(S, type.taille[0], type.taille[1]);
+  const noms = B.lieu(S.lieu).nomsClients;
+  const e = B.DATA.salle.entree;
+  const g = {
+    id: S.prochainId++, type: type.id, taille: taille,
+    nom: noms[B.entier(S, 0, noms.length - 1)],
+    etat: 'file', depuis: S.minute, arrivee: S.minute,
+    patience: B.duree(S, B.DATA.clients.durees.patienceFile),
+    tables: null, x: e.x, y: e.y, chemin: [], duree: 0, serveur: null, pret: 0, aMange: false
+  };
+  S.groupes.push(g);
+  S.stats.jour.groupes++;
+  S.stats.jour.arrives += taille;
+  if (taille >= 5) B.message(S, 'msg_grand_groupe', { taille: taille, groupe: B.t('groupe_' + type.id, { nom: g.nom }) });
+};
+
+/* Place les groupes qui attendent à la porte, dans l'ordre d'arrivée, dès qu'une table convient. */
+B.clients.placer = function (S) {
+  let enFile = 0;
+  for (const g of S.groupes) {
+    if (g.etat !== 'file') continue;
+    const ids = B.salle.chercher(S, g.taille);
+    if (ids) {
+      ids.forEach(function (id) { B.salle.tableDe(S, id).groupe = g.id; });
+      g.tables = ids;
+      g.etat = 'marche';
+      g.depuis = S.minute;
+      g.chemin = B.salle.chemin(g, B.salle.centre(ids));
+      if (ids.length > 1) B.message(S, 'msg_installe_rallonge', { num: B.salle.nomTables(ids), taille: g.taille });
+    } else if (S.minute - g.depuis > g.patience) {
+      g.etat = 'repart';
+      g.chemin = [{ x: B.DATA.salle.dehors.x, y: B.DATA.salle.dehors.y }];
+      S.stats.jour.repartis += g.taille;
+      B.message(S, 'msg_repart', { taille: g.taille });
+    } else enFile++;
+  }
+  S.stats.jour.fileMax = Math.max(S.stats.jour.fileMax, enFile);
+};
+
+/* Le groupe quitte sa table : la table devient à débarrasser. */
+B.clients.partir = function (S, g) {
+  (g.tables || []).forEach(function (id) {
+    const t = B.salle.tableDe(S, id);
+    t.groupe = null; t.sale = true;
+  });
+  const c = B.salle.centre(g.tables);
+  g.x = c.x; g.y = c.y;
+  g.etat = 'depart';
+  g.chemin = B.salle.chemin(g, B.DATA.salle.entree).concat([{ x: B.DATA.salle.dehors.x, y: B.DATA.salle.dehors.y }]);
+  if (g.aMange) S.stats.jour.servis += g.taille;
+};
+
+B.clients.avancer = function (S, h) {
+  const D = B.DATA.clients.durees, v = B.DATA.clients.vitesses.clients * h;
+  for (const g of S.groupes) {
+    const ecoule = S.minute - g.depuis;
+    if (g.etat === 'marche') {
+      if (B.salle.bouger(g, v)) { g.etat = 'carte'; g.depuis = S.minute; g.duree = B.duree(S, D.lireCarte); }
+    } else if (g.etat === 'carte') {
+      if (ecoule >= g.duree) { g.etat = 'commande'; g.depuis = S.minute; }
+    } else if (g.etat === 'cuisine') {
+      if (S.minute >= g.pret) { g.etat = 'pret'; g.depuis = S.minute; }
+    } else if (g.etat === 'mange') {
+      if (ecoule >= g.duree) { g.etat = 'addition'; g.depuis = S.minute; }
+    } else if (g.etat === 'depart' || g.etat === 'repart') {
+      if (B.salle.bouger(g, v)) g.parti = true;
+    }
+  }
+  S.groupes = S.groupes.filter(function (g) { return !g.parti; });
+};
+
+/* ==== src/moteur/service.js ==== */
+/* service.js — les serveurs : prendre les commandes, servir, encaisser, débarrasser. */
+B.service = {};
+
+/* Ordre de priorité : plat prêt (il refroidit), addition, commande, puis table à débarrasser. */
+B.service.choisir = function (S, w) {
+  let best = null;
+  const prop = function (prio, depuis, tache) {
+    if (!best || prio < best.prio || (prio === best.prio && depuis < best.depuis)) best = { prio: prio, depuis: depuis, tache: tache };
+  };
+  for (const g of S.groupes) {
+    if (g.serveur) continue;
+    if (g.etat === 'pret') prop(0, g.depuis, { type: 'servir', groupe: g.id });
+    else if (g.etat === 'addition') prop(1, g.depuis, { type: 'addition', groupe: g.id });
+    else if (g.etat === 'commande') prop(2, g.depuis, { type: 'commande', groupe: g.id });
+  }
+  for (const t of S.tables) {
+    if (t.sale && !t.serveur) prop(3, 9999, { type: 'debarrasser', table: t.id });
+  }
+  return best ? best.tache : null;
+};
+
+B.service.groupe = function (S, id) { return S.groupes.find(function (g) { return g.id === id; }); };
+
+/* Prépare les étapes d'une tâche : aller quelque part, puis agir un certain temps. */
+B.service.preparer = function (S, w, tache) {
+  const D = B.DATA.clients.durees, A = B.DATA.salle.allee;
+  const auBord = function (ids) { return { x: B.salle.centre(ids).x, y: A }; };
+  tache.etapes = [];
+  if (tache.type === 'debarrasser') {
+    const t = B.salle.tableDe(S, tache.table);
+    t.serveur = w.id;
+    tache.etapes.push({ aller: auBord([t.id]) }, { agir: D.debarrasserParTable });
+  } else {
+    const g = B.service.groupe(S, tache.groupe);
+    g.serveur = w.id;
+    if (tache.type === 'servir') tache.etapes.push({ aller: { x: B.DATA.salle.passe.x, y: A } }, { agir: D.prendrePlatPasse }, { aller: auBord(g.tables), porte: 'assiette' }, { agir: D.poserPlat, porte: 'assiette' });
+    if (tache.type === 'commande') tache.etapes.push({ aller: auBord(g.tables) }, { agir: D.prendreCommande });
+    if (tache.type === 'addition') tache.etapes.push({ aller: auBord(g.tables), porte: 'addition' }, { agir: D.addition, porte: 'addition' });
+  }
+  w.tache = tache;
+  w.chemin = [];
+};
+
+B.service.terminer = function (S, w) {
+  const tache = w.tache, D = B.DATA.clients.durees;
+  w.tache = null;
+  if (tache.type === 'debarrasser') {
+    const t = B.salle.tableDe(S, tache.table);
+    t.sale = false; t.serveur = null;
+    return;
+  }
+  const g = B.service.groupe(S, tache.groupe);
+  if (!g) return;
+  g.serveur = null;
+  if (tache.type === 'commande') {
+    S.stats.jour.attenteCommande += S.minute - g.depuis;
+    S.stats.jour.nbCommandes++;
+    g.etat = 'cuisine'; g.depuis = S.minute; g.pret = S.minute + B.duree(S, D.cuisine);
+  } else if (tache.type === 'servir') {
+    const type = B.clients.type(g.type);
+    g.etat = 'mange'; g.depuis = S.minute; g.duree = B.duree(S, type.repas); g.aMange = true;
+  } else if (tache.type === 'addition') {
+    B.clients.partir(S, g);
+  }
+};
+
+B.service.avancer = function (S, h) {
+  const v = B.DATA.clients.vitesses.serveurs;
+  S.serveurs.forEach(function (w, i) {
+    let reste = h;
+    let garde = 0;
+    while (reste > 1e-9 && garde++ < 20) {
+      if (!w.tache) {
+        const t = B.service.choisir(S, w);
+        if (t) B.service.preparer(S, w, t);
+        else {
+          const base = B.DATA.salle.serveurs[i];
+          if (!w.chemin.length && (Math.abs(w.x - base.x) > 1 || Math.abs(w.y - base.y) > 1)) w.chemin = B.salle.chemin(w, base);
+          B.salle.bouger(w, v * reste);
+          return;
+        }
+      }
+      const e = w.tache.etapes[0];
+      if (!e) { B.service.terminer(S, w); continue; }
+      if (e.aller) {
+        if (!w.chemin.length) w.chemin = B.salle.chemin(w, e.aller);
+        const besoin = B.service.longueur(w) / v;
+        if (besoin <= reste) { reste -= besoin; w.x = e.aller.x; w.y = e.aller.y; w.chemin = []; w.tache.etapes.shift(); }
+        else { B.salle.bouger(w, v * reste); reste = 0; }
+      } else if (e.agir != null) {
+        if (e.agir <= reste) { reste -= e.agir; w.tache.etapes.shift(); }
+        else { e.agir -= reste; reste = 0; }
+      }
+    }
+  });
+};
+
+B.service.longueur = function (w) {
+  let x = w.x, y = w.y, L = 0;
+  for (const p of w.chemin) { L += Math.hypot(p.x - x, p.y - y); x = p.x; y = p.y; }
+  return L;
+};
+
+/* ==== src/moteur/partie.js ==== */
+/* partie.js — créer une partie, faire passer le temps, finir la journée. */
+B.statsVides = function () {
+  return { groupes: 0, arrives: 0, servis: 0, repartis: 0, fileMax: 0, attenteCommande: 0, nbCommandes: 0 };
+};
+
+B.nouvellePartie = function (o) {
+  o = o || {};
+  const R = B.DATA.regles, J = B.DATA.clients.journee, P = B.DATA.salle;
+  const diff = R.difficultes.facile;
+  return {
+    format: 'bistrot',
+    version: B.VERSION_SAUVEGARDE,
+    jeu: B.VERSION_JEU,
+    creeLe: o.date || null,
+    nom: (o.nom || B.t('nouvelle_nom_defaut')).trim().slice(0, 40),
+    lieu: B.lieu(o.lieu || 'paris').id,
+    difficulte: 'facile',
+    jour: 1,
+    minute: J.ouverture,
+    argent: diff.capitalDepart,
+    note: diff.noteDepart,
+    vitesse: 1,
+    graine: (o.graine != null ? o.graine : Math.floor(Math.random() * 2147483647)) | 0,
+    prochainId: 1,
+    tables: P.tables.map(function (t) { return { id: t.id, places: t.places, groupe: null, sale: false, serveur: null }; }),
+    groupes: [],
+    serveurs: P.serveurs.map(function (s, i) { return { id: i + 1, nom: s.nom, x: s.x, y: s.y, chemin: [], tache: null }; }),
+    stats: { jour: B.statsVides(), totalServis: 0, joursJoues: 0 },
+    journal: [],
+    finJour: false,
+    bilan: null,
+    origine: null
+  };
+};
+
+/* Fait passer dt minutes de jeu, par petits pas d'un quart de minute. */
+B.avancer = function (S, dt) {
+  while (dt > 1e-9 && !S.finJour) {
+    const h = Math.min(0.25, dt);
+    dt -= h;
+    B.pas(S, h);
+  }
+};
+
+B.pas = function (S, h) {
+  const avant = S.minute;
+  S.minute += h;
+  B.DATA.clients.annonces.forEach(function (a) {
+    if (avant < a.minute && S.minute >= a.minute) B.message(S, a.texte);
+  });
+  const parMinute = B.clients.affluence(S, S.minute) / 60;
+  if (parMinute > 0 && B.hasard(S) < parMinute * h) B.clients.arrivee(S);
+  B.clients.placer(S);
+  B.clients.avancer(S, h);
+  B.service.avancer(S, h);
+  B.finDeJournee(S);
+};
+
+B.finDeJournee = function (S) {
+  const J = B.DATA.clients.journee;
+  if (S.minute >= J.finForcee && S.groupes.length) {
+    S.groupes.forEach(function (g) { if (g.aMange && g.etat !== 'depart') S.stats.jour.servis += g.taille; });
+    S.groupes = [];
+    S.tables.forEach(function (t) { t.groupe = null; t.sale = false; t.serveur = null; });
+    S.serveurs.forEach(function (w) { w.tache = null; w.chemin = []; });
+    B.message(S, 'msg_fin_forcee');
+  }
+  const salePasFaite = S.tables.some(function (t) { return t.sale; });
+  if (S.minute >= J.fermeture && !S.groupes.length && (!salePasFaite || S.minute >= J.finForcee)) {
+    S.finJour = true;
+    const st = S.stats.jour;
+    S.bilan = {
+      jour: S.jour, servis: st.servis, repartis: st.repartis,
+      attente: st.nbCommandes ? Math.round(st.attenteCommande / st.nbCommandes) : 0
+    };
+    S.stats.totalServis += st.servis;
+    S.stats.joursJoues++;
+    B.message(S, 'msg_fin_service');
+  }
+};
+
+B.jourSuivant = function (S) {
+  const P = B.DATA.salle;
+  S.jour++;
+  S.minute = B.DATA.clients.journee.ouverture;
+  S.stats.jour = B.statsVides();
+  S.finJour = false;
+  S.bilan = null;
+  S.groupes = [];
+  S.tables.forEach(function (t) { t.groupe = null; t.sale = false; t.serveur = null; });
+  S.serveurs.forEach(function (w, i) { w.x = P.serveurs[i].x; w.y = P.serveurs[i].y; w.chemin = []; w.tache = null; });
+};
+
+/* Contrôle de cohérence, utilisé par le simulateur et les tests. Renvoie la liste des problèmes. */
+B.verifier = function (S) {
+  const pb = [];
+  (function scan(o, chemin) {
+    if (typeof o === 'number') {
+      if (!isFinite(o)) pb.push('valeur impossible à ' + chemin);
+      return;
+    }
+    if (o && typeof o === 'object') for (const k in o) scan(o[k], chemin + '.' + k);
+  })(S, 'partie');
+  const st = S.stats.jour;
+  ['groupes', 'arrives', 'servis', 'repartis', 'fileMax', 'attenteCommande', 'nbCommandes'].forEach(function (k) {
+    if (st[k] < 0) pb.push('compteur négatif : ' + k);
+  });
+  if (st.servis + st.repartis > st.arrives) pb.push('plus de clients sortis que de clients entrés');
+  S.tables.forEach(function (t) {
+    if (t.groupe) {
+      const g = S.groupes.find(function (x) { return x.id === t.groupe; });
+      if (!g) pb.push('table ' + t.id + ' occupée par un groupe disparu');
+      else if (!g.tables || g.tables.indexOf(t.id) < 0) pb.push('table ' + t.id + ' et groupe ' + g.id + ' ne se correspondent pas');
+    }
+    if (t.groupe && t.sale) pb.push('table ' + t.id + ' occupée et sale à la fois');
+  });
+  S.groupes.forEach(function (g) {
+    const assis = ['marche', 'carte', 'commande', 'cuisine', 'pret', 'mange', 'addition'].indexOf(g.etat) >= 0;
+    if (assis && !(g.tables && g.tables.length)) pb.push('groupe ' + g.id + ' sans table');
+    if (assis) {
+      const places = g.tables.reduce(function (s, id) { return s + B.salle.geo(id).places; }, 0);
+      if (places < g.taille) pb.push('groupe ' + g.id + ' trop nombreux pour sa table');
+    }
+    if (['commande', 'pret', 'addition'].indexOf(g.etat) >= 0 && S.minute - g.depuis > 90) pb.push('groupe ' + g.id + ' oublié depuis plus de 90 min (' + g.etat + ')');
+  });
+  S.serveurs.forEach(function (w) {
+    if (w.tache && w.tache.groupe && !S.groupes.find(function (g) { return g.id === w.tache.groupe; })) pb.push('serveur ' + w.nom + ' sert un groupe disparu');
+  });
+  if (S.argent < 0 && S.difficulte === 'facile') pb.push('argent négatif');
+  return pb;
+};
+
+/* ==== src/moteur/sauvegarde.js ==== */
+/* sauvegarde.js — enregistrer et relire une partie. Chaque sauvegarde porte un numéro de version.
+   Quand le format change, on ajoute une étape dans B.MIGRATIONS (de la version n à n+1) :
+   ainsi chaque nouvelle version du jeu sait relire toutes les anciennes. */
+B.VERSION_SAUVEGARDE = 1;
+
+B.MIGRATIONS = {
+  /* Exemple pour plus tard :  1: function (S) { S.nouveauChamp = 0; S.version = 2; return S; } */
+};
+
+B.serialiser = function (S) { return JSON.stringify(S); };
+
+/* Relit un texte de sauvegarde. Renvoie { partie } ou { erreur: 'cle_du_texte' }. Ne modifie jamais le texte d'origine. */
+B.relire = function (texte) {
+  let S;
+  try { S = JSON.parse(texte); } catch (e) { return { erreur: 'erreur_sauvegarde_illisible' }; }
+  if (!S || S.format !== 'bistrot' || typeof S.version !== 'number') return { erreur: 'erreur_sauvegarde_illisible' };
+  if (S.version > B.VERSION_SAUVEGARDE) return { erreur: 'erreur_sauvegarde_recente' };
+  while (S.version < B.VERSION_SAUVEGARDE) {
+    const m = B.MIGRATIONS[S.version];
+    if (!m) return { erreur: 'erreur_sauvegarde_illisible' };
+    S = m(S);
+  }
+  S.jeu = B.VERSION_JEU;
+  return { partie: S };
+};
+
+/* Noms des cases de rangement du téléphone. Le lien TEST et le lien OFFICIEL ont chacun les leurs. */
+B.cles = function (canal) {
+  const p = 'bistrotjeu.' + canal + '.';
+  return { partie: p + 'partie', secours: p + 'partie-precedente', reglages: p + 'reglages', copieAncien: p + 'copie-ancien-jeu' };
+};
+
+/* ==== src/moteur/ancien.js ==== */
+/* ancien.js — lecture des parties de l'ancien jeu « Chez YaYa » (v1 à v10.2).
+   Règle d'or : on LIT seulement. Aucune écriture, aucune suppression sur les cases de l'ancien jeu. */
+B.ancien = {};
+
+/* Cases utilisées par l'ancien jeu : 5 emplacements + la sauvegarde principale. */
+B.ancien.cles = ['bistrot_slot1', 'bistrot_slot2', 'bistrot_slot3', 'bistrot_slot4', 'bistrot_slot5', 'bistrot_save_v1'];
+B.ancien.cleActive = 'bistrot_active_slot';
+
+B.ancien.lire = function (texte) {
+  try {
+    const o = JSON.parse(texte);
+    if (!o || typeof o !== 'object' || typeof o.t !== 'number' || typeof o.cash !== 'number') return null;
+    return o;
+  } catch (e) { return null; }
+};
+
+/* Résumé lisible d'une ancienne partie. */
+B.ancien.resumer = function (o) {
+  const lieu = B.lieu(o.v96loc || 'paris');
+  return {
+    nom: (o.rName || 'Chez YaYa').trim(),
+    lieu: lieu.id,
+    lieuNom: lieu.nom,
+    jour: Math.floor(o.t / 1440) + 1,
+    argent: Math.round(o.cash * 100) / 100,
+    note: typeof o.rep === 'number' && isFinite(o.rep) ? Math.round(o.rep * 100) / 100 : 3,
+    versionSauvegarde: o.v || 0
+  };
+};
+
+/* Crée une partie Bistrot à partir d'une ancienne partie (copie, l'originale reste intacte). */
+B.ancien.convertir = function (o, infos) {
+  const r = B.ancien.resumer(o);
+  const S = B.nouvellePartie({ nom: r.nom, lieu: r.lieu, graine: infos && infos.graine, date: infos && infos.date });
+  S.jour = Math.max(1, r.jour);
+  S.argent = r.argent;
+  S.note = Math.max(0, Math.min(5, r.note));
+  S.origine = {
+    jeu: 'Chez YaYa', versionSauvegarde: r.versionSauvegarde,
+    cle: infos && infos.cle || null, reprisLe: infos && infos.date || null,
+    reprisPourLinstant: ['nom', 'lieu', 'jour', 'argent', 'note']
+  };
+  return S;
+};
+
+/* Liste les anciennes parties trouvées, sans doublon (la sauvegarde principale recopie souvent un emplacement). */
+B.ancien.trouver = function (lireCase) {
+  const vues = {}, out = [];
+  let active = null;
+  try { active = lireCase(B.ancien.cleActive); } catch (e) { active = null; }
+  B.ancien.cles.forEach(function (cle) {
+    let txt = null;
+    try { txt = lireCase(cle); } catch (e) { txt = null; }
+    if (!txt) return;
+    const o = B.ancien.lire(txt);
+    if (!o) return;
+    if (vues[txt]) return;
+    vues[txt] = true;
+    const n = cle.indexOf('slot') >= 0 ? +cle.slice(-1) : null;
+    out.push({ cle: cle, emplacement: n, derniere: n === null || String(n) === String(active), texte: txt, resume: B.ancien.resumer(o) });
+  });
+  return out;
+};
+
+B.CANAL = "test";
+window.B = B;
+/* ==== src/interface/ecran.js ==== */
+/* ecran.js — l'écran de jeu : barre du haut, vitesses, pauses automatiques. */
+const UI = B.UI = {
+  S: null,                 // la partie en cours
+  pauses: {},              // raisons de pause automatique : volet, portrait, accueil, cache…
+  selection: null,         // table touchée
+  reglages: { pauseAuto: true },
+  derniereSauvegarde: null
+};
+
+UI.$ = function (id) { return document.getElementById(id); };
+UI.esc = function (s) {
+  return String(s).replace(/[&<>"']/g, function (c) { return { '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[c]; });
+};
+
+UI.pause = function (raison, oui) {
+  if (oui) UI.pauses[raison] = true; else delete UI.pauses[raison];
+  UI.majBarre();
+};
+UI.enPause = function () { return !UI.S || Object.keys(UI.pauses).length > 0 || UI.S.vitesse === 0 || UI.S.finJour; };
+UI.vitesseReelle = function () { return UI.enPause() ? 0 : UI.S.vitesse; };
+
+UI.initBarre = function () {
+  const zone = UI.$('vitesses');
+  zone.setAttribute('aria-label', B.t('aria_vitesse'));
+  zone.innerHTML = B.DATA.regles.vitesses.map(function (v) {
+    const lib = v === 0 ? B.t('btn_pause') : B.t('btn_' + v + 'x');
+    return '<button type="button" data-v="' + v + '">' + UI.esc(lib) + '</button>';
+  }).join('');
+  zone.addEventListener('click', function (e) {
+    const b = e.target.closest('button[data-v]');
+    if (!b || !UI.S) return;
+    UI.S.vitesse = +b.dataset.v;
+    UI.majBarre();
+  });
+  UI.$('btn-journal').textContent = B.t('btn_journal');
+  UI.$('btn-menu').textContent = B.t('btn_menu');
+  UI.$('btn-journal').addEventListener('click', function () { UI.ouvrirVolet('journal'); });
+  UI.$('btn-menu').addEventListener('click', function () { UI.ouvrirVolet('menu'); });
+};
+
+UI.majBarre = function () {
+  const S = UI.S;
+  if (!S) return;
+  UI.$('b-nom').textContent = S.nom;
+  UI.$('b-lieu').textContent = B.lieu(S.lieu).nom;
+  let h = B.t('barre_jour_heure', { jour: S.jour, heure: B.heure(S.minute) });
+  if (UI.enPause()) h += ' · ' + B.t('barre_en_pause');
+  UI.$('b-heure').textContent = h;
+  UI.$('b-argent').textContent = B.euros(S.argent);
+  UI.$('vitesses').querySelectorAll('button').forEach(function (b) {
+    const actif = +b.dataset.v === S.vitesse;
+    b.classList.toggle('actif', actif);
+    b.setAttribute('aria-pressed', actif ? 'true' : 'false');
+  });
+};
+
+/* Panneau de droite, en bas : le détail de la table touchée, ou un résumé de la salle. */
+UI.majDetail = function () {
+  const S = UI.S, el = UI.$('detail');
+  if (!S) return;
+  let html = '';
+  const sel = UI.selection && B.salle.tableDe(S, UI.selection);
+  if (sel) {
+    const g = sel.groupe && S.groupes.find(function (x) { return x.id === sel.groupe; });
+    const ids = g ? g.tables : [sel.id];
+    html += '<b>' + UI.esc(B.t('detail_table', { num: B.salle.nomTables(ids) })) + '</b>';
+    if (g) {
+      const taille = g.taille === 1 ? B.t('pers_1') : B.t('pers_n', { n: g.taille });
+      html += '<div>' + UI.esc(B.t('detail_groupe', { taille: taille, groupe: B.t('groupe_' + g.type, { nom: g.nom }) })) + '</div>';
+      html += '<div>' + UI.esc(B.t('etat_long_' + g.etat)) + '</div>';
+      const min = Math.floor(S.minute - g.depuis);
+      const attend = ['commande', 'pret', 'addition', 'cuisine'].indexOf(g.etat) >= 0;
+      html += '<div class="' + UI.classeAttente(g) + '">' + UI.esc(B.t(attend ? 'detail_attend' : 'detail_depuis', { min: min })) + '</div>';
+    } else if (sel.sale) {
+      html += '<div>' + UI.esc(B.t('detail_a_debarrasser')) + '</div>';
+    } else {
+      html += '<div>' + UI.esc(B.t('detail_libre', { places: sel.places })) + '</div>';
+    }
+  } else {
+    let enSalle = 0, file = 0;
+    S.groupes.forEach(function (g) {
+      if (g.etat === 'file') file++;
+      else if (g.etat !== 'repart' && g.etat !== 'depart') enSalle += g.taille;
+    });
+    html += '<div class="aide">' + UI.esc(B.t('detail_aucune')) + '</div>';
+    html += '<div>' + UI.esc(B.t('detail_en_salle', { n: enSalle })) + '</div>';
+    html += '<div>' + UI.esc(B.t('detail_file', { n: file })) + '</div>';
+    html += '<div>' + UI.esc(B.t('detail_servis', { n: S.stats.jour.servis })) + '</div>';
+    html += '<div>' + UI.esc(B.t('detail_repartis', { n: S.stats.jour.repartis })) + '</div>';
+  }
+  if (el._html !== html) { el.innerHTML = html; el._html = html; }
+};
+
+UI.classeAttente = function (g) {
+  const A = B.DATA.clients.alertes;
+  if (['commande', 'pret', 'addition'].indexOf(g.etat) < 0) return 'neutre';
+  const m = UI.S.minute - g.depuis;
+  return m >= A.attenteRouge ? 'rouge' : m >= A.attenteOrange ? 'orange' : 'vert';
+};
+
+/* ==== src/interface/dessin-salle.js ==== */
+/* dessin-salle.js — dessine la salle en largeur (format paysage), les clients et les serveurs. */
+UI.dessin = {};
+
+UI.dessin.fond = function () {
+  const P = B.DATA.salle, W = P.dessin.largeur, H = P.dessin.hauteur, e = P.entree, k = P.cuisine;
+  let s = '';
+  s += '<rect x="0" y="0" width="' + W + '" height="' + H + '" fill="#3a2a22"/>';
+  s += '<rect x="12" y="12" width="' + (W - 24) + '" height="' + (H - 24) + '" fill="#efe1c6"/>';
+  for (let x = 12; x < k.x; x += 56) s += '<line x1="' + x + '" y1="12" x2="' + x + '" y2="' + (H - 12) + '" stroke="#e4d2b0" stroke-width="2"/>';
+  /* Cuisine */
+  s += '<rect x="' + k.x + '" y="' + k.y + '" width="' + k.largeur + '" height="' + k.hauteur + '" fill="#dfe4e6"/>';
+  for (let y = k.y; y < k.y + k.hauteur; y += 33) s += '<line x1="' + k.x + '" y1="' + y + '" x2="' + (k.x + k.largeur) + '" y2="' + y + '" stroke="#cfd6d9" stroke-width="2"/>';
+  s += '<rect x="' + (k.x + 30) + '" y="' + (k.y + 30) + '" width="80" height="56" rx="6" fill="#555"/>';
+  s += '<circle cx="' + (k.x + 52) + '" cy="' + (k.y + 58) + '" r="13" fill="#333" stroke="#888" stroke-width="3"/><circle cx="' + (k.x + 88) + '" cy="' + (k.y + 58) + '" r="13" fill="#333" stroke="#888" stroke-width="3"/>';
+  s += '<rect x="' + (k.x + 30) + '" y="' + (k.y + k.hauteur - 90) + '" width="80" height="60" rx="6" fill="#9aa5ab"/>';
+  s += '<text x="' + (k.x + k.largeur / 2 + 6) + '" y="' + (k.y + k.hauteur / 2 + 9) + '" class="lieu-txt">' + UI.esc(B.t('salle_cuisine')) + '</text>';
+  /* Passe : le comptoir où les plats sortent de la cuisine */
+  s += '<rect x="' + (k.x - 16) + '" y="' + (P.allee - 87) + '" width="16" height="174" rx="4" fill="#9b9b9b"/>';
+  s += '<text x="' + (k.x - 8) + '" y="' + (P.allee - 97) + '" class="petit-txt">' + UI.esc(B.t('salle_passe')) + '</text>';
+  /* Murs avec la porte d'entrée à gauche */
+  s += '<path d="M12 12 H' + (W - 12) + ' V' + (H - 12) + ' H12 V' + (e.y + 32) + ' M12 ' + (e.y - 32) + ' V12" fill="none" stroke="#5a4636" stroke-width="10"/>';
+  s += '<text x="22" y="' + (e.y - 42) + '" class="petit-txt gauche">' + UI.esc(B.t('salle_entree')) + '</text>';
+  /* Tables et chaises */
+  P.tables.forEach(function (t) {
+    B.salle.places(t.id).forEach(function (p) { s += '<rect x="' + (p.x - 13) + '" y="' + (p.y - 13) + '" width="26" height="26" rx="7" fill="#9a6a45"/>'; });
+  });
+  P.tables.forEach(function (t) {
+    const c = B.salle.taille(t.places);
+    s += '<rect x="' + (t.x - c / 2) + '" y="' + (t.y - c / 2) + '" width="' + c + '" height="' + c + '" rx="8" fill="#b9834f" stroke="#7a5233" stroke-width="3"/>';
+  });
+  UI.$('fond').innerHTML = s;
+  /* Zones à toucher (plus grandes que les tables) */
+  let h = '';
+  P.tables.forEach(function (t) {
+    const w = t.places <= 2 ? 136 : 128, hh = t.places <= 2 ? 100 : 150;
+    h += '<rect data-table="' + t.id + '" x="' + (t.x - w / 2) + '" y="' + (t.y - hh / 2) + '" width="' + w + '" height="' + hh + '" fill="transparent"/>';
+  });
+  UI.$('touches').innerHTML = h;
+};
+
+/* Position verticale du n-ième groupe de la file (les gros groupes prennent plus de place). */
+UI.dessin.yFile = function (S, rang) {
+  let y = B.DATA.salle.file.y, i = 0;
+  for (const g of S.groupes) {
+    if (g.etat !== 'file') continue;
+    if (i === rang) return y + (Math.ceil(g.taille / 2) - 1) * 11;
+    y += Math.ceil(g.taille / 2) * 22 + 8; i++;
+  }
+  return y;
+};
+
+UI.dessin.couleur = function (g) { return B.clients.type(g.type).couleur; };
+
+UI.dessin.client = function (x, y, couleur) {
+  return '<circle cx="' + x.toFixed(1) + '" cy="' + y.toFixed(1) + '" r="14" fill="' + couleur + '" stroke="#fff" stroke-width="3"/>';
+};
+
+/* Petit groupe qui marche : les personnes en paquet autour d'un point. */
+UI.dessin.paquet = function (g, x, y) {
+  let s = '';
+  for (let i = 0; i < g.taille; i++) {
+    const col = i % 2, lig = Math.floor(i / 2);
+    s += UI.dessin.client(x - 11 + col * 22, y - (Math.ceil(g.taille / 2) - 1) * 11 + lig * 22, UI.dessin.couleur(g));
+  }
+  return s;
+};
+
+UI.dessin.etiquette = function (x, y, texte, couleur) {
+  const w = Math.max(70, texte.length * 12.5 + 20);
+  return '<rect x="' + (x - w / 2) + '" y="' + (y - 14) + '" width="' + w + '" height="28" rx="14" fill="' + couleur + '"/>' +
+    '<text x="' + x + '" y="' + (y + 8) + '" class="etiq">' + UI.esc(texte) + '</text>';
+};
+
+UI.dessin.couleurs = { vert: '#2f8f55', orange: '#d9811c', rouge: '#c73a3a', neutre: '#5a463b', sale: '#8a8a8a' };
+
+UI.dessin.dynamique = function () {
+  const S = UI.S, P = B.DATA.salle;
+  let bas = '', haut = '', etiq = '';
+  /* Rallonges entre deux tables rapprochées, miettes sur les tables sales, assiettes */
+  S.groupes.forEach(function (g) {
+    if (g.tables && g.tables.length > 1 && g.etat !== 'file') {
+      const a = B.salle.geo(g.tables[0]), b = B.salle.geo(g.tables[1]);
+      bas += '<rect x="' + (Math.min(a.x, b.x) + 40) + '" y="' + (a.y - 30) + '" width="' + (Math.abs(b.x - a.x) - 80) + '" height="60" fill="#b9834f" stroke="#7a5233" stroke-width="3"/>';
+    }
+  });
+  const choisie = UI.selection && B.salle.tableDe(S, UI.selection);
+  const gChoisi = choisie && choisie.groupe && S.groupes.find(function (g) { return g.id === choisie.groupe; });
+  const tablesChoisies = gChoisi ? gChoisi.tables : (choisie ? [choisie.id] : []);
+  S.tables.forEach(function (t) {
+    const geo = B.salle.geo(t.id);
+    if (t.sale) {
+      bas += '<circle cx="' + (geo.x - 12) + '" cy="' + (geo.y - 8) + '" r="9" fill="#f4f4f4" stroke="#999" stroke-width="2"/><circle cx="' + (geo.x + 14) + '" cy="' + (geo.y + 10) + '" r="9" fill="#f4f4f4" stroke="#999" stroke-width="2"/>';
+    }
+    if (tablesChoisies.indexOf(t.id) >= 0) {
+      const c = B.salle.taille(geo.places) + 14;
+      haut += '<rect x="' + (geo.x - c / 2) + '" y="' + (geo.y - c / 2) + '" width="' + c + '" height="' + c + '" rx="12" fill="none" stroke="#1d6fd8" stroke-width="5"/>';
+    }
+  });
+  /* Numéros de table */
+  P.tables.forEach(function (t) {
+    haut += '<text x="' + t.x + '" y="' + (t.y + 11) + '" class="num">' + t.id + '</text>';
+  });
+  /* Clients */
+  let rangFile = 0, nbFile = 0;
+  S.groupes.forEach(function (g) {
+    const assis = ['carte', 'commande', 'cuisine', 'pret', 'mange', 'addition'].indexOf(g.etat) >= 0;
+    if (g.etat === 'file') {
+      nbFile++;
+      const yf = UI.dessin.yFile(S, rangFile);
+      if (yf + Math.ceil(g.taille / 2) * 11 <= 428) bas += UI.dessin.paquet(g, P.file.x, yf);
+      rangFile++;
+    } else if (assis) {
+      const places = [];
+      g.tables.forEach(function (id) { B.salle.places(id).forEach(function (p) { places.push(p); }); });
+      for (let i = 0; i < g.taille; i++) bas += UI.dessin.client(places[i].x, places[i].y, UI.dessin.couleur(g));
+      if (g.etat === 'mange') g.tables.forEach(function (id) {
+        const geo = B.salle.geo(id);
+        bas += '<circle cx="' + geo.x + '" cy="' + (geo.y - 22) + '" r="10" fill="#fff" stroke="#ccc" stroke-width="2"/>';
+      });
+      const c = B.salle.centre(g.tables), geo = B.salle.geo(g.tables[0]);
+      const y = geo.y < P.allee ? geo.y - 85 : geo.y + 89;
+      etiq += UI.dessin.etiquette(c.x, y, B.t('etat_court_' + g.etat), UI.dessin.couleurs[UI.classeAttente(g)]);
+    } else {
+      bas += UI.dessin.paquet(g, g.x, g.y);
+    }
+  });
+  S.tables.forEach(function (t) {
+    if (!t.sale) return;
+    const geo = B.salle.geo(t.id), y = geo.y < P.allee ? geo.y - 85 : geo.y + 89;
+    etiq += UI.dessin.etiquette(geo.x, y, B.t('etat_court_sale'), UI.dessin.couleurs.sale);
+  });
+  if (nbFile) etiq += '<text x="22" y="' + (P.file.y - 30) + '" class="petit-txt gauche">' + UI.esc(B.t('salle_file', { n: nbFile })) + '</text>';
+  /* Serveurs : rond foncé avec tablier blanc, et leur prénom */
+  S.serveurs.forEach(function (w) {
+    const x = w.x.toFixed(1), y = w.y.toFixed(1);
+    haut += '<circle cx="' + x + '" cy="' + y + '" r="17" fill="#1f1f1f" stroke="#f2c14e" stroke-width="3"/>';
+    haut += '<rect x="' + (w.x - 7).toFixed(1) + '" y="' + (w.y - 2).toFixed(1) + '" width="14" height="14" rx="2" fill="#fff"/>';
+    const e = w.tache && w.tache.etapes[0];
+    if (e && e.porte === 'assiette') haut += '<circle cx="' + (w.x + 20).toFixed(1) + '" cy="' + (w.y - 14).toFixed(1) + '" r="10" fill="#fff" stroke="#bbb" stroke-width="2"/>';
+    if (e && e.porte === 'addition') haut += '<rect x="' + (w.x + 12).toFixed(1) + '" y="' + (w.y - 26).toFixed(1) + '" width="14" height="20" fill="#fff" stroke="#bbb" stroke-width="2"/>';
+  });
+  const html = bas + haut + etiq;
+  const dyn = UI.$('dyn');
+  if (dyn._html !== html) { dyn.innerHTML = html; dyn._html = html; }
+};
+
+UI.dessin.initTouches = function () {
+  UI.$('touches').addEventListener('click', function (e) {
+    const r = e.target.closest('[data-table]');
+    if (!r) return;
+    const id = +r.dataset.table;
+    UI.selection = UI.selection === id ? null : id;
+    UI.majDetail();
+    UI.dessin.dynamique();
+  });
+};
+
+/* ==== src/interface/messages.js ==== */
+/* messages.js — notifications dans leur zone réservée (jamais sur un bouton) et Journal complet. */
+UI.toasts = [];
+UI.DUREE_MESSAGE = 6000;
+UI.MAX_VISIBLES = 3;
+
+UI.majMessages = function (maintenant) {
+  while (B.flux.length) UI.toasts.push({ m: B.flux.shift(), fin: maintenant + UI.DUREE_MESSAGE });
+  UI.toasts = UI.toasts.filter(function (t) { return t.fin > maintenant; });
+  const el = UI.$('messages');
+  /* On affiche jusqu'à 3 messages, moins s'ils ne tiennent pas en entier dans la zone. */
+  for (let n = Math.min(UI.MAX_VISIBLES, UI.toasts.length); n >= 0; n--) {
+    const visibles = UI.toasts.slice(UI.toasts.length - n).reverse();
+    const caches = UI.toasts.length - n;
+    let html = visibles.map(function (t) {
+      return '<div class="msg"><span class="h">' + B.heure(t.m.minute) + '</span> ' + UI.esc(t.m.texte) + '</div>';
+    }).join('');
+    if (caches > 0) html += '<div class="msg-plus">' + UI.esc(B.t('msg_plus', { n: caches })) + '</div>';
+    if (el._html === html) return;
+    el.innerHTML = html;
+    if (el.scrollHeight <= el.clientHeight + 1 || n === 0) { el._html = html; return; }
+  }
+};
+
+UI.htmlJournal = function () {
+  const J = UI.S ? UI.S.journal.slice().reverse() : [];
+  if (!J.length) return '<p>' + UI.esc(B.t('journal_vide')) + '</p>';
+  return '<ul class="journal">' + J.map(function (m) {
+    return '<li><span class="h">' + UI.esc(B.t('journal_ligne', { jour: m.jour, heure: B.heure(m.minute) })) + '</span>' + UI.esc(m.texte) + '</li>';
+  }).join('') + '</ul>';
+};
+
+/* ==== src/interface/volets.js ==== */
+/* volets.js — panneaux qui s'ouvrent par-dessus la salle (Journal, Menu) et se ferment d'un geste.
+   Le jeu se met en pause pendant la lecture (réglage), et reprend à la fermeture. */
+UI.voletOuvert = null;
+
+UI.ouvrirVolet = function (quoi) {
+  UI.voletOuvert = quoi;
+  const v = UI.$('volet');
+  UI.$('volet-titre').textContent = B.t(quoi === 'journal' ? 'journal_titre' : 'menu_titre');
+  UI.$('volet-corps').innerHTML = quoi === 'journal' ? UI.htmlJournal() : UI.htmlMenu();
+  UI.$('voile').hidden = false;
+  v.hidden = false;
+  requestAnimationFrame(function () { v.classList.add('ouvert'); });
+  if (UI.reglages.pauseAuto) UI.pause('volet', true);
+  UI.sauver();
+};
+
+UI.fermerVolet = function () {
+  const v = UI.$('volet');
+  v.classList.remove('ouvert');
+  UI.$('voile').hidden = true;
+  setTimeout(function () { if (!v.classList.contains('ouvert')) v.hidden = true; }, 220);
+  UI.voletOuvert = null;
+  UI.pause('volet', false);
+};
+
+UI.htmlMenu = function () {
+  const S = UI.S;
+  let h = '<h3>' + UI.esc(B.t('menu_reglages')) + '</h3>';
+  h += '<div class="ligne-reglage"><span>' + UI.esc(B.t('menu_pause_auto')) + '</span>' +
+    '<button type="button" class="bascule' + (UI.reglages.pauseAuto ? ' on' : '') + '" data-action="pause-auto">' +
+    UI.esc(B.t(UI.reglages.pauseAuto ? 'menu_oui' : 'menu_non')) + '</button></div>';
+  h += '<h3>' + UI.esc(B.t('menu_partie')) + '</h3>';
+  if (UI.derniereSauvegarde != null) h += '<p>' + UI.esc(B.t('menu_sauve', { heure: B.heure(UI.derniereSauvegarde) })) + '</p>';
+  if (S && S.origine) h += '<p>' + UI.esc(B.t('menu_origine', { v: S.origine.versionSauvegarde })) + '</p>';
+  h += '<button type="button" class="gros" data-action="accueil">' + UI.esc(B.t('menu_accueil')) + '</button>';
+  h += '<p class="version">' + UI.esc(B.t('menu_version', { version: B.VERSION_JEU, canal: B.t('canal_' + B.CANAL) })) + '</p>';
+  return h;
+};
+
+UI.initVolets = function () {
+  UI.$('volet-fermer').textContent = B.t('btn_fermer');
+  UI.$('volet-fermer').addEventListener('click', UI.fermerVolet);
+  UI.$('voile').addEventListener('click', UI.fermerVolet);
+  UI.$('volet-corps').addEventListener('click', function (e) {
+    const b = e.target.closest('[data-action]');
+    if (!b) return;
+    if (b.dataset.action === 'pause-auto') {
+      UI.reglages.pauseAuto = !UI.reglages.pauseAuto;
+      UI.sauverReglages();
+      if (!UI.reglages.pauseAuto) UI.pause('volet', false);
+      UI.$('volet-corps').innerHTML = UI.htmlMenu();
+    } else if (b.dataset.action === 'accueil') {
+      UI.fermerVolet();
+      UI.sauver();
+      UI.montrerAccueil();
+    }
+  });
+  /* Glisser le volet vers la droite pour le fermer */
+  let x0 = null;
+  const v = UI.$('volet');
+  v.addEventListener('pointerdown', function (e) { x0 = e.clientX; });
+  v.addEventListener('pointerup', function (e) { if (x0 != null && e.clientX - x0 > 60) UI.fermerVolet(); x0 = null; });
+  v.addEventListener('pointercancel', function () { x0 = null; });
+};
+
+/* ==== src/interface/stockage.js ==== */
+/* stockage.js — rangement de la partie sur le téléphone. Cases propres à ce lien (TEST ou OFFICIEL).
+   Les cases de l'ancien jeu (« bistrot_… ») sont seulement lues, jamais écrites. */
+UI.cles = function () { return B.cles(B.CANAL); };
+
+UI.lireCase = function (cle) { try { return localStorage.getItem(cle); } catch (e) { return null; } };
+UI.ecrireCase = function (cle, valeur) {
+  if (cle.indexOf('bistrotjeu.') !== 0) throw new Error('écriture interdite hors des cases de Bistrot');
+  localStorage.setItem(cle, valeur);
+};
+
+UI.sauver = function () {
+  if (!UI.S) return;
+  const K = UI.cles();
+  try {
+    const avant = UI.lireCase(K.partie);
+    const txt = B.serialiser(UI.S);
+    if (avant && avant !== txt) UI.ecrireCase(K.secours, avant);
+    UI.ecrireCase(K.partie, txt);
+    UI.derniereSauvegarde = UI.S.minute;
+  } catch (e) {
+    if (!UI._alerteStockage) { UI._alerteStockage = true; B.message(UI.S, 'erreur_stockage'); }
+  }
+};
+
+/* Renvoie { partie } ou { erreur } ; essaie la copie de secours si la sauvegarde principale est abîmée. */
+UI.chargerPartie = function () {
+  const K = UI.cles();
+  const txt = UI.lireCase(K.partie);
+  if (!txt) return {};
+  const r = B.relire(txt);
+  if (r.partie || r.erreur === 'erreur_sauvegarde_recente') return r;
+  const sec = UI.lireCase(K.secours);
+  if (sec) { const r2 = B.relire(sec); if (r2.partie) return r2; }
+  return r;
+};
+
+UI.chargerReglages = function () {
+  try { const r = JSON.parse(UI.lireCase(UI.cles().reglages) || '{}'); if (typeof r.pauseAuto === 'boolean') UI.reglages.pauseAuto = r.pauseAuto; } catch (e) { /* réglages par défaut */ }
+};
+UI.sauverReglages = function () {
+  try { UI.ecrireCase(UI.cles().reglages, JSON.stringify(UI.reglages)); } catch (e) { /* tant pis */ }
+};
+
+/* ==== src/interface/accueil.js ==== */
+/* accueil.js — écran d'accueil : continuer, nouvelle partie, reprendre une partie de l'ancien jeu. */
+UI.montrerAccueil = function (vue) {
+  UI.pause('accueil', true);
+  const el = UI.$('accueil');
+  el.hidden = false;
+  vue = vue || 'menu';
+  let h = '<div class="carte-accueil"><h1>' + UI.esc(B.t('jeu_nom')) + '</h1>';
+  const sousTitre = B.t('canal_' + B.CANAL);
+  h += '<p class="sous">' + UI.esc(B.t('jeu_sous_titre')) + (sousTitre ? ' · <b>' + UI.esc(sousTitre) + '</b>' : '') + '</p>';
+  if (vue === 'menu') {
+    if (UI.S) h += '<button type="button" class="gros principal" data-a="continuer">' + UI.esc(B.t('accueil_continuer', { nom: UI.S.nom, lieu: B.lieu(UI.S.lieu).nom, jour: UI.S.jour })) + '</button>';
+    if (UI.erreurChargement) h += '<p class="alerte">' + UI.esc(B.t(UI.erreurChargement)) + '</p>';
+    h += '<button type="button" class="gros' + (UI.S ? '' : ' principal') + '" data-a="nouvelle">' + UI.esc(B.t('accueil_nouvelle')) + '</button>';
+    if (UI.anciennes().length) h += '<button type="button" class="gros" data-a="ancien">' + UI.esc(B.t('accueil_ancien')) + '</button>';
+  } else if (vue === 'nouvelle') {
+    h += '<h2>' + UI.esc(B.t('nouvelle_titre')) + '</h2>';
+    h += '<label>' + UI.esc(B.t('nouvelle_nom')) + '<input id="n-nom" maxlength="40" value="' + UI.esc(B.t('nouvelle_nom_defaut')) + '"></label>';
+    h += '<label>' + UI.esc(B.t('nouvelle_lieu')) + '<select id="n-lieu">';
+    ['france', 'outre-mer', 'monde'].forEach(function (gr) {
+      h += '<optgroup label="' + UI.esc(B.t('nouvelle_groupe_' + gr)) + '">';
+      B.DATA.lieux.lieux.filter(function (l) { return l.groupe === gr; }).forEach(function (l) {
+        h += '<option value="' + l.id + '">' + UI.esc(l.nom) + '</option>';
+      });
+      h += '</optgroup>';
+    });
+    h += '</select></label>';
+    h += '<p>' + UI.esc(B.t('nouvelle_difficulte', { capital: B.euros(B.DATA.regles.difficultes.facile.capitalDepart) })) + '</p>';
+    h += '<div class="rang"><button type="button" class="gros" data-a="menu">' + UI.esc(B.t('accueil_retour')) + '</button>';
+    h += '<button type="button" class="gros principal" data-a="ouvrir">' + UI.esc(B.t('nouvelle_ouvrir')) + '</button></div>';
+  } else if (vue === 'ancien') {
+    h += '<h2>' + UI.esc(B.t('ancien_titre')) + '</h2>';
+    h += '<p class="rassure">' + UI.esc(B.t('ancien_rassure')) + '</p>';
+    const A = UI.anciennes();
+    if (!A.length) h += '<p>' + UI.esc(B.t('ancien_aucune')) + '</p>';
+    A.forEach(function (a, i) {
+      const r = a.resume;
+      const titre = a.emplacement ? B.t('ancien_emplacement', { n: a.emplacement }) : B.t('ancien_derniere');
+      h += '<div class="ancienne"><div><b>' + UI.esc(titre) + (a.derniere && a.emplacement ? ' · ' + UI.esc(B.t('ancien_derniere')) : '') + '</b><br>' +
+        UI.esc(B.t('ancien_ligne', { nom: r.nom, lieu: r.lieuNom, jour: r.jour, argent: B.euros(r.argent) })) + '</div>' +
+        '<button type="button" class="gros principal" data-a="importer" data-i="' + i + '">' + UI.esc(B.t('ancien_reprendre')) + '</button></div>';
+    });
+    h += '<p class="petit">' + UI.esc(B.t('ancien_contenu')) + '</p>';
+    h += '<button type="button" class="gros" data-a="menu">' + UI.esc(B.t('accueil_retour')) + '</button>';
+  }
+  h += '</div>';
+  el.innerHTML = h;
+  el.scrollTop = 0;
+};
+
+UI.anciennes = function () { return B.ancien.trouver(UI.lireCase); };
+
+UI.remplacerOk = function () {
+  if (!UI.S) return true;
+  return window.confirm(B.t('nouvelle_remplace', { nom: UI.S.nom, jour: UI.S.jour }));
+};
+
+UI.cacherAccueil = function () {
+  UI.$('accueil').hidden = true;
+  UI.pause('accueil', false);
+  UI.majBarre();
+};
+
+UI.demarrer = function (S, cle, vars) {
+  UI.S = S;
+  UI.selection = null;
+  UI.toasts = [];
+  B.flux.length = 0;
+  if (cle) B.message(S, cle, vars);
+  UI.sauver();
+  UI.cacherAccueil();
+  UI.majDetail();
+  UI.majFin();
+};
+
+UI.initAccueil = function () {
+  UI.$('accueil').addEventListener('click', function (e) {
+    const b = e.target.closest('[data-a]');
+    if (!b) return;
+    const a = b.dataset.a;
+    if (a === 'continuer') { UI.cacherAccueil(); UI.majFin(); }
+    else if (a === 'nouvelle' || a === 'ancien' || a === 'menu') UI.montrerAccueil(a);
+    else if (a === 'ouvrir') {
+      if (!UI.remplacerOk()) return;
+      const S = B.nouvellePartie({ nom: UI.$('n-nom').value || B.t('nouvelle_nom_defaut'), lieu: UI.$('n-lieu').value, date: new Date().toISOString() });
+      UI.erreurChargement = null;
+      UI.demarrer(S, 'msg_bienvenue', { chez: B.chezNom(S.nom), heure: B.heure(B.DATA.clients.affluence[0].de) });
+    } else if (a === 'importer') {
+      const choix = UI.anciennes()[+b.dataset.i];
+      if (!choix || !UI.remplacerOk()) return;
+      const S = B.ancien.convertir(JSON.parse(choix.texte), { cle: choix.cle, date: new Date().toISOString(), graine: Math.floor(Math.random() * 2147483647) });
+      try { UI.ecrireCase(UI.cles().copieAncien, choix.texte); } catch (err) { /* la copie de réserve est un plus, pas une obligation */ }
+      UI.erreurChargement = null;
+      UI.demarrer(S, 'msg_import', { nom: S.nom, jour: S.jour });
+    }
+  });
+};
+
+/* ==== src/interface/boucle.js ==== */
+/* boucle.js — démarrage, écran portrait, fin de journée, et la boucle qui fait vivre la salle. */
+UI.initPortrait = function () {
+  UI.$('portrait').innerHTML = '<div class="tel"></div><h2>' + UI.esc(B.t('portrait_titre')) + '</h2><p>' + UI.esc(B.t('portrait_texte')) + '</p>';
+  const mq = window.matchMedia('(orientation: portrait)');
+  const maj = function () { UI.pause('portrait', mq.matches); if (mq.matches) UI.sauver(); };
+  if (mq.addEventListener) mq.addEventListener('change', maj); else mq.addListener(maj);
+  maj();
+};
+
+UI.majFin = function () {
+  const S = UI.S, el = UI.$('fin');
+  if (!S || !S.finJour || !S.bilan) { el.hidden = true; return; }
+  if (!el.hidden) return;
+  const b = S.bilan;
+  el.innerHTML = '<div class="carte-fin"><h2>' + UI.esc(B.t('fin_titre', { jour: b.jour })) + '</h2><div class="chiffres">' +
+    '<div><b>' + b.servis + '</b><span>' + UI.esc(B.t('fin_servis')) + '</span></div>' +
+    '<div><b>' + b.repartis + '</b><span>' + UI.esc(B.t('fin_repartis')) + '</span></div>' +
+    '<div><b>' + b.attente + '</b><span>' + UI.esc(B.t('fin_attente')) + '</span></div></div>' +
+    '<button type="button" class="gros principal" id="fin-suivant">' + UI.esc(B.t('fin_suivant', { jour: b.jour + 1 })) + '</button></div>';
+  el.hidden = false;
+  UI.sauver();
+  UI.$('fin-suivant').addEventListener('click', function () {
+    B.jourSuivant(UI.S);
+    el.hidden = true;
+    UI.sauver();
+    UI.majBarre();
+  });
+};
+
+UI.boucle = function (ts) {
+  const dtReel = UI._dernier == null ? 0 : Math.min(250, ts - UI._dernier);
+  UI._dernier = ts;
+  const S = UI.S;
+  if (S) {
+    const v = UI.vitesseReelle();
+    if (v > 0) {
+      B.avancer(S, dtReel / 1000 * v * B.DATA.regles.minutesParSeconde);
+      if (UI.derniereSauvegarde == null || S.minute - UI.derniereSauvegarde >= B.DATA.regles.sauvegarde.toutesLesMinutesDeJeu || S.minute < UI.derniereSauvegarde) UI.sauver();
+    }
+    if (S.finJour) UI.majFin();
+    UI.dessin.dynamique();
+    if (!UI._tDetail || ts - UI._tDetail > 250) { UI._tDetail = ts; UI.majDetail(); UI.majBarre(); }
+  }
+  UI.majMessages(Date.now());
+  requestAnimationFrame(UI.boucle);
+};
+
+UI.init = function () {
+  document.title = B.t('jeu_nom') + (B.CANAL === 'test' ? ' (test)' : '');
+  UI.chargerReglages();
+  UI.initBarre();
+  UI.dessin.fond();
+  UI.dessin.initTouches();
+  UI.initVolets();
+  UI.initAccueil();
+  UI.initPortrait();
+  const r = UI.chargerPartie();
+  if (r.partie) { UI.S = r.partie; B.message(UI.S, 'msg_reprise', { nom: UI.S.nom, jour: UI.S.jour }); }
+  UI.erreurChargement = r.erreur || null;
+  UI.montrerAccueil();
+  UI.majBarre();
+  UI.majDetail();
+  document.addEventListener('visibilitychange', function () {
+    UI.pause('cache', document.hidden);
+    if (document.hidden) UI.sauver();
+  });
+  window.addEventListener('pagehide', UI.sauver);
+  requestAnimationFrame(UI.boucle);
+  if ('serviceWorker' in navigator && location.protocol !== 'file:') {
+    navigator.serviceWorker.register('sw.js').catch(function () { /* hors ligne indisponible, le jeu marche quand même */ });
+  }
+};
+
+document.addEventListener('DOMContentLoaded', UI.init);
+
+})();
+</script>
+</body>
+</html>

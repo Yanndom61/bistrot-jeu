@@ -1,0 +1,51 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<meta name="theme-color" content="#3a2a22">
+<meta name="mobile-web-app-capable" content="yes">
+<link rel="manifest" href="manifest.webmanifest">
+<link rel="icon" href="icone-192.png">
+<link rel="apple-touch-icon" href="icone-192.png">
+<title>Bistrot</title>
+<style>
+/*CSS*/
+</style>
+</head>
+<body>
+<div id="app">
+  <header id="barre">
+    <div class="infos">
+      <div class="l1"><b id="b-nom"></b> · <span id="b-lieu"></span></div>
+      <div class="l2"><span id="b-heure"></span> · <b id="b-argent"></b></div>
+    </div>
+    <div id="vitesses" role="group"></div>
+    <button type="button" id="btn-journal" class="btn-barre"></button>
+    <button type="button" id="btn-menu" class="btn-barre"></button>
+  </header>
+  <main id="jeu">
+    <div id="salle-zone">
+      <svg id="salle" viewBox="0 0 1000 450" preserveAspectRatio="xMidYMid meet" aria-label="Salle">
+        <g id="fond"></g><g id="dyn"></g><g id="touches"></g>
+      </svg>
+    </div>
+    <aside id="cote">
+      <section id="messages" aria-live="polite"></section>
+      <section id="detail"></section>
+    </aside>
+  </main>
+</div>
+<div id="voile" hidden></div>
+<div id="volet" hidden role="dialog">
+  <div class="volet-tete"><h2 id="volet-titre"></h2><button type="button" id="volet-fermer"></button></div>
+  <div id="volet-corps"></div>
+</div>
+<div id="fin" hidden></div>
+<div id="accueil" hidden></div>
+<div id="portrait"></div>
+<script>
+/*JS*/
+</script>
+</body>
+</html>

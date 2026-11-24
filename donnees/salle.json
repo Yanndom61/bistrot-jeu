@@ -1,0 +1,115 @@
+{
+  "_explication": "Plan de la salle de départ, dessiné en largeur (unités du dessin : 1000 de large sur 430 de haut).",
+  "dessin": {
+    "largeur": 1000,
+    "hauteur": 450
+  },
+  "allee": 220,
+  "entree": {
+    "x": 22,
+    "y": 220
+  },
+  "dehors": {
+    "x": -40,
+    "y": 220
+  },
+  "file": {
+    "x": 52,
+    "y": 306,
+    "ecart": 40
+  },
+  "passe": {
+    "x": 812,
+    "y": 220
+  },
+  "cuisine": {
+    "x": 856,
+    "y": 18,
+    "largeur": 132,
+    "hauteur": 414
+  },
+  "tables": [
+    {
+      "id": 1,
+      "x": 165,
+      "y": 112,
+      "places": 2
+    },
+    {
+      "id": 2,
+      "x": 305,
+      "y": 112,
+      "places": 4
+    },
+    {
+      "id": 3,
+      "x": 445,
+      "y": 112,
+      "places": 4
+    },
+    {
+      "id": 4,
+      "x": 585,
+      "y": 112,
+      "places": 2
+    },
+    {
+      "id": 5,
+      "x": 725,
+      "y": 112,
+      "places": 4
+    },
+    {
+      "id": 6,
+      "x": 165,
+      "y": 328,
+      "places": 4
+    },
+    {
+      "id": 7,
+      "x": 305,
+      "y": 328,
+      "places": 2
+    },
+    {
+      "id": 8,
+      "x": 445,
+      "y": 328,
+      "places": 4
+    },
+    {
+      "id": 9,
+      "x": 585,
+      "y": 328,
+      "places": 4
+    },
+    {
+      "id": 10,
+      "x": 725,
+      "y": 328,
+      "places": 2
+    }
+  ],
+  "rallonges": [
+    [
+      2,
+      3
+    ],
+    [
+      8,
+      9
+    ]
+  ],
+  "serveurs": [
+    {
+      "nom": "Patron",
+      "x": 800,
+      "y": 196
+    },
+    {
+      "nom": "Léa",
+      "x": 800,
+      "y": 244
+    }
+  ]
+}

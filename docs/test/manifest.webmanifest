@@ -1,0 +1,33 @@
+{
+ "name": "Bistrot (test)",
+ "short_name": "Bistrot (test)",
+ "lang": "fr",
+ "start_url": "./",
+ "scope": "./",
+ "display": "fullscreen",
+ "display_override": [
+  "fullscreen",
+  "standalone"
+ ],
+ "orientation": "landscape",
+ "background_color": "#2b211c",
+ "theme_color": "#3a2a22",
+ "icons": [
+  {
+   "src": "icone-192.png",
+   "sizes": "192x192",
+   "type": "image/png"
+  },
+  {
+   "src": "icone-512.png",
+   "sizes": "512x512",
+   "type": "image/png"
+  },
+  {
+   "src": "icone-masquable-512.png",
+   "sizes": "512x512",
+   "type": "image/png",
+   "purpose": "maskable"
+  }
+ ]
+}

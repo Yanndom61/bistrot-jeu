@@ -1,0 +1,40 @@
+{
+  "_explication": "Règles de l'étape 1 : arrivée des clients et durées. Les durées sont en minutes de jeu.",
+  "journee": { "ouverture": 690, "fermeture": 1350, "finForcee": 1439 },
+  "affluence": [
+    { "de": 705,  "a": 720,  "groupesParHeure": 3 },
+    { "de": 720,  "a": 810,  "groupesParHeure": 5 },
+    { "de": 810,  "a": 855,  "groupesParHeure": 4 },
+    { "de": 855,  "a": 1110, "groupesParHeure": 1 },
+    { "de": 1110, "a": 1155, "groupesParHeure": 3 },
+    { "de": 1155, "a": 1260, "groupesParHeure": 5 },
+    { "de": 1260, "a": 1305, "groupesParHeure": 3 }
+  ],
+  "annonces": [
+    { "minute": 705,  "texte": "msg_premiers_clients" },
+    { "minute": 720,  "texte": "msg_service_midi" },
+    { "minute": 855,  "texte": "msg_apres_midi" },
+    { "minute": 1140, "texte": "msg_service_soir" },
+    { "minute": 1305, "texte": "msg_plus_d_arrivees" }
+  ],
+  "types": [
+    { "id": "solo",      "taille": [1, 1], "poids": 12, "repas": [20, 30], "couleur": "#4f7fe0" },
+    { "id": "couple",    "taille": [2, 2], "poids": 26, "repas": [30, 45], "couleur": "#e0567f" },
+    { "id": "amis",      "taille": [2, 4], "poids": 20, "repas": [35, 50], "couleur": "#e8902a" },
+    { "id": "famille",   "taille": [3, 6], "poids": 14, "repas": [40, 55], "couleur": "#2f9e5c" },
+    { "id": "affaires",  "taille": [2, 4], "poids": 14, "repas": [25, 35], "couleur": "#7b55c9" },
+    { "id": "touristes", "taille": [2, 4], "poids": 14, "repas": [35, 50], "couleur": "#1597a8" }
+  ],
+  "durees": {
+    "lireCarte": [4, 7],
+    "prendreCommande": 1.5,
+    "cuisine": [12, 18],
+    "prendrePlatPasse": 0.3,
+    "poserPlat": 0.5,
+    "addition": 1.5,
+    "debarrasserParTable": 1,
+    "patienceFile": [12, 20]
+  },
+  "vitesses": { "clients": 170, "serveurs": 260 },
+  "alertes": { "attenteOrange": 8, "attenteRouge": 15 }
+}
