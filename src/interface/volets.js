@@ -5,8 +5,12 @@ UI.voletOuvert = null;
 UI.ouvrirVolet = function (quoi) {
   UI.voletOuvert = quoi;
   const v = UI.$('volet');
-  UI.$('volet-titre').textContent = B.t(quoi === 'journal' ? 'journal_titre' : 'menu_titre');
-  UI.$('volet-corps').innerHTML = quoi === 'journal' ? UI.htmlJournal() : UI.htmlMenu();
+  v.classList.toggle('large', quoi === 'equipe');
+  if (quoi === 'equipe') { UI.candidatCourant = null; UI.rafraichirEquipe(true); }
+  else {
+    UI.$('volet-titre').textContent = B.t(quoi === 'journal' ? 'journal_titre' : 'menu_titre');
+    UI.$('volet-corps').innerHTML = quoi === 'journal' ? UI.htmlJournal() : UI.htmlMenu();
+  }
   UI.$('voile').hidden = false;
   v.hidden = false;
   requestAnimationFrame(function () { v.classList.add('ouvert'); });
@@ -20,7 +24,9 @@ UI.fermerVolet = function () {
   UI.$('voile').hidden = true;
   setTimeout(function () { if (!v.classList.contains('ouvert')) v.hidden = true; }, 220);
   UI.voletOuvert = null;
+  UI.candidatCourant = null;
   UI.pause('volet', false);
+  UI.majDetail();
 };
 
 UI.htmlMenu = function () {
@@ -29,6 +35,9 @@ UI.htmlMenu = function () {
   h += '<div class="ligne-reglage"><span>' + UI.esc(B.t('menu_pause_auto')) + '</span>' +
     '<button type="button" class="bascule' + (UI.reglages.pauseAuto ? ' on' : '') + '" data-action="pause-auto">' +
     UI.esc(B.t(UI.reglages.pauseAuto ? 'menu_oui' : 'menu_non')) + '</button></div>';
+  const manuel = S && S.placement === 'manuel';
+  h += '<div class="ligne-reglage"><span>' + UI.esc(B.t('menu_placement')) + '</span>' +
+    '<button type="button" class="bascule' + (manuel ? ' on' : '') + '" data-action="placement">' + UI.esc(B.t(manuel ? 'menu_oui' : 'menu_non')) + '</button></div>';
   h += '<h3>' + UI.esc(B.t('menu_partie')) + '</h3>';
   if (UI.derniereSauvegarde != null) h += '<p>' + UI.esc(B.t('menu_sauve', { heure: B.heure(UI.derniereSauvegarde) })) + '</p>';
   if (S && S.origine) h += '<p>' + UI.esc(B.t('menu_origine', { v: S.origine.versionSauvegarde })) + '</p>';
@@ -48,6 +57,11 @@ UI.initVolets = function () {
       UI.reglages.pauseAuto = !UI.reglages.pauseAuto;
       UI.sauverReglages();
       if (!UI.reglages.pauseAuto) UI.pause('volet', false);
+      UI.$('volet-corps').innerHTML = UI.htmlMenu();
+    } else if (b.dataset.action === 'placement' && UI.S) {
+      UI.S.placement = UI.S.placement === 'manuel' ? 'auto' : 'manuel';
+      UI.groupeChoisi = null;
+      UI.majPlacement(); UI.sauver();
       UI.$('volet-corps').innerHTML = UI.htmlMenu();
     } else if (b.dataset.action === 'accueil') {
       UI.fermerVolet();

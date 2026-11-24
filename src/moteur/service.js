@@ -55,7 +55,7 @@ B.service.terminer = function (S, w) {
   if (tache.type === 'commande') {
     S.stats.jour.attenteCommande += S.minute - g.depuis;
     S.stats.jour.nbCommandes++;
-    g.etat = 'cuisine'; g.depuis = S.minute; g.pret = S.minute + B.duree(S, D.cuisine);
+    g.etat = 'cuisine'; g.depuis = S.minute; g.pret = null; g.cuisinier = null;
   } else if (tache.type === 'servir') {
     const type = B.clients.type(g.type);
     g.etat = 'mange'; g.depuis = S.minute; g.duree = B.duree(S, type.repas); g.aMange = true;
@@ -65,8 +65,8 @@ B.service.terminer = function (S, w) {
 };
 
 B.service.avancer = function (S, h) {
-  const v = B.DATA.clients.vitesses.serveurs;
-  S.serveurs.forEach(function (w, i) {
+  B.equipe.salle(S).forEach(function (w) {
+    const f = B.equipe.facteurSalle(w), v = B.DATA.clients.vitesses.serveurs * f;
     let reste = h;
     let garde = 0;
     while (reste > 1e-9 && garde++ < 20) {
@@ -74,7 +74,7 @@ B.service.avancer = function (S, h) {
         const t = B.service.choisir(S, w);
         if (t) B.service.preparer(S, w, t);
         else {
-          const base = B.DATA.salle.serveurs[i];
+          const base = B.equipe.base(S, w);
           if (!w.chemin.length && (Math.abs(w.x - base.x) > 1 || Math.abs(w.y - base.y) > 1)) w.chemin = B.salle.chemin(w, base);
           B.salle.bouger(w, v * reste);
           return;
@@ -88,8 +88,8 @@ B.service.avancer = function (S, h) {
         if (besoin <= reste) { reste -= besoin; w.x = e.aller.x; w.y = e.aller.y; w.chemin = []; w.tache.etapes.shift(); }
         else { B.salle.bouger(w, v * reste); reste = 0; }
       } else if (e.agir != null) {
-        if (e.agir <= reste) { reste -= e.agir; w.tache.etapes.shift(); }
-        else { e.agir -= reste; reste = 0; }
+        if (e.agir / f <= reste) { reste -= e.agir / f; w.tache.etapes.shift(); }
+        else { e.agir -= reste * f; reste = 0; }
       }
     }
   });

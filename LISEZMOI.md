@@ -8,8 +8,8 @@
 - `PRIORITES.md` : ce qui reste à faire (Indispensable / Sympa / Un jour).
 - `CHANGEMENTS.md` : 10 lignes maximum par version.
 - `donnees/` : les données lisibles (lieux, salle, clients, réglages) et **tous les textes** du jeu (`textes.json`).
-- `src/moteur/` : les règles (sans affichage) : temps, salle, clients, service, sauvegarde, ancien jeu.
-- `src/interface/` : l'affichage : barre, dessin de la salle, messages, volets, accueil.
+- `src/moteur/` : les règles (sans affichage) : temps, salle, clients, équipe, cuisine, service, sauvegarde, ancien jeu.
+- `src/interface/` : l’affichage : barre, dessin de la salle, messages, volets, équipe et entretiens, accueil.
 - `statique/` : page, style, icônes, service hors connexion.
 - `docs/` : le jeu assemblé, servi par GitHub Pages (`docs/test/` = lien TEST, `docs/` = lien OFFICIEL).
 

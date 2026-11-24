@@ -1,0 +1,376 @@
+{
+  "_explication": "Équipe : postes, grille officielle des salaires, candidats. Salaires en euros bruts de l'heure.",
+  "sourceSalaires": "Convention collective HCR (IDCC 1979), avenant n° 36 du 4 juin 2026, minima horaires bruts en vigueur depuis le 1er novembre 2026 (Légifrance, vérifié le 24 novembre 2026).",
+  "grilleHCR": {
+    "I": [
+      12.31,
+      12.37,
+      12.47
+    ],
+    "II": [
+      12.58,
+      12.8,
+      13.43
+    ],
+    "III": [
+      13.59,
+      13.81,
+      14.28
+    ],
+    "IV": [
+      14.69,
+      15.07,
+      15.71
+    ],
+    "V": [
+      18.8,
+      22.22,
+      28.68
+    ]
+  },
+  "heuresParMois39h": 170.73,
+  "echelonSelonExperience": [
+    {
+      "jusqua": 2,
+      "echelon": 1
+    },
+    {
+      "jusqua": 7,
+      "echelon": 2
+    },
+    {
+      "jusqua": 99,
+      "echelon": 3
+    }
+  ],
+  "postes": {
+    "serv": {
+      "nom": "Serveur",
+      "nomF": "Serveuse",
+      "service": "salle",
+      "niveauHCR": "II",
+      "niveauJeu": [
+        3,
+        8
+      ],
+      "recrutable": true
+    },
+    "csalle": {
+      "nom": "Commis de salle",
+      "nomF": "Commis de salle",
+      "service": "salle",
+      "niveauHCR": "I",
+      "niveauJeu": [
+        2,
+        6
+      ],
+      "recrutable": true
+    },
+    "commis": {
+      "nom": "Commis de cuisine",
+      "nomF": "Commis de cuisine",
+      "service": "cuisine",
+      "niveauHCR": "II",
+      "niveauJeu": [
+        3,
+        7
+      ],
+      "recrutable": true
+    },
+    "chef": {
+      "nom": "Chef de cuisine",
+      "nomF": "Cheffe de cuisine",
+      "service": "cuisine",
+      "niveauHCR": "IV",
+      "niveauJeu": [
+        5,
+        9
+      ],
+      "recrutable": true
+    },
+    "resp": {
+      "nom": "Responsable de salle",
+      "nomF": "Responsable de salle",
+      "service": "salle",
+      "niveauHCR": "III"
+    },
+    "second": {
+      "nom": "Second de cuisine",
+      "nomF": "Seconde de cuisine",
+      "service": "cuisine",
+      "niveauHCR": "III"
+    },
+    "aide": {
+      "nom": "Aide de cuisine",
+      "nomF": "Aide de cuisine",
+      "service": "cuisine",
+      "niveauHCR": "I"
+    },
+    "appr": {
+      "nom": "Apprenti cuisine",
+      "nomF": "Apprentie cuisine",
+      "service": "cuisine",
+      "niveauHCR": "I",
+      "partDuMinimum": 0.53
+    },
+    "barman": {
+      "nom": "Barman",
+      "nomF": "Barmaid",
+      "service": "autre",
+      "niveauHCR": "II"
+    },
+    "plong": {
+      "nom": "Plongeur",
+      "nomF": "Plongeuse",
+      "service": "autre",
+      "niveauHCR": "I"
+    },
+    "nett": {
+      "nom": "Agent de nettoyage",
+      "nomF": "Agente de nettoyage",
+      "service": "autre",
+      "niveauHCR": "I"
+    }
+  },
+  "candidatsDepart": [
+    "serv",
+    "serv",
+    "serv",
+    "csalle",
+    "commis",
+    "commis",
+    "chef",
+    "chef"
+  ],
+  "nouveauxCandidatsParJour": {
+    "min": 1,
+    "max": 2,
+    "plafond": 6
+  },
+  "refusAvantDepart": 2,
+  "commandesParCuisinier": 2,
+  "patron": {
+    "nom": "Patron",
+    "vitesse": 5,
+    "qualite": 5,
+    "amabilite": 6
+  },
+  "personnalites": [
+    {
+      "id": "serieux",
+      "adj": "sérieux",
+      "adjF": "sérieuse",
+      "souplesse": 0.02,
+      "exigence": 0.06
+    },
+    {
+      "id": "souriant",
+      "adj": "souriant",
+      "adjF": "souriante",
+      "souplesse": 0.05,
+      "exigence": 0.04
+    },
+    {
+      "id": "ambitieux",
+      "adj": "ambitieux",
+      "adjF": "ambitieuse",
+      "souplesse": 0.0,
+      "exigence": 0.16
+    },
+    {
+      "id": "discret",
+      "adj": "discret",
+      "adjF": "discrète",
+      "souplesse": 0.04,
+      "exigence": 0.03
+    },
+    {
+      "id": "stresse",
+      "adj": "stressé",
+      "adjF": "stressée",
+      "souplesse": 0.06,
+      "exigence": 0.02
+    },
+    {
+      "id": "blagueur",
+      "adj": "blagueur",
+      "adjF": "blagueuse",
+      "souplesse": 0.03,
+      "exigence": 0.07
+    },
+    {
+      "id": "pose",
+      "adj": "posé",
+      "adjF": "posée",
+      "souplesse": 0.05,
+      "exigence": 0.05
+    }
+  ],
+  "prenoms": [
+    [
+      "Louise",
+      "f"
+    ],
+    [
+      "Hugo",
+      "m"
+    ],
+    [
+      "Camille",
+      "f"
+    ],
+    [
+      "Lucas",
+      "m"
+    ],
+    [
+      "Manon",
+      "f"
+    ],
+    [
+      "Nathan",
+      "m"
+    ],
+    [
+      "Inès",
+      "f"
+    ],
+    [
+      "Karim",
+      "m"
+    ],
+    [
+      "Chloé",
+      "f"
+    ],
+    [
+      "Théo",
+      "m"
+    ],
+    [
+      "Sarah",
+      "f"
+    ],
+    [
+      "Mehdi",
+      "m"
+    ],
+    [
+      "Julie",
+      "f"
+    ],
+    [
+      "Antoine",
+      "m"
+    ],
+    [
+      "Yasmine",
+      "f"
+    ],
+    [
+      "Romain",
+      "m"
+    ],
+    [
+      "Zoé",
+      "f"
+    ],
+    [
+      "Malik",
+      "m"
+    ],
+    [
+      "Emma",
+      "f"
+    ],
+    [
+      "Bastien",
+      "m"
+    ],
+    [
+      "Laura",
+      "f"
+    ],
+    [
+      "Kevin",
+      "m"
+    ],
+    [
+      "Aïcha",
+      "f"
+    ],
+    [
+      "Julien",
+      "m"
+    ],
+    [
+      "Clara",
+      "f"
+    ],
+    [
+      "Samuel",
+      "m"
+    ],
+    [
+      "Nadia",
+      "f"
+    ],
+    [
+      "Maxime",
+      "m"
+    ],
+    [
+      "Lina",
+      "f"
+    ],
+    [
+      "Thomas",
+      "m"
+    ]
+  ],
+  "noms": [
+    "Martin",
+    "Bernard",
+    "Petit",
+    "Durand",
+    "Leroy",
+    "Moreau",
+    "Simon",
+    "Laurent",
+    "Garcia",
+    "Roux",
+    "Fournier",
+    "Girard",
+    "Bonnet",
+    "Dupont",
+    "Lambert",
+    "Fontaine",
+    "Rousseau",
+    "Vincent",
+    "Muller",
+    "Faure",
+    "Mercier",
+    "Blanc",
+    "Guérin",
+    "Boyer",
+    "Chevalier",
+    "Benali",
+    "Diallo",
+    "Nguyen"
+  ],
+  "prenomsFemininsAncienJeu": [
+    "Léa",
+    "Manon",
+    "Chloé",
+    "Inès",
+    "Sarah",
+    "Emma",
+    "Clara",
+    "Louise",
+    "Zoé",
+    "Jade",
+    "Alice",
+    "Yasmine",
+    "Margaux"
+  ]
+}

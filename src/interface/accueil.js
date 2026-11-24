@@ -69,7 +69,9 @@ UI.demarrer = function (S, cle, vars) {
   UI.sauver();
   UI.cacherAccueil();
   UI.majDetail();
+  UI.majPlacement();
   UI.majFin();
+  if (!S.ouvert) UI.ouvrirVolet('equipe');
 };
 
 UI.initAccueil = function () {
@@ -77,11 +79,11 @@ UI.initAccueil = function () {
     const b = e.target.closest('[data-a]');
     if (!b) return;
     const a = b.dataset.a;
-    if (a === 'continuer') { UI.cacherAccueil(); UI.majFin(); }
+    if (a === 'continuer') { UI.cacherAccueil(); UI.majPlacement(); UI.majFin(); if (!UI.S.ouvert) UI.ouvrirVolet('equipe'); }
     else if (a === 'nouvelle' || a === 'ancien' || a === 'menu') UI.montrerAccueil(a);
     else if (a === 'ouvrir') {
       if (!UI.remplacerOk()) return;
-      const S = B.nouvellePartie({ nom: UI.$('n-nom').value || B.t('nouvelle_nom_defaut'), lieu: UI.$('n-lieu').value, date: new Date().toISOString() });
+      const S = B.creerPartie({ nom: UI.$('n-nom').value || B.t('nouvelle_nom_defaut'), lieu: UI.$('n-lieu').value, date: new Date().toISOString() });
       UI.erreurChargement = null;
       UI.demarrer(S, 'msg_bienvenue', { chez: B.chezNom(S.nom), heure: B.heure(B.DATA.clients.affluence[0].de) });
     } else if (a === 'importer') {
@@ -90,6 +92,7 @@ UI.initAccueil = function () {
       const S = B.ancien.convertir(JSON.parse(choix.texte), { cle: choix.cle, date: new Date().toISOString(), graine: Math.floor(Math.random() * 2147483647) });
       try { UI.ecrireCase(UI.cles().copieAncien, choix.texte); } catch (err) { /* la copie de réserve est un plus, pas une obligation */ }
       UI.erreurChargement = null;
+      if (S.equipeReprise) B.message(S, 'msg_equipe_reprise', { n: S.equipeReprise });
       UI.demarrer(S, 'msg_import', { nom: S.nom, jour: S.jour });
     }
   });

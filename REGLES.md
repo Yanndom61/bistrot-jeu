@@ -1,20 +1,21 @@
 # Règles du jeu Bistrot
 
 Ce document est **la référence unique** des règles. Il est tenu à jour à chaque version.
-Version décrite : **0.1 (étape 1 : la salle en direct)**.
+Version décrite : **0.2 (étape 1 + retours de Yann : placement manuel, équipe de départ)**.
 
 ---
 
 ## 1. Le temps
 
 - La journée commence à **11:30** et les portes ouvrent à **11:45**.
+- **Premier jour** : le restaurant reste **fermé** (l'horloge ne tourne pas) tant que l'équipe n'est pas prête et que tu n'as pas touché « Ouvrir le restaurant » dans le volet Équipe. Les jours suivants, il ouvre tout seul.
 - À la vitesse **1×**, une minute de jeu passe en une seconde. **2×** et **4×** vont deux et quatre fois plus vite. **Pause** arrête tout.
 - Le service du midi commence à 12:00 et celui du soir à 19:00. Plus aucun client n'arrive après **21:45**.
 - La journée se termine quand il est au moins **22:30**, que le dernier client est parti et que les tables sont débarrassées. À **23:59** au plus tard, les derniers clients partent d'eux-mêmes.
 - À la fin de la journée, un écran montre 3 chiffres : clients servis, clients repartis faute de place, attente moyenne avant la commande. Un bouton lance le jour suivant.
 
 ### Pauses automatiques
-- **Volet ouvert** (Journal, Menu) : le jeu se met en pause et repart tout seul à la fermeture. Ce réglage peut être coupé dans Menu › Réglages.
+- **Volet ouvert** (Équipe, Journal, Menu) : le jeu se met en pause et repart tout seul à la fermeture. Ce réglage peut être coupé dans Menu › Réglages.
 - **Téléphone en portrait** : un écran demande de tourner le téléphone, et la partie est en pause.
 - **Appli en arrière-plan** (on change d'appli, l'écran s'éteint) : pause et sauvegarde.
 - **Écran d'accueil** et **fin de journée** : pause.
@@ -46,18 +47,70 @@ Version décrite : **0.1 (étape 1 : la salle en direct)**.
 - **Affluence** (groupes par heure, avant le coefficient du lieu) :
   11:45-12:00 : 3 · 12:00-13:30 : 5 · 13:30-14:15 : 4 · 14:15-18:30 : 1 · 18:30-19:15 : 3 · 19:15-21:00 : 5 · 21:00-21:45 : 3.
 - Ce nombre est multiplié par **l'affluence du lieu** (Paris × 1,3 ; Tokyo × 1,45 ; Mayotte × 0,75…).
-- **Placement** (automatique à cette étape) : le groupe prend la plus petite table libre et propre qui suffit. Pour 5 ou 6 personnes, il faut deux tables rapprochées libres.
+- **Placement automatique** (par défaut) : le groupe prend la plus petite table libre et propre qui suffit. Pour 5 ou 6 personnes, il faut deux tables rapprochées libres.
+- **Placement par le joueur** : le bouton « Placement : auto / moi » (en bas à droite, aussi dans Menu › Réglages) bascule le mode. En mode « moi », personne ne s'assoit tout seul : tu touches un groupe à la porte (il s'entoure en bleu), puis une table libre.
+  - Si la table est trop petite, un message le dit (« Table 1 : 2 places, trop petite pour 4 pers. ») et le groupe reste choisi.
+  - Pour 5 ou 6 personnes, touche la table 2, 3, 8 ou 9 : les deux tables rapprochées doivent être libres.
+  - Les groupes que tu ne places pas repartent au bout de leur patience, comme en automatique.
+  - Le mode choisi est enregistré avec la partie.
 - **File à la porte** : sans table, le groupe attend à l'entrée. Il repart au bout de **12 à 20 min** s'il n'a toujours pas de table. Les premiers arrivés passent en premier, sauf si leur table n'est pas libre et qu'un groupe plus petit peut s'asseoir.
 - **Déroulé d'un repas** : s'installer → lire la carte (4 à 7 min) → attendre le serveur pour commander → plat en cuisine (12 à 18 min) → le serveur apporte le plat → manger (selon le groupe) → demander l'addition → le serveur l'apporte → départ. La table est ensuite **à débarrasser**.
 - À cette étape, les clients ne paient pas encore : la carte, les prix et le paiement arrivent à l'étape 2. L'argent affiché ne bouge donc pas.
 
-## 4. Les serveurs
+## 4. L'équipe
 
-- Deux serveurs pour l'instant : **le Patron** et **Léa**. On les reconnaît à leur rond noir cerclé de jaune avec un tablier blanc. Ils portent une assiette blanche quand ils servent, et une petite note quand ils apportent l'addition.
-- Ils choisissent seuls quoi faire, dans cet ordre : 1) apporter un plat prêt (il refroidit), 2) apporter l'addition, 3) prendre une commande, 4) débarrasser une table. À priorité égale, ils servent celui qui attend depuis le plus longtemps.
-- Temps de chaque geste : prendre une commande 1,5 min, prendre le plat à la passe 0,3 min, poser le plat 0,5 min, addition 1,5 min, débarrasser 1 min par table.
-- Ils marchent par l'allée centrale. Quand il n'y a rien à faire, ils retournent près de la passe.
-- L'équipe (recrutement, plannings, salaires) arrive à l'étape 4.
+### Démarrage (comme dans Chez YaYa)
+- Tu démarres **seul, avec le patron**, et tu recrutes ton équipe dès le premier jour, avant d'ouvrir.
+- **8 candidats** t'attendent : 3 serveurs, 1 commis de salle, 2 commis de cuisine, 2 chefs de cuisine. Chaque matin, 1 ou 2 nouveaux candidats arrivent (6 au plus en attente).
+- Pour ouvrir, il faut **au moins une personne en salle et une en cuisine**. Le patron compte pour l'une des deux : il est en salle au départ, et tu peux le passer en cuisine (bouton dans Équipe), sauf s'il laisserait son poste vide.
+- La v0.1 avait une serveuse automatique (Léa) : elle est supprimée.
+
+### Les candidats et l'entretien
+- Chaque candidat a un prénom, un âge, un poste, des années d'expérience et une **personnalité** : sérieux, souriant, ambitieux, discret, stressé, blagueur ou posé (accordée au féminin quand il le faut).
+- Il a aussi une **note sur 10**, une **vitesse**, un **sens du service** (salle) ou une **qualité en cuisine**, et un **salaire souhaité**. Ces chiffres sont cachés : on les découvre en posant les questions.
+- **4 questions** (on peut les poser dans l'ordre qu'on veut) :
+  1. « Parlez-moi de votre parcours. » : la réponse dépend de l'expérience ;
+  2. « Que faites-vous en plein coup de feu ? » : révèle la vitesse ;
+  3. « Racontez-moi un client difficile. » (salle) ou « Comment travaillez-vous vos plats ? » (cuisine) : révèle le sens du service ou la qualité ;
+  4. « Quel salaire souhaitez-vous ? » : révèle le salaire demandé.
+- Les réponses mêlent une entrée en matière selon la personnalité, une réponse selon le niveau, et parfois une petite phrase de fin. Sur 192 réponses tirées au hasard, 93 % sont différentes.
+- **Proposer un salaire** (en € brut de l'heure, par pas de 10 centimes) :
+  - jamais en dessous du **minimum de la grille** pour ce poste ;
+  - le candidat **accepte** si l'offre atteint son souhait (il accepte jusqu'à 6 % de moins selon sa personnalité ; l'ambitieux ne lâche rien) ;
+  - il fait une **contre-proposition** si l'offre atteint au moins 92 % de son souhait ;
+  - sinon il **refuse**. Au 2ᵉ refus, il retire sa candidature.
+- Le candidat embauché rejoint l'équipe tout de suite.
+
+### Salaires : la grille officielle
+- Source : convention collective Hôtels, cafés, restaurants (IDCC 1979), **avenant n° 36 du 4 juin 2026**, minima horaires bruts en vigueur depuis le **1er novembre 2026**. Vérifié sur Légifrance le 24 novembre 2026. Fichier : `donnees/equipe.json`.
+
+| | Niveau I | Niveau II | Niveau III | Niveau IV | Niveau V |
+|---|---|---|---|---|---|
+| Échelon 1 | 12,31 € | 12,58 € | 13,59 € | 14,69 € | 18,80 € |
+| Échelon 2 | 12,37 € | 12,80 € | 13,81 € | 15,07 € | 22,22 € |
+| Échelon 3 | 12,47 € | 13,43 € | 14,28 € | 15,71 € | 28,68 € |
+
+- Niveau de chaque poste (choix du jeu) : commis de salle **I**, serveur **II**, commis de cuisine **II**, chef de cuisine **IV**. Pour les employés repris de l'ancien jeu : responsable de salle III, second III, aide de cuisine I, barman II, plongeur I, nettoyage I, apprenti 53 % du niveau I-1.
+- Échelon selon l'expérience : jusqu'à 2 ans → échelon 1 ; 3 à 7 ans → échelon 2 ; 8 ans et plus → échelon 3.
+- Le coefficient « salaires » du lieu s'applique par-dessus (Paris × 1,15). Il ne descend jamais sous 1, donc jamais sous la grille.
+- Le candidat demande entre le minimum et environ 35 % de plus, selon sa note et sa personnalité.
+- Salaire mensuel affiché : taux horaire × 170,73 h (39 h par semaine, dont 4 h majorées de 10 %).
+- **Les salaires ne sont pas encore payés** : l'argent ne bouge pas avant l'étape « Argent ». Le coût mensuel de l'équipe est affiché dans le volet Équipe.
+
+### Le travail en salle
+- Les personnes en salle (patron compris) choisissent seules quoi faire, dans cet ordre : 1) apporter un plat prêt, 2) apporter l'addition, 3) prendre une commande, 4) débarrasser. À priorité égale, elles servent celui qui attend depuis le plus longtemps.
+- Temps de base de chaque geste : prendre une commande 1,5 min, prendre le plat à la passe 0,3 min, poser le plat 0,5 min, addition 1,5 min, débarrasser 1 min par table.
+- La **vitesse** change la marche et les gestes : × (0,8 + 0,04 × vitesse). Une vitesse de 5 donne la vitesse normale, 10 va 20 % plus vite, 1 va 16 % moins vite.
+- À l'écran : rond noir cerclé de jaune avec un tablier blanc ; **le patron est en rouge foncé**. Ils portent une assiette ou une note quand ils servent.
+
+### Le travail en cuisine
+- Chaque personne en cuisine (patron compris s'il y est) prépare **2 commandes à la fois**. Les autres attendent leur tour, dans l'ordre d'arrivée.
+- Durée d'une commande : 12 à 18 min × (1,25 − 0,05 × vitesse). Une vitesse de 5 donne la durée normale, 10 va 25 % plus vite.
+- À l'écran : rond blanc avec une toque, cerclé d'orange quand la personne cuisine (rouge foncé pour le patron).
+
+### Pas encore là (étape « Équipe »)
+- Le sens du service, la qualité, la personnalité, la motivation, les plannings, les jours de repos, les contrats, les formations et le départ d'un employé n'ont pas encore d'effet.
+- Bar, plonge et nettoyage existent seulement pour les employés repris de l'ancien jeu : ils sont gardés dans l'équipe, mais leur rôle viendra plus tard.
 
 ## 5. Les lieux
 
@@ -79,7 +132,8 @@ Version décrite : **0.1 (étape 1 : la salle en direct)**.
 
 - La partie est **enregistrée toute seule** : toutes les 5 minutes de jeu, quand on ouvre un volet, en fin de journée, et quand on quitte l'appli.
 - L'avant-dernière sauvegarde est gardée en secours. Si la dernière est abîmée, le jeu reprend la précédente.
-- Chaque sauvegarde porte un **numéro de version** (actuellement 1). Quand une future version changera le format, elle saura convertir les anciennes sauvegardes. Une sauvegarde venant d'une version plus récente n'est jamais écrasée sans prévenir : un message demande de mettre le jeu à jour.
+- Chaque sauvegarde porte un **numéro de version** (actuellement 2). Quand une version change le format, elle sait convertir les anciennes sauvegardes.
+- **Format 1 → 2 (Bistrot 0.2)** : une partie de la v0.1 est relue ainsi : le patron reste seul (Léa part), 8 candidats arrivent, et la journée en cours repart au matin, restaurant fermé jusqu'au recrutement. Le nom, le lieu, le jour, l'argent et le journal sont gardés. Une sauvegarde venant d'une version plus récente n'est jamais écrasée sans prévenir : un message demande de mettre le jeu à jour.
 - **Cases séparées** sur le téléphone :
   - lien TEST : `bistrotjeu.test.partie` (+ `bistrotjeu.test.partie-precedente`, `bistrotjeu.test.reglages`) ;
   - lien OFFICIEL : `bistrotjeu.officiel.partie`, etc.
@@ -88,8 +142,11 @@ Version décrite : **0.1 (étape 1 : la salle en direct)**.
 ### Reprendre une partie de l'ancien jeu (Chez YaYa)
 - L'ancien jeu et Bistrot sont sur la même adresse (yanndom61.github.io). Bistrot peut donc **lire** les parties de l'ancien jeu sur le même téléphone : les 5 emplacements (`bistrot_slot1` à `bistrot_slot5`) et la sauvegarde principale (`bistrot_save_v1`).
 - Bistrot **ne modifie jamais et n'efface jamais** ces cases. Il fait une copie dans ses propres cases (`bistrotjeu.test.copie-ancien-jeu`).
-- À l'étape 1, Bistrot reprend : le **nom** du restaurant, le **lieu**, le **jour**, l'**argent** et la **note**. La partie repart au matin de ce jour. La carte, les stocks, l'équipe et le plan seront repris aux étapes suivantes, à partir de la copie.
-- Les anciennes sauvegardes testées vont de la version 9 à la version 11 de l'ancien format (Chez YaYa v8 à v10.2).
+- Bistrot reprend : le **nom** du restaurant, le **lieu**, le **jour**, l'**argent**, la **note** et **l'équipe**. La partie repart au matin de ce jour.
+- **Équipe reprise** : chaque employé lisible garde son nom, son poste, sa note, sa vitesse, son sens du service, sa qualité, son expérience et sa personnalité. Les serveurs, commis de salle et responsables vont en salle ; les chefs, seconds, commis, aides et apprentis vont en cuisine. Les barmans, plongeurs et agents de nettoyage sont gardés en attente de leur rôle. Le genre est déduit du prénom.
+- Le salaire est **recalculé sur la grille officielle** (poste + expérience), car l'ancien jeu comptait autrement.
+- Si l'ancienne équipe n'a personne en cuisine, le patron y passe. Si elle est vide, le restaurant reste fermé jusqu'au recrutement. La carte, les stocks, l'équipe et le plan seront repris aux étapes suivantes, à partir de la copie.
+- Les anciennes sauvegardes testées vont de la version 9 à la version 11 de l'ancien format (Chez YaYa v8 à v10.2), dont une partie au « Jour 0 » sans équipe, et une partie à Tokyo.
 
 ## 9. Affichage sur téléphone
 
@@ -107,15 +164,25 @@ Tailles de référence testées (en pixels « CSS », téléphone en paysage) :
 
 ## 10. Équilibre mesuré (simulateur, 30 jours, Facile)
 
+Équipe testée : patron en salle + 1 serveur + 1 commis de cuisine.
+
 | Lieu | Clients par jour | Servis | Repartis faute de place |
 |---|---|---|---|
-| Mayotte | 39 | 39 | 1 % |
-| La Réunion | 65 | 62 | 3 % |
-| Bretagne | 70 | 67 | 4 % |
-| Île-de-France | 81 | 77 | 4 % |
-| Paris | 99 | 90 | 9 % |
-| Tokyo | 115 | 100 | 13 % |
-| New York | 119 | 104 | 13 % |
+| Mayotte | 38 | 38 | 0 % |
+| La Réunion | 63 | 62 | 3 % |
+| Île-de-France | 81 | 78 | 4 % |
+| Bretagne | 72 | 68 | 6 % |
+| Paris | 98 | 89 | 10 % |
+| Tokyo | 114 | 99 | 13 % |
+| New York | 117 | 100 | 15 % |
 
-Attente moyenne avant la commande : environ 3 min. Aucune valeur impossible, toutes les journées se terminent.
-Détail complet : `tests/resultat-simulation-30-jours.txt`.
+Selon l'équipe, à Paris (moyenne par jour) :
+
+| Équipe | Servis | Repartis | Attente avant la commande |
+|---|---|---|---|
+| Patron seul en salle + 1 commis | 83 | 14 % | 5 min |
+| Patron + 1 serveur + 1 commis | 86 | 11 % | 3 min |
+| Patron + 2 serveurs + chef + commis | 89 | 7 % | 3 min |
+
+Avec 10 tables, c'est surtout le nombre de tables qui limite les clients. L'équipe joue sur l'attente.
+Aucune valeur impossible, et toutes les journées se terminent. Détail complet : `tests/resultat-simulation-30-jours.txt`.

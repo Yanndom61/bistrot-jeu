@@ -1,10 +1,26 @@
 /* sauvegarde.js — enregistrer et relire une partie. Chaque sauvegarde porte un numéro de version.
    Quand le format change, on ajoute une étape dans B.MIGRATIONS (de la version n à n+1) :
    ainsi chaque nouvelle version du jeu sait relire toutes les anciennes. */
-B.VERSION_SAUVEGARDE = 1;
+B.VERSION_SAUVEGARDE = 2;
 
 B.MIGRATIONS = {
-  /* Exemple pour plus tard :  1: function (S) { S.nouveauChamp = 0; S.version = 2; return S; } */
+  /* v1 → v2 (Bistrot 0.2) : l'équipe arrive. Le patron démarre seul (Léa n'est plus là), avec des candidats.
+     La journée en cours repart au matin, car le service ne peut pas continuer sans cuisine. */
+  1: function (S) {
+    delete S.serveurs;
+    S.equipe = []; S.candidats = []; S.placement = 'auto';
+    S.groupes = [];
+    S.tables.forEach(function (t) { t.groupe = null; t.sale = false; t.serveur = null; });
+    S.minute = B.DATA.clients.journee.ouverture;
+    S.stats.jour = B.statsVides();
+    S.finJour = false; S.bilan = null;
+    B.equipe.creerPatron(S);
+    B.equipe.genererDepart(S);
+    S.ouvert = false;
+    B.message(S, 'msg_lea_partie');
+    S.version = 2;
+    return S;
+  }
 };
 
 B.serialiser = function (S) { return JSON.stringify(S); };

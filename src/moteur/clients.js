@@ -30,7 +30,7 @@ B.clients.arrivee = function (S) {
     nom: noms[B.entier(S, 0, noms.length - 1)],
     etat: 'file', depuis: S.minute, arrivee: S.minute,
     patience: B.duree(S, B.DATA.clients.durees.patienceFile),
-    tables: null, x: e.x, y: e.y, chemin: [], duree: 0, serveur: null, pret: 0, aMange: false
+    tables: null, x: e.x, y: e.y, chemin: [], duree: 0, serveur: null, cuisinier: null, pret: null, aMange: false
   };
   S.groupes.push(g);
   S.stats.jour.groupes++;
@@ -43,14 +43,9 @@ B.clients.placer = function (S) {
   let enFile = 0;
   for (const g of S.groupes) {
     if (g.etat !== 'file') continue;
-    const ids = B.salle.chercher(S, g.taille);
+    const ids = S.placement === 'manuel' ? null : B.salle.chercher(S, g.taille);
     if (ids) {
-      ids.forEach(function (id) { B.salle.tableDe(S, id).groupe = g.id; });
-      g.tables = ids;
-      g.etat = 'marche';
-      g.depuis = S.minute;
-      g.chemin = B.salle.chemin(g, B.salle.centre(ids));
-      if (ids.length > 1) B.message(S, 'msg_installe_rallonge', { num: B.salle.nomTables(ids), taille: g.taille });
+      B.clients.installer(S, g, ids);
     } else if (S.minute - g.depuis > g.patience) {
       g.etat = 'repart';
       g.chemin = [{ x: B.DATA.salle.dehors.x, y: B.DATA.salle.dehors.y }];
@@ -59,6 +54,33 @@ B.clients.placer = function (S) {
     } else enFile++;
   }
   S.stats.jour.fileMax = Math.max(S.stats.jour.fileMax, enFile);
+};
+
+B.clients.installer = function (S, g, ids) {
+  ids.forEach(function (id) { B.salle.tableDe(S, id).groupe = g.id; });
+  g.tables = ids;
+  g.etat = 'marche';
+  g.depuis = S.minute;
+  g.chemin = B.salle.chemin(g, B.salle.centre(ids));
+  if (ids.length > 1) B.message(S, 'msg_installe_rallonge', { num: B.salle.nomTables(ids), taille: g.taille });
+};
+
+/* Placement par le joueur : un groupe de la file sur une table touchée. Renvoie { ok } ou { erreur, vars }. */
+B.clients.placerManuel = function (S, groupeId, tableId) {
+  const g = S.groupes.find(function (x) { return x.id === groupeId && x.etat === 'file'; });
+  const t = B.salle.tableDe(S, tableId);
+  if (!g || !t) return { erreur: 'placement_occupee', vars: { num: tableId } };
+  const libre = function (id) { const x = B.salle.tableDe(S, id); return x && !x.groupe && !x.sale; };
+  if (!libre(tableId)) return { erreur: 'placement_occupee', vars: { num: tableId } };
+  if (t.places >= g.taille) { B.clients.installer(S, g, [tableId]); return { ok: true }; }
+  const r = B.DATA.salle.rallonges.find(function (r) { return r.indexOf(tableId) >= 0; });
+  if (r) {
+    const total = r.reduce(function (s, id) { return s + B.salle.tableDe(S, id).places; }, 0);
+    if (total >= g.taille && r.every(libre)) { B.clients.installer(S, g, r.slice()); return { ok: true }; }
+    if (total >= g.taille) { const autre = r.find(function (id) { return id !== tableId; }); return { erreur: 'placement_occupee', vars: { num: autre } }; }
+  }
+  if (g.taille >= 5) return { erreur: 'placement_rallonge', vars: { taille: g.taille } };
+  return { erreur: 'placement_trop_petite', vars: { num: tableId, places: t.places, taille: g.taille } };
 };
 
 /* Le groupe quitte sa table : la table devient à débarrasser. */
@@ -83,7 +105,7 @@ B.clients.avancer = function (S, h) {
     } else if (g.etat === 'carte') {
       if (ecoule >= g.duree) { g.etat = 'commande'; g.depuis = S.minute; }
     } else if (g.etat === 'cuisine') {
-      if (S.minute >= g.pret) { g.etat = 'pret'; g.depuis = S.minute; }
+      if (g.cuisinier && g.pret != null && S.minute >= g.pret) { g.etat = 'pret'; g.depuis = S.minute; g.cuisinier = null; }
     } else if (g.etat === 'mange') {
       if (ecoule >= g.duree) { g.etat = 'addition'; g.depuis = S.minute; }
     } else if (g.etat === 'depart' || g.etat === 'repart') {

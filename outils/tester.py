@@ -36,8 +36,10 @@ MESURES_JS = r"""() => {
   (dessus || document).querySelectorAll('button').forEach(b => {
     if (!b.offsetParent) return;
     const r = b.getBoundingClientRect();
-    if (r.left < -0.5 || r.top < -0.5 || r.right > vw + 0.5 || r.bottom > vh + 0.5) pb.push('bouton hors écran : ' + b.textContent);
+    const defile = b.closest('#volet-corps, #accueil');
+    if (r.left < -0.5 || r.right > vw + 0.5 || (!defile && (r.top < -0.5 || r.bottom > vh + 0.5))) pb.push('bouton hors écran : ' + b.textContent);
     if (r.height < 43.5 || r.width < 43.5) pb.push('bouton trop petit (' + Math.round(r.width) + '×' + Math.round(r.height) + ') : ' + b.textContent);
+    if (r.bottom > vh || r.top < 0) return;
     const e = document.elementFromPoint(r.left + r.width / 2, r.top + r.height / 2);
     if (e && e !== b && !b.contains(e)) pb.push('bouton recouvert : ' + b.textContent);
   });
@@ -67,10 +69,34 @@ async def nouveau_contexte(b, w, h, init=None):
     await p.wait_for_timeout(500)
     return c, p
 
-async def lancer_partie(p):
+async def lancer_partie(p, captures=None):
+    """Nouvelle partie, puis recrutement par l'écran Équipe : un serveur (entretien complet) et un commis de cuisine."""
     await p.get_by_role('button', name='Nouvelle partie').click()
     await p.get_by_role('button', name='Ouvrir le restaurant').click()
+    await p.wait_for_timeout(500)
+    if captures: await p.screenshot(path=str(CAPTURES / f'10-recrutement-{captures}.png'))
+    ouvert = await p.evaluate('() => B.UI.S.ouvert')
+    if ouvert: problemes.append('le restaurant ne devrait pas être ouvert avant le recrutement')
+    for poste, complet in (('serv', True), ('commis', False)):
+        cid = await p.evaluate(f"() => B.UI.S.candidats.find(c => c.poste === '{poste}').id")
+        await p.locator(f'[data-eq="entretien"][data-id="{cid}"]').click(); await p.wait_for_timeout(200)
+        questions = ['Quel salaire souhaitez-vous ?'] if not complet else ['Parlez-moi de votre parcours.', 'Que faites-vous en plein coup de feu ?', 'Racontez-moi un client difficile.', 'Quel salaire souhaitez-vous ?']
+        for q in questions:
+            await p.get_by_role('button', name=q).click(); await p.wait_for_timeout(120)
+        if complet and captures:
+            await p.screenshot(path=str(CAPTURES / f'11-entretien-{captures}.png'))
+            verifier('entretien', await p.evaluate(MESURES_JS), p)
+        await p.locator('[data-eq="proposer"]').click(); await p.wait_for_timeout(200)
+        if complet and captures: await p.screenshot(path=str(CAPTURES / f'12-embauche-{captures}.png'))
+        await p.get_by_role('button', name='Retour à l’équipe').click(); await p.wait_for_timeout(200)
+    if captures:
+        await p.screenshot(path=str(CAPTURES / f'13-equipe-prete-{captures}.png'))
+        verifier('écran équipe', await p.evaluate(MESURES_JS), p)
+    n = await p.evaluate('() => B.UI.S.equipe.length')
+    if n != 3: problemes.append(f'recrutement : équipe de {n} au lieu de 3')
+    await p.locator('[data-eq="ouvrir"]').click()
     await p.wait_for_timeout(300)
+    if not await p.evaluate('() => B.UI.S.ouvert'): problemes.append("le restaurant n'ouvre pas après le recrutement")
 
 async def au_coeur_du_service(p, minutes=95):
     await p.evaluate(f"() => {{ B.avancer(B.UI.S, {minutes}); }}")
@@ -96,7 +122,7 @@ async def main():
         for nom, w, h in TAILLES:
             c, p = await nouveau_contexte(b, w, h)
             if nom == 's22': await p.screenshot(path=str(CAPTURES / '00-accueil-780x360.png'))
-            await lancer_partie(p)
+            await lancer_partie(p, f'{w}x{h}' if nom in ('s22', 'barres') else None)
             await au_coeur_du_service(p)
             await p.screenshot(path=str(CAPTURES / f'01-salle-{nom}-{w}x{h}.png'))
             await choisir_table(p)
@@ -147,6 +173,38 @@ async def main():
                 if 'jour 2' not in txt: problemes.append('la partie ne revient pas après rechargement')
             await c.close()
 
+        print('1b) Placement des clients par le joueur :')
+        c, p = await nouveau_contexte(b, 780, 360)
+        await lancer_partie(p)
+        await p.locator('#btn-placement').click(); await p.wait_for_timeout(200)
+        for i in range(40):
+            nb = await p.evaluate("() => B.UI.S.groupes.filter(g => g.etat === 'file').length")
+            if nb >= 2: break
+            await p.evaluate('() => B.avancer(B.UI.S, 3)')
+        assis = await p.evaluate("() => B.UI.S.groupes.filter(g => g.tables).length")
+        if assis: problemes.append('placement manuel : des clients se sont assis tout seuls')
+        await p.wait_for_timeout(300)
+        g = await p.evaluate("() => { const g = B.UI.S.groupes.find(g => g.etat === 'file'); return g && {id: g.id, taille: g.taille}; }")
+        if not g: problemes.append('placement manuel : aucun groupe à la porte')
+        else:
+            await p.locator(f'[data-groupe="{g["id"]}"]').click(); await p.wait_for_timeout(300)
+            await p.screenshot(path=str(CAPTURES / '14-placement-groupe-choisi-780x360.png'))
+            verifier('placement manuel', await p.evaluate(MESURES_JS), p)
+            petite = 1 if g['taille'] > 2 else None
+            if petite:
+                await p.locator('[data-table="1"]').click(); await p.wait_for_timeout(300)
+                await p.screenshot(path=str(CAPTURES / '15-placement-table-trop-petite-780x360.png'))
+            cible = await p.evaluate(f"() => {{ const t = B.UI.S.tables.find(t => !t.groupe && !t.sale && t.places >= {g['taille']}); return t ? t.id : 2; }}")
+            await p.locator(f'[data-table="{cible}"]').click(); await p.wait_for_timeout(300)
+            ok = await p.evaluate(f"() => {{ const x = B.UI.S.groupes.find(x => x.id === {g['id']}); return !!(x && x.tables); }}")
+            print(f"  groupe de {g['taille']} placé à la table {cible} :", ok)
+            if not ok: problemes.append('placement manuel : le groupe ne s’est pas assis')
+            await p.get_by_role('button', name='1×').click()
+            await p.wait_for_timeout(2500)
+            await p.screenshot(path=str(CAPTURES / '16-placement-groupe-installe-780x360.png'))
+        problemes.extend('placement : ' + e for e in p.erreurs)
+        await c.close()
+
         print('2) Téléphone tenu en portrait :')
         c, p = await nouveau_contexte(b, 360, 780)
         await p.screenshot(path=str(CAPTURES / '06-portrait-360x780.png'))
@@ -168,7 +226,8 @@ async def main():
         await au_coeur_du_service(p, 70)
         await p.screenshot(path=str(CAPTURES / '08-ancienne-partie-reprise-780x360.png'))
         apres = await p.evaluate("() => JSON.stringify(Object.fromEntries(Object.keys(localStorage).filter(k => k.startsWith('bistrot_')).map(k => [k, localStorage.getItem(k)])))")
-        info = await p.evaluate("() => ({nom: B.UI.S.nom, jour: B.UI.S.jour, argent: B.UI.S.argent, lieu: B.UI.S.lieu})")
+        info = await p.evaluate("() => ({nom: B.UI.S.nom, jour: B.UI.S.jour, argent: B.UI.S.argent, lieu: B.UI.S.lieu, equipe: B.UI.S.equipe.length, ouvert: B.UI.S.ouvert})")
+        if info['equipe'] < 10 or not info['ouvert']: problemes.append("l'équipe de l'ancien jeu n'a pas été reprise")
         intact = json.loads(avant) == json.loads(apres) and len(json.loads(avant)) == 3
         print('  partie reprise :', info, '| ancien jeu intact :', intact)
         if not intact:
@@ -177,6 +236,17 @@ async def main():
             problemes.append("l'ancienne sauvegarde a été modifiée !")
         if info['jour'] != 9: problemes.append('jour repris incorrect')
         problemes.extend('import : ' + e for e in p.erreurs)
+        await c.close()
+
+        print('3b) Sauvegarde de Bistrot 0.1 (format 1) :')
+        v1 = (RACINE / 'tests/sauvegardes-bistrot/v1-bistrot-0.1-en-service.json').read_text()
+        c, p = await nouveau_contexte(b, 780, 360, "if(!sessionStorage.getItem('g')){sessionStorage.setItem('g','1');localStorage.setItem('bistrotjeu.test.partie'," + json.dumps(v1) + ");}")
+        txt = await p.locator('#accueil').inner_text()
+        await p.get_by_role('button', name='Continuer : Chez YaYa · Bretagne · jour 1').click(); await p.wait_for_timeout(400)
+        etat = await p.evaluate("() => ({v: B.UI.S.version, equipe: B.UI.S.equipe.map(x => x.nom), volet: B.UI.voletOuvert})")
+        print('  partie 0.1 relue :', etat)
+        if etat['v'] != 2 or etat['equipe'] != ['Patron'] or etat['volet'] != 'equipe': problemes.append('la sauvegarde 0.1 est mal relue')
+        problemes.extend('sauvegarde 0.1 : ' + e for e in p.erreurs)
         await c.close()
 
         print('4) Hors connexion :')

@@ -53,6 +53,8 @@ UI.init = function () {
   UI.dessin.initTouches();
   UI.initVolets();
   UI.initAccueil();
+  UI.initEquipe();
+  UI.initPlacement();
   UI.initPortrait();
   const r = UI.chargerPartie();
   if (r.partie) { UI.S = r.partie; B.message(UI.S, 'msg_reprise', { nom: UI.S.nom, jour: UI.S.jour }); }

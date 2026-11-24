@@ -23,9 +23,9 @@ button { font: inherit; cursor: pointer; }
 .infos .l1 { font-size: 14px; }
 .infos .l2 { font-size: 14px; color: #f6deb0; }
 #vitesses { display: flex; gap: 4px; flex: none; }
-#vitesses button { min-width: 50px; height: 44px; border: 0; border-radius: 9px; background: #5a463b; color: #fff6e8; font-size: 15px; font-weight: 600; }
+#vitesses button { min-width: 46px; height: 44px; border: 0; border-radius: 9px; background: #5a463b; color: #fff6e8; font-size: 15px; font-weight: 600; }
 #vitesses button.actif { background: #f2c14e; color: #2a211b; }
-.btn-barre { flex: none; height: 44px; min-width: 64px; padding: 0 10px; border: 0; border-radius: 9px; background: #6d5546; color: #fff6e8; font-size: 14px; font-weight: 600; }
+.btn-barre { flex: none; height: 44px; min-width: 60px; padding: 0 9px; border: 0; border-radius: 9px; background: #6d5546; color: #fff6e8; font-size: 14px; font-weight: 600; }
 
 /* Salle et colonne de droite */
 #jeu { flex: 1; display: flex; min-height: 0; }
@@ -40,6 +40,10 @@ button { font: inherit; cursor: pointer; }
 #detail { flex: none; background: #fff; border-radius: 6px; padding: 5px 7px; font-size: 12px; line-height: 1.35; min-height: 92px; }
 #detail b { font-size: 14px; }
 #detail .aide { color: #6d5546; margin-bottom: 2px; }
+#btn-placement { flex: none; height: 44px; border: 2px solid #8a6a50; border-radius: 9px; background: #fff; color: #3a2a22; font-size: 13px; font-weight: 700; }
+#btn-placement.manuel { background: #1d6fd8; border-color: #1d6fd8; color: #fff; }
+#detail .choisi { color: #1d6fd8; font-weight: 700; }
+#detail .ferme { color: #b8322a; font-weight: 700; }
 #detail .vert { color: #2f8f55; font-weight: 600; } #detail .orange { color: #b8650c; font-weight: 600; } #detail .rouge { color: #c73a3a; font-weight: 600; }
 
 /* Dessin de la salle */
@@ -53,8 +57,27 @@ button { font: inherit; cursor: pointer; }
 
 /* Volets */
 #voile { position: fixed; inset: 0; background: rgba(20, 12, 8, .4); z-index: 20; }
-#volet { position: fixed; top: 0; right: 0; bottom: 0; width: min(460px, 78vw); background: #fffaf2; z-index: 21; display: flex; flex-direction: column; transform: translateX(100%); transition: transform .2s ease-out; box-shadow: -4px 0 18px rgba(0,0,0,.3); padding-right: env(safe-area-inset-right); }
+#volet { position: fixed; top: 0; right: 0; bottom: 0; width: min(460px, 78vw); max-width: 100vw; background: #fffaf2; z-index: 21; display: flex; flex-direction: column; transform: translateX(100%); transition: transform .2s ease-out; box-shadow: -4px 0 18px rgba(0,0,0,.3); padding-right: env(safe-area-inset-right); }
 #volet.ouvert { transform: none; }
+#volet.large { width: min(640px, 94vw); }
+.alerte-equipe { background: #fbe6e3; border-radius: 8px; padding: 6px 10px; margin: 6px 0; }
+.ok-equipe { background: #e7f4ea; border-radius: 8px; padding: 6px 10px; margin: 6px 0; }
+.personne { display: flex; align-items: center; gap: 10px; border-bottom: 1px solid #eadfcd; padding: 5px 0; }
+.personne > div { flex: 1; min-width: 0; }
+.personne .nom { font-weight: 700; }
+.personne .sous { font-size: 13px; color: #6d5546; }
+.petit-btn { flex: none; min-height: 44px; min-width: 96px; padding: 0 12px; border: 2px solid #8a6a50; border-radius: 10px; background: #fff; color: #3a2a22; font-weight: 700; font-size: 14px; }
+.petit-btn.principal { background: #b8322a; border-color: #b8322a; color: #fff; }
+.petit-btn:disabled { opacity: .45; }
+.fiche { display: grid; grid-template-columns: auto 1fr; gap: 2px 12px; font-size: 14px; margin: 4px 0 8px; }
+.fiche span:nth-child(odd) { color: #6d5546; }
+.questions { display: flex; flex-wrap: wrap; gap: 6px; }
+.questions .petit-btn { flex: 1 1 45%; text-align: left; font-weight: 600; }
+.reponse { background: #f3eadb; border-radius: 8px; padding: 6px 10px; margin: 6px 0; }
+.reponse .q { font-weight: 700; font-size: 13px; color: #6d5546; display: block; }
+.offre { display: flex; align-items: center; gap: 8px; flex-wrap: wrap; margin: 6px 0; }
+.offre b { font-size: 18px; min-width: 80px; text-align: center; }
+.mot { font-style: italic; background: #fff3d6; border-radius: 8px; padding: 6px 10px; }
 .volet-tete { display: flex; align-items: center; justify-content: space-between; padding: 4px 8px 4px 14px; background: #3a2a22; color: #fff6e8; flex: none; }
 .volet-tete h2 { font-size: 17px; margin: 0; }
 #volet-fermer { height: 44px; min-width: 84px; border: 0; border-radius: 9px; background: #f2c14e; color: #2a211b; font-weight: 700; font-size: 15px; }
@@ -117,18 +140,20 @@ button { font: inherit; cursor: pointer; }
       <div class="l2"><span id="b-heure"></span> · <b id="b-argent"></b></div>
     </div>
     <div id="vitesses" role="group"></div>
+    <button type="button" id="btn-equipe" class="btn-barre"></button>
     <button type="button" id="btn-journal" class="btn-barre"></button>
     <button type="button" id="btn-menu" class="btn-barre"></button>
   </header>
   <main id="jeu">
     <div id="salle-zone">
       <svg id="salle" viewBox="0 0 1000 450" preserveAspectRatio="xMidYMid meet" aria-label="Salle">
-        <g id="fond"></g><g id="dyn"></g><g id="touches"></g>
+        <g id="fond"></g><g id="dyn"></g><g id="touches"></g><g id="touches-file"></g>
       </svg>
     </div>
     <aside id="cote">
       <section id="messages" aria-live="polite"></section>
       <section id="detail"></section>
+      <button type="button" id="btn-placement"></button>
     </aside>
   </main>
 </div>
@@ -144,10 +169,10 @@ button { font: inherit; cursor: pointer; }
 (function () {
 "use strict";
 var B = {};
-B.DATA = {"lieux":{"source":"Repris de Chez YaYa v10.2 (liste des 44 lieux), novembre 2026","lieux":[{"id":"paris","nom":"Paris","repere":"🗼","groupe":"france","affluence":1.3,"salaires":1.15,"prix":1.2,"travaux":1.25,"valeurLocal":1500000,"calendrier":"Zone C · fériés FR","meteo":"Océanique doux","tourisme":"Toute l'année, pic été","specialites":["Soupe à l'oignon","Croque-monsieur","Paris-Brest"],"nomsClients":["Martin","Bernard","Dubois","Lefèvre"],"latitude":48.86,"longitude":2.35,"hemisphereSud":false},{"id":"idf","nom":"Île-de-France (hors Paris)","repere":"🏘️","groupe":"france","affluence":1.05,"salaires":1.08,"prix":1.05,"travaux":1.1,"valeurLocal":700000,"calendrier":"Zone C","meteo":"Océanique","tourisme":"Faible","specialites":["Brie de Meaux","Potage Saint-Germain"],"nomsClients":["Moreau","Laurent","Simon","Michel"],"latitude":48.8,"longitude":2.5,"hemisphereSud":false},{"id":"ara","nom":"Auvergne-Rhône-Alpes","repere":"🏔️","groupe":"france","affluence":1,"salaires":1,"prix":1,"travaux":1,"valeurLocal":450000,"calendrier":"Zone A","meteo":"Continental, hiver neigeux","tourisme":"Pic hiver (ski) + été","specialites":["Tartiflette","Quenelles","Saint-Marcellin"],"nomsClients":["Garnier","Faure","Rousset","Chabert"],"latitude":45.76,"longitude":4.84,"hemisphereSud":false},{"id":"bfc","nom":"Bourgogne-Franche-Comté","repere":"🍷","groupe":"france","affluence":0.8,"salaires":0.95,"prix":0.98,"travaux":0.92,"valeurLocal":300000,"calendrier":"Zone A","meteo":"Continental","tourisme":"Vendanges (sept.)","specialites":["Bœuf bourguignon","Œufs en meurette","Comté"],"nomsClients":["Bonnot","Mercier","Guyot"],"latitude":47.32,"longitude":5.04,"hemisphereSud":false},{"id":"bretagne","nom":"Bretagne","repere":"⚓","groupe":"france","affluence":0.9,"salaires":0.95,"prix":0.95,"travaux":0.95,"valeurLocal":320000,"calendrier":"Zone B","meteo":"Océanique pluvieux","tourisme":"Fort été","specialites":["Galette complète","Kouign-amann","Moules"],"nomsClients":["Le Gall","Le Goff","Le Bihan","Tanguy"],"latitude":48.11,"longitude":-1.68,"hemisphereSud":false},{"id":"centre","nom":"Centre-Val de Loire","repere":"🏰","groupe":"france","affluence":0.75,"salaires":0.93,"prix":0.95,"travaux":0.9,"valeurLocal":280000,"calendrier":"Zone B","meteo":"Doux","tourisme":"Châteaux (printemps-été)","specialites":["Tarte Tatin","Rillettes de Tours"],"nomsClients":["Chevalier","Renard","Boucher"],"latitude":47.9,"longitude":1.9,"hemisphereSud":false},{"id":"corse","nom":"Corse","repere":"🏝️","groupe":"france","affluence":0.7,"salaires":0.97,"prix":1.05,"travaux":1.15,"valeurLocal":380000,"calendrier":"Zone A (Corse)","meteo":"Méditerranéen chaud","tourisme":"Très fort été, creux hiver","specialites":["Figatellu","Fiadone","Brocciu"],"nomsClients":["Santoni","Leca","Colonna","Pieri"],"latitude":41.92,"longitude":8.74,"hemisphereSud":false},{"id":"grand-est","nom":"Grand Est","repere":"🥨","groupe":"france","affluence":0.85,"salaires":0.95,"prix":0.97,"travaux":0.95,"valeurLocal":330000,"calendrier":"Zone B · Alsace-Moselle (+26/12, Vendredi saint)","meteo":"Continental froid","tourisme":"Marchés de Noël (déc.)","specialites":["Choucroute","Flammekueche","Quiche lorraine"],"nomsClients":["Muller","Schmitt","Meyer","Klein"],"latitude":48.58,"longitude":7.75,"hemisphereSud":false},{"id":"hauts","nom":"Hauts-de-France","repere":"🍟","groupe":"france","affluence":0.85,"salaires":0.93,"prix":0.92,"travaux":0.92,"valeurLocal":280000,"calendrier":"Zone B","meteo":"Océanique frais","tourisme":"Faible","specialites":["Carbonade flamande","Welsh","Maroilles"],"nomsClients":["Lefebvre","Leroy","Delattre","Wattel"],"latitude":50.63,"longitude":3.06,"hemisphereSud":false},{"id":"normandie","nom":"Normandie","repere":"🐄","groupe":"france","affluence":0.85,"salaires":0.94,"prix":0.97,"travaux":0.95,"valeurLocal":320000,"calendrier":"Zone B","meteo":"Océanique pluvieux","tourisme":"Été (plages, Mont-St-Michel)","specialites":["Teurgoule","Camembert","Sole normande"],"nomsClients":["Lemoine","Hébert","Lecomte"],"latitude":49.18,"longitude":-0.37,"hemisphereSud":false},{"id":"aquitaine","nom":"Nouvelle-Aquitaine","repere":"🦆","groupe":"france","affluence":0.95,"salaires":0.96,"prix":1,"travaux":0.98,"valeurLocal":400000,"calendrier":"Zone A","meteo":"Océanique chaud","tourisme":"Fort été (côte)","specialites":["Confit de canard","Cannelés","Huîtres"],"nomsClients":["Etcheverry","Dupuy","Lafitte"],"latitude":44.84,"longitude":-0.58,"hemisphereSud":false},{"id":"occitanie","nom":"Occitanie","repere":"☀️","groupe":"france","affluence":0.95,"salaires":0.95,"prix":0.98,"travaux":0.97,"valeurLocal":380000,"calendrier":"Zone C","meteo":"Méditerranéen","tourisme":"Fort été","specialites":["Cassoulet","Aligot","Brandade"],"nomsClients":["Fabre","Vidal","Roux","Marty"],"latitude":43.6,"longitude":1.44,"hemisphereSud":false},{"id":"loire","nom":"Pays de la Loire","repere":"🌊","groupe":"france","affluence":0.85,"salaires":0.95,"prix":0.97,"travaux":0.95,"valeurLocal":330000,"calendrier":"Zone B","meteo":"Océanique doux","tourisme":"Été (côte)","specialites":["Rillauds","Beurre blanc","Mâche nantaise"],"nomsClients":["Gautier","Brunet","Perrin"],"latitude":47.22,"longitude":-1.55,"hemisphereSud":false},{"id":"provence","nom":"Provence-Alpes-Côte d'Azur","repere":"🌻","groupe":"france","affluence":1.2,"salaires":1.02,"prix":1.12,"travaux":1.1,"valeurLocal":800000,"calendrier":"Zone B","meteo":"Méditerranéen ensoleillé","tourisme":"Très fort été","specialites":["Bouillabaisse","Ratatouille","Socca"],"nomsClients":["Giraud","Blanc","Martini","Olivier"],"latitude":43.3,"longitude":5.37,"hemisphereSud":false},{"id":"guadeloupe","nom":"Guadeloupe","repere":"🌴","groupe":"outre-mer","affluence":0.8,"salaires":0.98,"prix":1.15,"travaux":1.3,"valeurLocal":330000,"calendrier":"Calendrier Guadeloupe · 27/05 abolition","meteo":"Tropical, cyclones août-oct","tourisme":"Saison sèche déc.-avr.","specialites":["Colombo de poulet","Accras","Bokit"],"nomsClients":["Lubin","Jean-Baptiste","Célestin"],"latitude":16.24,"longitude":-61.53,"hemisphereSud":false},{"id":"martinique","nom":"Martinique","repere":"🌺","groupe":"outre-mer","affluence":0.8,"salaires":0.98,"prix":1.15,"travaux":1.3,"valeurLocal":340000,"calendrier":"Calendrier Martinique · 22/05 abolition","meteo":"Tropical, cyclones","tourisme":"Déc.-avr.","specialites":["Féroce d'avocat","Blaff","Ti-punch"],"nomsClients":["Rosier","Dorval","Théodose"],"latitude":14.61,"longitude":-61.07,"hemisphereSud":false},{"id":"guyane","nom":"Guyane","repere":"🦜","groupe":"outre-mer","affluence":0.55,"salaires":0.97,"prix":1.18,"travaux":1.4,"valeurLocal":220000,"calendrier":"Calendrier Guyane · 10/06","meteo":"Équatorial pluvieux","tourisme":"Très faible","specialites":["Bouillon d'awara","Couac"],"nomsClients":["Pierre-Louis","Atticot","Ho-A-Chuck"],"latitude":4.94,"longitude":-52.33,"hemisphereSud":false},{"id":"reunion","nom":"La Réunion","repere":"🌋","groupe":"outre-mer","affluence":0.85,"salaires":0.97,"prix":1.12,"travaux":1.3,"valeurLocal":320000,"calendrier":"Calendrier Réunion · 20/12 Fèt Kaf (été austral)","meteo":"Tropical, saisons inversées","tourisme":"Juil.-août + déc.","specialites":["Rougail saucisse","Cari","Samoussas"],"nomsClients":["Payet","Hoarau","Grondin","Técher"],"latitude":-20.88,"longitude":55.45,"hemisphereSud":true},{"id":"mayotte","nom":"Mayotte","repere":"🐢","groupe":"outre-mer","affluence":0.5,"salaires":0.9,"prix":1.1,"travaux":1.45,"valeurLocal":180000,"calendrier":"Calendrier Mayotte · 27/04","meteo":"Tropical","tourisme":"Très faible","specialites":["Mataba","Brochettes-manioc"],"nomsClients":["Abdallah","Madi","Soilihi"],"latitude":-12.78,"longitude":45.23,"hemisphereSud":true},{"id":"polynesie","nom":"Polynésie française","repere":"🌊","groupe":"outre-mer","affluence":0.7,"salaires":1.1,"prix":1.35,"travaux":1.5,"valeurLocal":500000,"calendrier":"Calendrier Polynésie · 29/06 autonomie","meteo":"Tropical, saisons inversées","tourisme":"Fort (lunes de miel), pic juil.-août","specialites":["Poisson cru au lait de coco","Firi firi"],"nomsClients":["Teriitehau","Tetuanui","Bambridge"],"latitude":-17.55,"longitude":-149.56,"hemisphereSud":true},{"id":"caledonie","nom":"Nouvelle-Calédonie","repere":"🦎","groupe":"outre-mer","affluence":0.65,"salaires":1.08,"prix":1.3,"travaux":1.45,"valeurLocal":450000,"calendrier":"Calendrier NC · 24/09","meteo":"Tropical tempéré, inversé","tourisme":"Moyen","specialites":["Bougna","Cerf en civet"],"nomsClients":["Wamytan","Gope","Tjibaou"],"latitude":-22.27,"longitude":166.45,"hemisphereSud":true},{"id":"londres","nom":"Londres","repere":"🇬🇧","groupe":"monde","affluence":1.4,"salaires":1.3,"prix":1.3,"travaux":1.4,"valeurLocal":2200000,"calendrier":"Royaume-Uni · bank holidays","meteo":"Océanique gris","tourisme":"Toute l'année","specialites":["Fish & chips","Sunday roast","Scones"],"nomsClients":["Smith","Jones","Taylor","Brown"],"latitude":51.51,"longitude":-0.13,"hemisphereSud":false},{"id":"berlin","nom":"Berlin","repere":"🇩🇪","groupe":"monde","affluence":1.15,"salaires":1.05,"prix":1,"travaux":1.05,"valeurLocal":900000,"calendrier":"Allemagne · 3/10 Unité","meteo":"Continental froid","tourisme":"Été + Noël","specialites":["Currywurst","Eisbein","Bretzel"],"nomsClients":["Müller","Schmidt","Fischer"],"latitude":52.52,"longitude":13.4,"hemisphereSud":false},{"id":"madrid","nom":"Madrid","repere":"🇪🇸","groupe":"monde","affluence":1.15,"salaires":0.85,"prix":0.95,"travaux":0.95,"valeurLocal":800000,"calendrier":"Espagne · 12/10 Hispanité","meteo":"Chaud et sec","tourisme":"Printemps-automne","specialites":["Cocido","Tortilla","Churros"],"nomsClients":["García","López","Martínez"],"latitude":40.42,"longitude":-3.7,"hemisphereSud":false},{"id":"rome","nom":"Rome","repere":"🇮🇹","groupe":"monde","affluence":1.25,"salaires":0.9,"prix":1,"travaux":1.05,"valeurLocal":1000000,"calendrier":"Italie · Ferragosto 15/08","meteo":"Méditerranéen","tourisme":"Très fort","specialites":["Carbonara","Supplì","Tiramisu"],"nomsClients":["Rossi","Russo","Bianchi"],"latitude":41.9,"longitude":12.5,"hemisphereSud":false},{"id":"lisbonne","nom":"Lisbonne","repere":"🇵🇹","groupe":"monde","affluence":1.1,"salaires":0.7,"prix":0.85,"travaux":0.85,"valeurLocal":600000,"calendrier":"Portugal · 13/06 St-Antoine","meteo":"Doux ensoleillé","tourisme":"Fort été","specialites":["Bacalhau à brás","Pastel de nata"],"nomsClients":["Silva","Santos","Ferreira"],"latitude":38.72,"longitude":-9.14,"hemisphereSud":false},{"id":"bruxelles","nom":"Bruxelles","repere":"🇧🇪","groupe":"monde","affluence":1.05,"salaires":1.08,"prix":1.02,"travaux":1.05,"valeurLocal":700000,"calendrier":"Belgique · 21/07","meteo":"Océanique pluvieux","tourisme":"Moyen","specialites":["Moules-frites","Gaufre","Carbonnade"],"nomsClients":["Peeters","Janssens","Maes"],"latitude":50.85,"longitude":4.35,"hemisphereSud":false},{"id":"amsterdam","nom":"Amsterdam","repere":"🇳🇱","groupe":"monde","affluence":1.2,"salaires":1.12,"prix":1.1,"travaux":1.15,"valeurLocal":1100000,"calendrier":"Pays-Bas · 27/04 Koningsdag","meteo":"Océanique venteux","tourisme":"Fort printemps (tulipes)","specialites":["Bitterballen","Stamppot","Stroopwafel"],"nomsClients":["De Jong","Jansen","Visser"],"latitude":52.37,"longitude":4.9,"hemisphereSud":false},{"id":"vienne","nom":"Vienne","repere":"🇦🇹","groupe":"monde","affluence":1.05,"salaires":1.05,"prix":1.05,"travaux":1.05,"valeurLocal":800000,"calendrier":"Autriche","meteo":"Continental","tourisme":"Noël + été","specialites":["Wiener Schnitzel","Sachertorte"],"nomsClients":["Gruber","Huber","Wagner"],"latitude":48.21,"longitude":16.37,"hemisphereSud":false},{"id":"athenes","nom":"Athènes","repere":"🇬🇷","groupe":"monde","affluence":1,"salaires":0.65,"prix":0.85,"travaux":0.85,"valeurLocal":450000,"calendrier":"Grèce · Pâques orthodoxe","meteo":"Chaud et sec","tourisme":"Très fort été","specialites":["Moussaka","Souvlaki","Baklava"],"nomsClients":["Papadopoulos","Nikolaou"],"latitude":37.98,"longitude":23.73,"hemisphereSud":false},{"id":"moscou","nom":"Moscou","repere":"🇷🇺","groupe":"monde","affluence":1.05,"salaires":0.7,"prix":0.95,"travaux":0.95,"valeurLocal":700000,"calendrier":"Russie · Noël 7/01","meteo":"Continental très froid","tourisme":"Faible hiver","specialites":["Bortsch","Blinis","Pelmeni"],"nomsClients":["Ivanov","Petrov","Smirnov"],"latitude":55.75,"longitude":37.62,"hemisphereSud":false},{"id":"new-york","nom":"New York","repere":"🇺🇸","groupe":"monde","affluence":1.5,"salaires":1.35,"prix":1.4,"travaux":1.45,"valeurLocal":2500000,"calendrier":"États-Unis · Thanksgiving, 4/07","meteo":"Continental contrasté","tourisme":"Toute l'année","specialites":["Burger","Cheesecake","Bagel"],"nomsClients":["Johnson","Williams","Miller"],"latitude":40.71,"longitude":-74,"hemisphereSud":false},{"id":"washington","nom":"Washington","repere":"🇺🇸","groupe":"monde","affluence":1.1,"salaires":1.25,"prix":1.25,"travaux":1.3,"valeurLocal":1400000,"calendrier":"États-Unis","meteo":"Humide","tourisme":"Printemps (cerisiers)","specialites":["Crab cakes","Half-smoke"],"nomsClients":["Davis","Wilson","Anderson"],"latitude":38.91,"longitude":-77.04,"hemisphereSud":false},{"id":"ottawa","nom":"Ottawa","repere":"🇨🇦","groupe":"monde","affluence":0.85,"salaires":1.1,"prix":1.1,"travaux":1.15,"valeurLocal":700000,"calendrier":"Canada · 1/07","meteo":"Hiver très froid","tourisme":"Faible","specialites":["Poutine","Queues de castor"],"nomsClients":["Tremblay","Gagnon","Roy"],"latitude":45.42,"longitude":-75.7,"hemisphereSud":false},{"id":"mexico","nom":"Mexico","repere":"🇲🇽","groupe":"monde","affluence":1.2,"salaires":0.45,"prix":0.7,"travaux":0.75,"valeurLocal":500000,"calendrier":"Mexique · 16/09, Día de Muertos","meteo":"Tempéré d'altitude","tourisme":"Moyen","specialites":["Tacos al pastor","Mole","Churros"],"nomsClients":["Hernández","González","Pérez"],"latitude":19.43,"longitude":-99.13,"hemisphereSud":false},{"id":"buenos-aires","nom":"Buenos Aires","repere":"🇦🇷","groupe":"monde","affluence":1.1,"salaires":0.5,"prix":0.75,"travaux":0.8,"valeurLocal":450000,"calendrier":"Argentine · saisons inversées","meteo":"Tempéré, inversé","tourisme":"Moyen","specialites":["Asado","Empanadas","Dulce de leche"],"nomsClients":["Fernández","Rodríguez","Gómez"],"latitude":-34.6,"longitude":-58.38,"hemisphereSud":true},{"id":"brasilia","nom":"Brasilia","repere":"🇧🇷","groupe":"monde","affluence":0.7,"salaires":0.5,"prix":0.75,"travaux":0.8,"valeurLocal":350000,"calendrier":"Brésil · Carnaval","meteo":"Tropical","tourisme":"Faible","specialites":["Feijoada","Pão de queijo"],"nomsClients":["Silva","Souza","Oliveira"],"latitude":-15.79,"longitude":-47.88,"hemisphereSud":true},{"id":"caire","nom":"Le Caire","repere":"🇪🇬","groupe":"monde","affluence":1.1,"salaires":0.35,"prix":0.6,"travaux":0.65,"valeurLocal":250000,"calendrier":"Égypte · Ramadan/Aïd","meteo":"Désertique","tourisme":"Hiver","specialites":["Koshari","Ful medames"],"nomsClients":["Mohamed","Hassan","Ibrahim"],"latitude":30.04,"longitude":31.24,"hemisphereSud":false},{"id":"dakar","nom":"Dakar","repere":"🇸🇳","groupe":"monde","affluence":0.85,"salaires":0.35,"prix":0.6,"travaux":0.7,"valeurLocal":220000,"calendrier":"Sénégal · Tabaski","meteo":"Tropical sec","tourisme":"Hiver","specialites":["Thiéboudienne","Yassa","Mafé"],"nomsClients":["Diop","Ndiaye","Fall","Sow"],"latitude":14.69,"longitude":-17.45,"hemisphereSud":false},{"id":"tokyo","nom":"Tokyo","repere":"🇯🇵","groupe":"monde","affluence":1.45,"salaires":1.1,"prix":1.25,"travaux":1.35,"valeurLocal":2000000,"calendrier":"Japon · Golden Week","meteo":"Tempéré humide","tourisme":"Printemps (sakura)","specialites":["Ramen","Tonkatsu","Mochi"],"nomsClients":["Sato","Suzuki","Takahashi"],"latitude":35.68,"longitude":139.69,"hemisphereSud":false},{"id":"pekin","nom":"Pékin","repere":"🇨🇳","groupe":"monde","affluence":1.3,"salaires":0.6,"prix":0.8,"travaux":0.85,"valeurLocal":900000,"calendrier":"Chine · Nouvel An lunaire","meteo":"Continental sec","tourisme":"Moyen","specialites":["Canard laqué","Jiaozi"],"nomsClients":["Wang","Li","Zhang"],"latitude":39.9,"longitude":116.4,"hemisphereSud":false},{"id":"seoul","nom":"Séoul","repere":"🇰🇷","groupe":"monde","affluence":1.25,"salaires":0.9,"prix":1.05,"travaux":1.05,"valeurLocal":1100000,"calendrier":"Corée · Chuseok","meteo":"Continental","tourisme":"Moyen","specialites":["Bibimbap","Bulgogi","Kimchi"],"nomsClients":["Kim","Lee","Park"],"latitude":37.57,"longitude":126.98,"hemisphereSud":false},{"id":"bangkok","nom":"Bangkok","repere":"🇹🇭","groupe":"monde","affluence":1.25,"salaires":0.4,"prix":0.65,"travaux":0.7,"valeurLocal":400000,"calendrier":"Thaïlande · Songkran","meteo":"Tropical","tourisme":"Fort nov.-mars","specialites":["Pad thaï","Tom yum","Mango sticky rice"],"nomsClients":["Saetang","Srisuk","Wongsa"],"latitude":13.76,"longitude":100.5,"hemisphereSud":false},{"id":"canberra","nom":"Canberra","repere":"🇦🇺","groupe":"monde","affluence":0.6,"salaires":1.2,"prix":1.2,"travaux":1.25,"valeurLocal":600000,"calendrier":"Australie · inversé","meteo":"Tempéré, inversé","tourisme":"Faible","specialites":["Meat pie","Pavlova"],"nomsClients":["Smith","Nguyen","Walker"],"latitude":-35.28,"longitude":149.13,"hemisphereSud":true}]},"salle":{"_explication":"Plan de la salle de départ, dessiné en largeur (unités du dessin : 1000 de large sur 430 de haut).","dessin":{"largeur":1000,"hauteur":450},"allee":220,"entree":{"x":22,"y":220},"dehors":{"x":-40,"y":220},"file":{"x":52,"y":306,"ecart":40},"passe":{"x":812,"y":220},"cuisine":{"x":856,"y":18,"largeur":132,"hauteur":414},"tables":[{"id":1,"x":165,"y":112,"places":2},{"id":2,"x":305,"y":112,"places":4},{"id":3,"x":445,"y":112,"places":4},{"id":4,"x":585,"y":112,"places":2},{"id":5,"x":725,"y":112,"places":4},{"id":6,"x":165,"y":328,"places":4},{"id":7,"x":305,"y":328,"places":2},{"id":8,"x":445,"y":328,"places":4},{"id":9,"x":585,"y":328,"places":4},{"id":10,"x":725,"y":328,"places":2}],"rallonges":[[2,3],[8,9]],"serveurs":[{"nom":"Patron","x":800,"y":196},{"nom":"Léa","x":800,"y":244}]},"clients":{"_explication":"Règles de l'étape 1 : arrivée des clients et durées. Les durées sont en minutes de jeu.","journee":{"ouverture":690,"fermeture":1350,"finForcee":1439},"affluence":[{"de":705,"a":720,"groupesParHeure":3},{"de":720,"a":810,"groupesParHeure":5},{"de":810,"a":855,"groupesParHeure":4},{"de":855,"a":1110,"groupesParHeure":1},{"de":1110,"a":1155,"groupesParHeure":3},{"de":1155,"a":1260,"groupesParHeure":5},{"de":1260,"a":1305,"groupesParHeure":3}],"annonces":[{"minute":705,"texte":"msg_premiers_clients"},{"minute":720,"texte":"msg_service_midi"},{"minute":855,"texte":"msg_apres_midi"},{"minute":1140,"texte":"msg_service_soir"},{"minute":1305,"texte":"msg_plus_d_arrivees"}],"types":[{"id":"solo","taille":[1,1],"poids":12,"repas":[20,30],"couleur":"#4f7fe0"},{"id":"couple","taille":[2,2],"poids":26,"repas":[30,45],"couleur":"#e0567f"},{"id":"amis","taille":[2,4],"poids":20,"repas":[35,50],"couleur":"#e8902a"},{"id":"famille","taille":[3,6],"poids":14,"repas":[40,55],"couleur":"#2f9e5c"},{"id":"affaires","taille":[2,4],"poids":14,"repas":[25,35],"couleur":"#7b55c9"},{"id":"touristes","taille":[2,4],"poids":14,"repas":[35,50],"couleur":"#1597a8"}],"durees":{"lireCarte":[4,7],"prendreCommande":1.5,"cuisine":[12,18],"prendrePlatPasse":0.3,"poserPlat":0.5,"addition":1.5,"debarrasserParTable":1,"patienceFile":[12,20]},"vitesses":{"clients":170,"serveurs":260},"alertes":{"attenteOrange":8,"attenteRouge":15}},"regles":{"_explication":"Réglages généraux. Une minute de jeu passe en une seconde à la vitesse 1×.","minutesParSeconde":1,"vitesses":[0,1,2,4],"difficultes":{"facile":{"capitalDepart":600000,"noteDepart":3}},"sauvegarde":{"toutesLesMinutesDeJeu":5}},"textes":{"_explication":"Tous les textes affichés au joueur. Les mots entre accolades {comme_ceci} sont remplacés par le jeu.","jeu_nom":"Bistrot","jeu_sous_titre":"Ton restaurant, en direct","canal_test":"Version de test","canal_officiel":"","btn_pause":"Pause","btn_1x":"1×","btn_2x":"2×","btn_4x":"4×","btn_journal":"Journal","btn_menu":"Menu","btn_fermer":"Fermer","aria_vitesse":"Vitesse du jeu","barre_jour_heure":"Jour {jour} · {heure}","barre_en_pause":"en pause","accueil_continuer":"Continuer : {nom} · {lieu} · jour {jour}","accueil_nouvelle":"Nouvelle partie","accueil_ancien":"Reprendre une partie de l’ancien jeu","accueil_retour":"Retour","nouvelle_titre":"Nouvelle partie","nouvelle_nom":"Nom de ton restaurant","nouvelle_nom_defaut":"Chez YaYa","nouvelle_lieu":"Où ouvres-tu ?","nouvelle_groupe_france":"France","nouvelle_groupe_outre-mer":"Outre-mer","nouvelle_groupe_monde":"Capitales du monde","nouvelle_difficulte":"Difficulté : Facile (tu es propriétaire, avec {capital} de départ).","nouvelle_ouvrir":"Ouvrir le restaurant","nouvelle_remplace":"Ta partie en cours ({nom}, jour {jour}) sera remplacée. Continuer ?","ancien_titre":"Reprendre une partie de l’ancien jeu","ancien_rassure":"Ton ancienne partie n’est ni effacée ni modifiée : Bistrot en fait seulement une copie.","ancien_contenu":"Pour l’instant, Bistrot reprend le nom, le lieu, le jour, l’argent et la note. La carte, les stocks et l’équipe seront repris aux prochaines étapes.","ancien_aucune":"Aucune partie de l’ancien jeu n’a été trouvée sur ce téléphone.","ancien_ligne":"{nom} · {lieu} · jour {jour} · {argent}","ancien_emplacement":"Emplacement {n}","ancien_derniere":"Dernière partie jouée","ancien_reprendre":"Reprendre","ancien_illisible":"Cette sauvegarde est illisible, elle est ignorée.","detail_aucune":"Touche une table pour voir ce qui s’y passe.","detail_en_salle":"En salle : {n} clients","detail_file":"À la porte : {n} groupes","detail_servis":"Servis aujourd’hui : {n}","detail_repartis":"Partis sans table : {n}","detail_table":"Table {num}","detail_libre":"Libre · {places} places","detail_a_debarrasser":"À débarrasser","detail_groupe":"{taille} · {groupe}","detail_attend":"attend depuis {min} min","detail_depuis":"depuis {min} min","pers_1":"1 pers.","pers_n":"{n} pers.","groupe_solo":"{nom}, client seul","groupe_couple":"couple {nom}","groupe_amis":"amis de {nom}","groupe_famille":"famille {nom}","groupe_affaires":"repas d’affaires de {nom}","groupe_touristes":"touristes ({nom})","etat_court_marche":"arrive","etat_court_carte":"carte","etat_court_commande":"commande","etat_court_cuisine":"cuisine","etat_court_pret":"plat prêt","etat_court_mange":"mange","etat_court_addition":"addition","etat_court_sale":"à nettoyer","etat_long_marche":"s’installe","etat_long_carte":"lit la carte","etat_long_commande":"veut commander","etat_long_cuisine":"plat en cuisine","etat_long_pret":"plat prêt à servir","etat_long_mange":"mange","etat_long_addition":"demande l’addition","salle_entree":"Entrée","salle_cuisine":"Cuisine","salle_passe":"Passe","salle_file":"File : {n}","serveur_libre":"{nom} : libre","msg_bienvenue":"Bienvenue {chez} ! Ouverture des portes à {heure}.","msg_reprise":"Partie reprise : {nom}, jour {jour}.","msg_import":"Ancienne partie reprise : {nom}, jour {jour}. L’ancien jeu n’a pas été modifié.","msg_premiers_clients":"Les portes sont ouvertes, les premiers clients arrivent.","msg_service_midi":"Le service du midi commence.","msg_apres_midi":"Le rush du midi est passé, la salle se calme.","msg_service_soir":"Le service du soir commence.","msg_plus_d_arrivees":"Plus de nouveaux clients ce soir, on finit le service.","msg_grand_groupe":"Un groupe de {taille} arrive : {groupe}.","msg_installe_rallonge":"Tables {num} rapprochées pour le groupe de {taille}.","msg_repart":"Pas de table libre : {taille} pers. sont reparties.","msg_fin_service":"Le dernier client est parti. Fin de la journée.","msg_fin_forcee":"Il est tard : les derniers clients sont partis.","msg_plus":"+{n} messages","journal_titre":"Journal","journal_vide":"Rien pour l’instant.","journal_ligne":"Jour {jour} · {heure}","menu_titre":"Menu","menu_reglages":"Réglages","menu_pause_auto":"Pause automatique quand un volet est ouvert","menu_oui":"Oui","menu_non":"Non","menu_partie":"Partie","menu_accueil":"Retour à l’écran d’accueil","menu_version":"Bistrot {version} · {canal}","menu_sauve":"Sauvegarde automatique : dernière à {heure}.","menu_origine":"Partie reprise de l’ancien jeu (sauvegarde n°{v}).","fin_titre":"Fin du jour {jour}","fin_servis":"clients servis","fin_repartis":"repartis faute de place","fin_attente":"min d’attente moyenne avant la commande","fin_suivant":"Commencer le jour {jour}","portrait_titre":"Tourne ton téléphone","portrait_texte":"Bistrot se joue en mode paysage. La partie est en pause.","erreur_sauvegarde_recente":"Cette sauvegarde vient d’une version plus récente de Bistrot. Mets le jeu à jour pour la relire.","erreur_sauvegarde_illisible":"La sauvegarde n’a pas pu être relue. Elle est gardée de côté, rien n’est effacé.","erreur_stockage":"Impossible d’enregistrer la partie sur ce téléphone (mémoire pleine ou navigation privée)."}};
+B.DATA = {"lieux":{"source":"Repris de Chez YaYa v10.2 (liste des 44 lieux), novembre 2026","lieux":[{"id":"paris","nom":"Paris","repere":"🗼","groupe":"france","affluence":1.3,"salaires":1.15,"prix":1.2,"travaux":1.25,"valeurLocal":1500000,"calendrier":"Zone C · fériés FR","meteo":"Océanique doux","tourisme":"Toute l'année, pic été","specialites":["Soupe à l'oignon","Croque-monsieur","Paris-Brest"],"nomsClients":["Martin","Bernard","Dubois","Lefèvre"],"latitude":48.86,"longitude":2.35,"hemisphereSud":false},{"id":"idf","nom":"Île-de-France (hors Paris)","repere":"🏘️","groupe":"france","affluence":1.05,"salaires":1.08,"prix":1.05,"travaux":1.1,"valeurLocal":700000,"calendrier":"Zone C","meteo":"Océanique","tourisme":"Faible","specialites":["Brie de Meaux","Potage Saint-Germain"],"nomsClients":["Moreau","Laurent","Simon","Michel"],"latitude":48.8,"longitude":2.5,"hemisphereSud":false},{"id":"ara","nom":"Auvergne-Rhône-Alpes","repere":"🏔️","groupe":"france","affluence":1,"salaires":1,"prix":1,"travaux":1,"valeurLocal":450000,"calendrier":"Zone A","meteo":"Continental, hiver neigeux","tourisme":"Pic hiver (ski) + été","specialites":["Tartiflette","Quenelles","Saint-Marcellin"],"nomsClients":["Garnier","Faure","Rousset","Chabert"],"latitude":45.76,"longitude":4.84,"hemisphereSud":false},{"id":"bfc","nom":"Bourgogne-Franche-Comté","repere":"🍷","groupe":"france","affluence":0.8,"salaires":0.95,"prix":0.98,"travaux":0.92,"valeurLocal":300000,"calendrier":"Zone A","meteo":"Continental","tourisme":"Vendanges (sept.)","specialites":["Bœuf bourguignon","Œufs en meurette","Comté"],"nomsClients":["Bonnot","Mercier","Guyot"],"latitude":47.32,"longitude":5.04,"hemisphereSud":false},{"id":"bretagne","nom":"Bretagne","repere":"⚓","groupe":"france","affluence":0.9,"salaires":0.95,"prix":0.95,"travaux":0.95,"valeurLocal":320000,"calendrier":"Zone B","meteo":"Océanique pluvieux","tourisme":"Fort été","specialites":["Galette complète","Kouign-amann","Moules"],"nomsClients":["Le Gall","Le Goff","Le Bihan","Tanguy"],"latitude":48.11,"longitude":-1.68,"hemisphereSud":false},{"id":"centre","nom":"Centre-Val de Loire","repere":"🏰","groupe":"france","affluence":0.75,"salaires":0.93,"prix":0.95,"travaux":0.9,"valeurLocal":280000,"calendrier":"Zone B","meteo":"Doux","tourisme":"Châteaux (printemps-été)","specialites":["Tarte Tatin","Rillettes de Tours"],"nomsClients":["Chevalier","Renard","Boucher"],"latitude":47.9,"longitude":1.9,"hemisphereSud":false},{"id":"corse","nom":"Corse","repere":"🏝️","groupe":"france","affluence":0.7,"salaires":0.97,"prix":1.05,"travaux":1.15,"valeurLocal":380000,"calendrier":"Zone A (Corse)","meteo":"Méditerranéen chaud","tourisme":"Très fort été, creux hiver","specialites":["Figatellu","Fiadone","Brocciu"],"nomsClients":["Santoni","Leca","Colonna","Pieri"],"latitude":41.92,"longitude":8.74,"hemisphereSud":false},{"id":"grand-est","nom":"Grand Est","repere":"🥨","groupe":"france","affluence":0.85,"salaires":0.95,"prix":0.97,"travaux":0.95,"valeurLocal":330000,"calendrier":"Zone B · Alsace-Moselle (+26/12, Vendredi saint)","meteo":"Continental froid","tourisme":"Marchés de Noël (déc.)","specialites":["Choucroute","Flammekueche","Quiche lorraine"],"nomsClients":["Muller","Schmitt","Meyer","Klein"],"latitude":48.58,"longitude":7.75,"hemisphereSud":false},{"id":"hauts","nom":"Hauts-de-France","repere":"🍟","groupe":"france","affluence":0.85,"salaires":0.93,"prix":0.92,"travaux":0.92,"valeurLocal":280000,"calendrier":"Zone B","meteo":"Océanique frais","tourisme":"Faible","specialites":["Carbonade flamande","Welsh","Maroilles"],"nomsClients":["Lefebvre","Leroy","Delattre","Wattel"],"latitude":50.63,"longitude":3.06,"hemisphereSud":false},{"id":"normandie","nom":"Normandie","repere":"🐄","groupe":"france","affluence":0.85,"salaires":0.94,"prix":0.97,"travaux":0.95,"valeurLocal":320000,"calendrier":"Zone B","meteo":"Océanique pluvieux","tourisme":"Été (plages, Mont-St-Michel)","specialites":["Teurgoule","Camembert","Sole normande"],"nomsClients":["Lemoine","Hébert","Lecomte"],"latitude":49.18,"longitude":-0.37,"hemisphereSud":false},{"id":"aquitaine","nom":"Nouvelle-Aquitaine","repere":"🦆","groupe":"france","affluence":0.95,"salaires":0.96,"prix":1,"travaux":0.98,"valeurLocal":400000,"calendrier":"Zone A","meteo":"Océanique chaud","tourisme":"Fort été (côte)","specialites":["Confit de canard","Cannelés","Huîtres"],"nomsClients":["Etcheverry","Dupuy","Lafitte"],"latitude":44.84,"longitude":-0.58,"hemisphereSud":false},{"id":"occitanie","nom":"Occitanie","repere":"☀️","groupe":"france","affluence":0.95,"salaires":0.95,"prix":0.98,"travaux":0.97,"valeurLocal":380000,"calendrier":"Zone C","meteo":"Méditerranéen","tourisme":"Fort été","specialites":["Cassoulet","Aligot","Brandade"],"nomsClients":["Fabre","Vidal","Roux","Marty"],"latitude":43.6,"longitude":1.44,"hemisphereSud":false},{"id":"loire","nom":"Pays de la Loire","repere":"🌊","groupe":"france","affluence":0.85,"salaires":0.95,"prix":0.97,"travaux":0.95,"valeurLocal":330000,"calendrier":"Zone B","meteo":"Océanique doux","tourisme":"Été (côte)","specialites":["Rillauds","Beurre blanc","Mâche nantaise"],"nomsClients":["Gautier","Brunet","Perrin"],"latitude":47.22,"longitude":-1.55,"hemisphereSud":false},{"id":"provence","nom":"Provence-Alpes-Côte d'Azur","repere":"🌻","groupe":"france","affluence":1.2,"salaires":1.02,"prix":1.12,"travaux":1.1,"valeurLocal":800000,"calendrier":"Zone B","meteo":"Méditerranéen ensoleillé","tourisme":"Très fort été","specialites":["Bouillabaisse","Ratatouille","Socca"],"nomsClients":["Giraud","Blanc","Martini","Olivier"],"latitude":43.3,"longitude":5.37,"hemisphereSud":false},{"id":"guadeloupe","nom":"Guadeloupe","repere":"🌴","groupe":"outre-mer","affluence":0.8,"salaires":0.98,"prix":1.15,"travaux":1.3,"valeurLocal":330000,"calendrier":"Calendrier Guadeloupe · 27/05 abolition","meteo":"Tropical, cyclones août-oct","tourisme":"Saison sèche déc.-avr.","specialites":["Colombo de poulet","Accras","Bokit"],"nomsClients":["Lubin","Jean-Baptiste","Célestin"],"latitude":16.24,"longitude":-61.53,"hemisphereSud":false},{"id":"martinique","nom":"Martinique","repere":"🌺","groupe":"outre-mer","affluence":0.8,"salaires":0.98,"prix":1.15,"travaux":1.3,"valeurLocal":340000,"calendrier":"Calendrier Martinique · 22/05 abolition","meteo":"Tropical, cyclones","tourisme":"Déc.-avr.","specialites":["Féroce d'avocat","Blaff","Ti-punch"],"nomsClients":["Rosier","Dorval","Théodose"],"latitude":14.61,"longitude":-61.07,"hemisphereSud":false},{"id":"guyane","nom":"Guyane","repere":"🦜","groupe":"outre-mer","affluence":0.55,"salaires":0.97,"prix":1.18,"travaux":1.4,"valeurLocal":220000,"calendrier":"Calendrier Guyane · 10/06","meteo":"Équatorial pluvieux","tourisme":"Très faible","specialites":["Bouillon d'awara","Couac"],"nomsClients":["Pierre-Louis","Atticot","Ho-A-Chuck"],"latitude":4.94,"longitude":-52.33,"hemisphereSud":false},{"id":"reunion","nom":"La Réunion","repere":"🌋","groupe":"outre-mer","affluence":0.85,"salaires":0.97,"prix":1.12,"travaux":1.3,"valeurLocal":320000,"calendrier":"Calendrier Réunion · 20/12 Fèt Kaf (été austral)","meteo":"Tropical, saisons inversées","tourisme":"Juil.-août + déc.","specialites":["Rougail saucisse","Cari","Samoussas"],"nomsClients":["Payet","Hoarau","Grondin","Técher"],"latitude":-20.88,"longitude":55.45,"hemisphereSud":true},{"id":"mayotte","nom":"Mayotte","repere":"🐢","groupe":"outre-mer","affluence":0.5,"salaires":0.9,"prix":1.1,"travaux":1.45,"valeurLocal":180000,"calendrier":"Calendrier Mayotte · 27/04","meteo":"Tropical","tourisme":"Très faible","specialites":["Mataba","Brochettes-manioc"],"nomsClients":["Abdallah","Madi","Soilihi"],"latitude":-12.78,"longitude":45.23,"hemisphereSud":true},{"id":"polynesie","nom":"Polynésie française","repere":"🌊","groupe":"outre-mer","affluence":0.7,"salaires":1.1,"prix":1.35,"travaux":1.5,"valeurLocal":500000,"calendrier":"Calendrier Polynésie · 29/06 autonomie","meteo":"Tropical, saisons inversées","tourisme":"Fort (lunes de miel), pic juil.-août","specialites":["Poisson cru au lait de coco","Firi firi"],"nomsClients":["Teriitehau","Tetuanui","Bambridge"],"latitude":-17.55,"longitude":-149.56,"hemisphereSud":true},{"id":"caledonie","nom":"Nouvelle-Calédonie","repere":"🦎","groupe":"outre-mer","affluence":0.65,"salaires":1.08,"prix":1.3,"travaux":1.45,"valeurLocal":450000,"calendrier":"Calendrier NC · 24/09","meteo":"Tropical tempéré, inversé","tourisme":"Moyen","specialites":["Bougna","Cerf en civet"],"nomsClients":["Wamytan","Gope","Tjibaou"],"latitude":-22.27,"longitude":166.45,"hemisphereSud":true},{"id":"londres","nom":"Londres","repere":"🇬🇧","groupe":"monde","affluence":1.4,"salaires":1.3,"prix":1.3,"travaux":1.4,"valeurLocal":2200000,"calendrier":"Royaume-Uni · bank holidays","meteo":"Océanique gris","tourisme":"Toute l'année","specialites":["Fish & chips","Sunday roast","Scones"],"nomsClients":["Smith","Jones","Taylor","Brown"],"latitude":51.51,"longitude":-0.13,"hemisphereSud":false},{"id":"berlin","nom":"Berlin","repere":"🇩🇪","groupe":"monde","affluence":1.15,"salaires":1.05,"prix":1,"travaux":1.05,"valeurLocal":900000,"calendrier":"Allemagne · 3/10 Unité","meteo":"Continental froid","tourisme":"Été + Noël","specialites":["Currywurst","Eisbein","Bretzel"],"nomsClients":["Müller","Schmidt","Fischer"],"latitude":52.52,"longitude":13.4,"hemisphereSud":false},{"id":"madrid","nom":"Madrid","repere":"🇪🇸","groupe":"monde","affluence":1.15,"salaires":0.85,"prix":0.95,"travaux":0.95,"valeurLocal":800000,"calendrier":"Espagne · 12/10 Hispanité","meteo":"Chaud et sec","tourisme":"Printemps-automne","specialites":["Cocido","Tortilla","Churros"],"nomsClients":["García","López","Martínez"],"latitude":40.42,"longitude":-3.7,"hemisphereSud":false},{"id":"rome","nom":"Rome","repere":"🇮🇹","groupe":"monde","affluence":1.25,"salaires":0.9,"prix":1,"travaux":1.05,"valeurLocal":1000000,"calendrier":"Italie · Ferragosto 15/08","meteo":"Méditerranéen","tourisme":"Très fort","specialites":["Carbonara","Supplì","Tiramisu"],"nomsClients":["Rossi","Russo","Bianchi"],"latitude":41.9,"longitude":12.5,"hemisphereSud":false},{"id":"lisbonne","nom":"Lisbonne","repere":"🇵🇹","groupe":"monde","affluence":1.1,"salaires":0.7,"prix":0.85,"travaux":0.85,"valeurLocal":600000,"calendrier":"Portugal · 13/06 St-Antoine","meteo":"Doux ensoleillé","tourisme":"Fort été","specialites":["Bacalhau à brás","Pastel de nata"],"nomsClients":["Silva","Santos","Ferreira"],"latitude":38.72,"longitude":-9.14,"hemisphereSud":false},{"id":"bruxelles","nom":"Bruxelles","repere":"🇧🇪","groupe":"monde","affluence":1.05,"salaires":1.08,"prix":1.02,"travaux":1.05,"valeurLocal":700000,"calendrier":"Belgique · 21/07","meteo":"Océanique pluvieux","tourisme":"Moyen","specialites":["Moules-frites","Gaufre","Carbonnade"],"nomsClients":["Peeters","Janssens","Maes"],"latitude":50.85,"longitude":4.35,"hemisphereSud":false},{"id":"amsterdam","nom":"Amsterdam","repere":"🇳🇱","groupe":"monde","affluence":1.2,"salaires":1.12,"prix":1.1,"travaux":1.15,"valeurLocal":1100000,"calendrier":"Pays-Bas · 27/04 Koningsdag","meteo":"Océanique venteux","tourisme":"Fort printemps (tulipes)","specialites":["Bitterballen","Stamppot","Stroopwafel"],"nomsClients":["De Jong","Jansen","Visser"],"latitude":52.37,"longitude":4.9,"hemisphereSud":false},{"id":"vienne","nom":"Vienne","repere":"🇦🇹","groupe":"monde","affluence":1.05,"salaires":1.05,"prix":1.05,"travaux":1.05,"valeurLocal":800000,"calendrier":"Autriche","meteo":"Continental","tourisme":"Noël + été","specialites":["Wiener Schnitzel","Sachertorte"],"nomsClients":["Gruber","Huber","Wagner"],"latitude":48.21,"longitude":16.37,"hemisphereSud":false},{"id":"athenes","nom":"Athènes","repere":"🇬🇷","groupe":"monde","affluence":1,"salaires":0.65,"prix":0.85,"travaux":0.85,"valeurLocal":450000,"calendrier":"Grèce · Pâques orthodoxe","meteo":"Chaud et sec","tourisme":"Très fort été","specialites":["Moussaka","Souvlaki","Baklava"],"nomsClients":["Papadopoulos","Nikolaou"],"latitude":37.98,"longitude":23.73,"hemisphereSud":false},{"id":"moscou","nom":"Moscou","repere":"🇷🇺","groupe":"monde","affluence":1.05,"salaires":0.7,"prix":0.95,"travaux":0.95,"valeurLocal":700000,"calendrier":"Russie · Noël 7/01","meteo":"Continental très froid","tourisme":"Faible hiver","specialites":["Bortsch","Blinis","Pelmeni"],"nomsClients":["Ivanov","Petrov","Smirnov"],"latitude":55.75,"longitude":37.62,"hemisphereSud":false},{"id":"new-york","nom":"New York","repere":"🇺🇸","groupe":"monde","affluence":1.5,"salaires":1.35,"prix":1.4,"travaux":1.45,"valeurLocal":2500000,"calendrier":"États-Unis · Thanksgiving, 4/07","meteo":"Continental contrasté","tourisme":"Toute l'année","specialites":["Burger","Cheesecake","Bagel"],"nomsClients":["Johnson","Williams","Miller"],"latitude":40.71,"longitude":-74,"hemisphereSud":false},{"id":"washington","nom":"Washington","repere":"🇺🇸","groupe":"monde","affluence":1.1,"salaires":1.25,"prix":1.25,"travaux":1.3,"valeurLocal":1400000,"calendrier":"États-Unis","meteo":"Humide","tourisme":"Printemps (cerisiers)","specialites":["Crab cakes","Half-smoke"],"nomsClients":["Davis","Wilson","Anderson"],"latitude":38.91,"longitude":-77.04,"hemisphereSud":false},{"id":"ottawa","nom":"Ottawa","repere":"🇨🇦","groupe":"monde","affluence":0.85,"salaires":1.1,"prix":1.1,"travaux":1.15,"valeurLocal":700000,"calendrier":"Canada · 1/07","meteo":"Hiver très froid","tourisme":"Faible","specialites":["Poutine","Queues de castor"],"nomsClients":["Tremblay","Gagnon","Roy"],"latitude":45.42,"longitude":-75.7,"hemisphereSud":false},{"id":"mexico","nom":"Mexico","repere":"🇲🇽","groupe":"monde","affluence":1.2,"salaires":0.45,"prix":0.7,"travaux":0.75,"valeurLocal":500000,"calendrier":"Mexique · 16/09, Día de Muertos","meteo":"Tempéré d'altitude","tourisme":"Moyen","specialites":["Tacos al pastor","Mole","Churros"],"nomsClients":["Hernández","González","Pérez"],"latitude":19.43,"longitude":-99.13,"hemisphereSud":false},{"id":"buenos-aires","nom":"Buenos Aires","repere":"🇦🇷","groupe":"monde","affluence":1.1,"salaires":0.5,"prix":0.75,"travaux":0.8,"valeurLocal":450000,"calendrier":"Argentine · saisons inversées","meteo":"Tempéré, inversé","tourisme":"Moyen","specialites":["Asado","Empanadas","Dulce de leche"],"nomsClients":["Fernández","Rodríguez","Gómez"],"latitude":-34.6,"longitude":-58.38,"hemisphereSud":true},{"id":"brasilia","nom":"Brasilia","repere":"🇧🇷","groupe":"monde","affluence":0.7,"salaires":0.5,"prix":0.75,"travaux":0.8,"valeurLocal":350000,"calendrier":"Brésil · Carnaval","meteo":"Tropical","tourisme":"Faible","specialites":["Feijoada","Pão de queijo"],"nomsClients":["Silva","Souza","Oliveira"],"latitude":-15.79,"longitude":-47.88,"hemisphereSud":true},{"id":"caire","nom":"Le Caire","repere":"🇪🇬","groupe":"monde","affluence":1.1,"salaires":0.35,"prix":0.6,"travaux":0.65,"valeurLocal":250000,"calendrier":"Égypte · Ramadan/Aïd","meteo":"Désertique","tourisme":"Hiver","specialites":["Koshari","Ful medames"],"nomsClients":["Mohamed","Hassan","Ibrahim"],"latitude":30.04,"longitude":31.24,"hemisphereSud":false},{"id":"dakar","nom":"Dakar","repere":"🇸🇳","groupe":"monde","affluence":0.85,"salaires":0.35,"prix":0.6,"travaux":0.7,"valeurLocal":220000,"calendrier":"Sénégal · Tabaski","meteo":"Tropical sec","tourisme":"Hiver","specialites":["Thiéboudienne","Yassa","Mafé"],"nomsClients":["Diop","Ndiaye","Fall","Sow"],"latitude":14.69,"longitude":-17.45,"hemisphereSud":false},{"id":"tokyo","nom":"Tokyo","repere":"🇯🇵","groupe":"monde","affluence":1.45,"salaires":1.1,"prix":1.25,"travaux":1.35,"valeurLocal":2000000,"calendrier":"Japon · Golden Week","meteo":"Tempéré humide","tourisme":"Printemps (sakura)","specialites":["Ramen","Tonkatsu","Mochi"],"nomsClients":["Sato","Suzuki","Takahashi"],"latitude":35.68,"longitude":139.69,"hemisphereSud":false},{"id":"pekin","nom":"Pékin","repere":"🇨🇳","groupe":"monde","affluence":1.3,"salaires":0.6,"prix":0.8,"travaux":0.85,"valeurLocal":900000,"calendrier":"Chine · Nouvel An lunaire","meteo":"Continental sec","tourisme":"Moyen","specialites":["Canard laqué","Jiaozi"],"nomsClients":["Wang","Li","Zhang"],"latitude":39.9,"longitude":116.4,"hemisphereSud":false},{"id":"seoul","nom":"Séoul","repere":"🇰🇷","groupe":"monde","affluence":1.25,"salaires":0.9,"prix":1.05,"travaux":1.05,"valeurLocal":1100000,"calendrier":"Corée · Chuseok","meteo":"Continental","tourisme":"Moyen","specialites":["Bibimbap","Bulgogi","Kimchi"],"nomsClients":["Kim","Lee","Park"],"latitude":37.57,"longitude":126.98,"hemisphereSud":false},{"id":"bangkok","nom":"Bangkok","repere":"🇹🇭","groupe":"monde","affluence":1.25,"salaires":0.4,"prix":0.65,"travaux":0.7,"valeurLocal":400000,"calendrier":"Thaïlande · Songkran","meteo":"Tropical","tourisme":"Fort nov.-mars","specialites":["Pad thaï","Tom yum","Mango sticky rice"],"nomsClients":["Saetang","Srisuk","Wongsa"],"latitude":13.76,"longitude":100.5,"hemisphereSud":false},{"id":"canberra","nom":"Canberra","repere":"🇦🇺","groupe":"monde","affluence":0.6,"salaires":1.2,"prix":1.2,"travaux":1.25,"valeurLocal":600000,"calendrier":"Australie · inversé","meteo":"Tempéré, inversé","tourisme":"Faible","specialites":["Meat pie","Pavlova"],"nomsClients":["Smith","Nguyen","Walker"],"latitude":-35.28,"longitude":149.13,"hemisphereSud":true}]},"salle":{"_explication":"Plan de la salle de départ, dessiné en largeur (unités du dessin : 1000 de large sur 430 de haut).","dessin":{"largeur":1000,"hauteur":450},"allee":220,"entree":{"x":22,"y":220},"dehors":{"x":-40,"y":220},"file":{"x":52,"y":306,"ecart":40},"passe":{"x":812,"y":220},"cuisine":{"x":856,"y":18,"largeur":132,"hauteur":414},"tables":[{"id":1,"x":165,"y":112,"places":2},{"id":2,"x":305,"y":112,"places":4},{"id":3,"x":445,"y":112,"places":4},{"id":4,"x":585,"y":112,"places":2},{"id":5,"x":725,"y":112,"places":4},{"id":6,"x":165,"y":328,"places":4},{"id":7,"x":305,"y":328,"places":2},{"id":8,"x":445,"y":328,"places":4},{"id":9,"x":585,"y":328,"places":4},{"id":10,"x":725,"y":328,"places":2}],"rallonges":[[2,3],[8,9]]},"clients":{"_explication":"Règles de l'étape 1 : arrivée des clients et durées. Les durées sont en minutes de jeu.","journee":{"ouverture":690,"fermeture":1350,"finForcee":1439},"affluence":[{"de":705,"a":720,"groupesParHeure":3},{"de":720,"a":810,"groupesParHeure":5},{"de":810,"a":855,"groupesParHeure":4},{"de":855,"a":1110,"groupesParHeure":1},{"de":1110,"a":1155,"groupesParHeure":3},{"de":1155,"a":1260,"groupesParHeure":5},{"de":1260,"a":1305,"groupesParHeure":3}],"annonces":[{"minute":705,"texte":"msg_premiers_clients"},{"minute":720,"texte":"msg_service_midi"},{"minute":855,"texte":"msg_apres_midi"},{"minute":1140,"texte":"msg_service_soir"},{"minute":1305,"texte":"msg_plus_d_arrivees"}],"types":[{"id":"solo","taille":[1,1],"poids":12,"repas":[20,30],"couleur":"#4f7fe0"},{"id":"couple","taille":[2,2],"poids":26,"repas":[30,45],"couleur":"#e0567f"},{"id":"amis","taille":[2,4],"poids":20,"repas":[35,50],"couleur":"#e8902a"},{"id":"famille","taille":[3,6],"poids":14,"repas":[40,55],"couleur":"#2f9e5c"},{"id":"affaires","taille":[2,4],"poids":14,"repas":[25,35],"couleur":"#7b55c9"},{"id":"touristes","taille":[2,4],"poids":14,"repas":[35,50],"couleur":"#1597a8"}],"durees":{"lireCarte":[4,7],"prendreCommande":1.5,"cuisine":[12,18],"prendrePlatPasse":0.3,"poserPlat":0.5,"addition":1.5,"debarrasserParTable":1,"patienceFile":[12,20]},"vitesses":{"clients":170,"serveurs":260},"alertes":{"attenteOrange":8,"attenteRouge":15}},"equipe":{"_explication":"Équipe : postes, grille officielle des salaires, candidats. Salaires en euros bruts de l'heure.","sourceSalaires":"Convention collective HCR (IDCC 1979), avenant n° 36 du 4 juin 2026, minima horaires bruts en vigueur depuis le 1er novembre 2026 (Légifrance, vérifié le 24 novembre 2026).","grilleHCR":{"I":[12.31,12.37,12.47],"II":[12.58,12.8,13.43],"III":[13.59,13.81,14.28],"IV":[14.69,15.07,15.71],"V":[18.8,22.22,28.68]},"heuresParMois39h":170.73,"echelonSelonExperience":[{"jusqua":2,"echelon":1},{"jusqua":7,"echelon":2},{"jusqua":99,"echelon":3}],"postes":{"serv":{"nom":"Serveur","nomF":"Serveuse","service":"salle","niveauHCR":"II","niveauJeu":[3,8],"recrutable":true},"csalle":{"nom":"Commis de salle","nomF":"Commis de salle","service":"salle","niveauHCR":"I","niveauJeu":[2,6],"recrutable":true},"commis":{"nom":"Commis de cuisine","nomF":"Commis de cuisine","service":"cuisine","niveauHCR":"II","niveauJeu":[3,7],"recrutable":true},"chef":{"nom":"Chef de cuisine","nomF":"Cheffe de cuisine","service":"cuisine","niveauHCR":"IV","niveauJeu":[5,9],"recrutable":true},"resp":{"nom":"Responsable de salle","nomF":"Responsable de salle","service":"salle","niveauHCR":"III"},"second":{"nom":"Second de cuisine","nomF":"Seconde de cuisine","service":"cuisine","niveauHCR":"III"},"aide":{"nom":"Aide de cuisine","nomF":"Aide de cuisine","service":"cuisine","niveauHCR":"I"},"appr":{"nom":"Apprenti cuisine","nomF":"Apprentie cuisine","service":"cuisine","niveauHCR":"I","partDuMinimum":0.53},"barman":{"nom":"Barman","nomF":"Barmaid","service":"autre","niveauHCR":"II"},"plong":{"nom":"Plongeur","nomF":"Plongeuse","service":"autre","niveauHCR":"I"},"nett":{"nom":"Agent de nettoyage","nomF":"Agente de nettoyage","service":"autre","niveauHCR":"I"}},"candidatsDepart":["serv","serv","serv","csalle","commis","commis","chef","chef"],"nouveauxCandidatsParJour":{"min":1,"max":2,"plafond":6},"refusAvantDepart":2,"commandesParCuisinier":2,"patron":{"nom":"Patron","vitesse":5,"qualite":5,"amabilite":6},"personnalites":[{"id":"serieux","adj":"sérieux","adjF":"sérieuse","souplesse":0.02,"exigence":0.06},{"id":"souriant","adj":"souriant","adjF":"souriante","souplesse":0.05,"exigence":0.04},{"id":"ambitieux","adj":"ambitieux","adjF":"ambitieuse","souplesse":0,"exigence":0.16},{"id":"discret","adj":"discret","adjF":"discrète","souplesse":0.04,"exigence":0.03},{"id":"stresse","adj":"stressé","adjF":"stressée","souplesse":0.06,"exigence":0.02},{"id":"blagueur","adj":"blagueur","adjF":"blagueuse","souplesse":0.03,"exigence":0.07},{"id":"pose","adj":"posé","adjF":"posée","souplesse":0.05,"exigence":0.05}],"prenoms":[["Louise","f"],["Hugo","m"],["Camille","f"],["Lucas","m"],["Manon","f"],["Nathan","m"],["Inès","f"],["Karim","m"],["Chloé","f"],["Théo","m"],["Sarah","f"],["Mehdi","m"],["Julie","f"],["Antoine","m"],["Yasmine","f"],["Romain","m"],["Zoé","f"],["Malik","m"],["Emma","f"],["Bastien","m"],["Laura","f"],["Kevin","m"],["Aïcha","f"],["Julien","m"],["Clara","f"],["Samuel","m"],["Nadia","f"],["Maxime","m"],["Lina","f"],["Thomas","m"]],"noms":["Martin","Bernard","Petit","Durand","Leroy","Moreau","Simon","Laurent","Garcia","Roux","Fournier","Girard","Bonnet","Dupont","Lambert","Fontaine","Rousseau","Vincent","Muller","Faure","Mercier","Blanc","Guérin","Boyer","Chevalier","Benali","Diallo","Nguyen"],"prenomsFemininsAncienJeu":["Léa","Manon","Chloé","Inès","Sarah","Emma","Clara","Louise","Zoé","Jade","Alice","Yasmine","Margaux"]},"regles":{"_explication":"Réglages généraux. Une minute de jeu passe en une seconde à la vitesse 1×.","minutesParSeconde":1,"vitesses":[0,1,2,4],"difficultes":{"facile":{"capitalDepart":600000,"noteDepart":3}},"sauvegarde":{"toutesLesMinutesDeJeu":5}},"textes":{"_explication":"Tous les textes affichés au joueur. Les mots entre accolades {comme_ceci} sont remplacés par le jeu.","jeu_nom":"Bistrot","jeu_sous_titre":"Ton restaurant, en direct","canal_test":"Version de test","canal_officiel":"","btn_pause":"Pause","btn_1x":"1×","btn_2x":"2×","btn_4x":"4×","btn_journal":"Journal","btn_menu":"Menu","btn_fermer":"Fermer","aria_vitesse":"Vitesse du jeu","barre_jour_heure":"Jour {jour} · {heure}","barre_en_pause":"en pause","accueil_continuer":"Continuer : {nom} · {lieu} · jour {jour}","accueil_nouvelle":"Nouvelle partie","accueil_ancien":"Reprendre une partie de l’ancien jeu","accueil_retour":"Retour","nouvelle_titre":"Nouvelle partie","nouvelle_nom":"Nom de ton restaurant","nouvelle_nom_defaut":"Chez YaYa","nouvelle_lieu":"Où ouvres-tu ?","nouvelle_groupe_france":"France","nouvelle_groupe_outre-mer":"Outre-mer","nouvelle_groupe_monde":"Capitales du monde","nouvelle_difficulte":"Difficulté : Facile (tu es propriétaire, avec {capital} de départ).","nouvelle_ouvrir":"Ouvrir le restaurant","nouvelle_remplace":"Ta partie en cours ({nom}, jour {jour}) sera remplacée. Continuer ?","ancien_titre":"Reprendre une partie de l’ancien jeu","ancien_rassure":"Ton ancienne partie n’est ni effacée ni modifiée : Bistrot en fait seulement une copie.","ancien_contenu":"Pour l’instant, Bistrot reprend le nom, le lieu, le jour, l’argent et la note. La carte, les stocks et l’équipe seront repris aux prochaines étapes.","ancien_aucune":"Aucune partie de l’ancien jeu n’a été trouvée sur ce téléphone.","ancien_ligne":"{nom} · {lieu} · jour {jour} · {argent}","ancien_emplacement":"Emplacement {n}","ancien_derniere":"Dernière partie jouée","ancien_reprendre":"Reprendre","ancien_illisible":"Cette sauvegarde est illisible, elle est ignorée.","detail_aucune":"Touche une table pour voir ce qui s’y passe.","detail_en_salle":"En salle : {n} clients","detail_file":"À la porte : {n} groupes","detail_servis":"Servis aujourd’hui : {n}","detail_repartis":"Partis sans table : {n}","detail_table":"Table {num}","detail_libre":"Libre · {places} places","detail_a_debarrasser":"À débarrasser","detail_groupe":"{taille} · {groupe}","detail_attend":"attend depuis {min} min","detail_depuis":"depuis {min} min","pers_1":"1 pers.","pers_n":"{n} pers.","groupe_solo":"{nom}, client seul","groupe_couple":"couple {nom}","groupe_amis":"amis de {nom}","groupe_famille":"famille {nom}","groupe_affaires":"repas d’affaires de {nom}","groupe_touristes":"touristes ({nom})","etat_court_marche":"arrive","etat_court_carte":"carte","etat_court_commande":"commande","etat_court_cuisine":"cuisine","etat_court_pret":"plat prêt","etat_court_mange":"mange","etat_court_addition":"addition","etat_court_sale":"à nettoyer","etat_long_marche":"s’installe","etat_long_carte":"lit la carte","etat_long_commande":"veut commander","etat_long_cuisine":"plat en cuisine","etat_long_pret":"plat prêt à servir","etat_long_mange":"mange","etat_long_addition":"demande l’addition","salle_entree":"Entrée","salle_cuisine":"Cuisine","salle_passe":"Passe","salle_file":"File : {n}","serveur_libre":"{nom} : libre","msg_bienvenue":"Bienvenue {chez} ! Ouverture des portes à {heure}.","msg_reprise":"Partie reprise : {nom}, jour {jour}.","msg_import":"Ancienne partie reprise : {nom}, jour {jour}. L’ancien jeu n’a pas été modifié.","msg_premiers_clients":"Les portes sont ouvertes, les premiers clients arrivent.","msg_service_midi":"Le service du midi commence.","msg_apres_midi":"Le rush du midi est passé, la salle se calme.","msg_service_soir":"Le service du soir commence.","msg_plus_d_arrivees":"Plus de nouveaux clients ce soir, on finit le service.","msg_grand_groupe":"Un groupe de {taille} arrive : {groupe}.","msg_installe_rallonge":"Tables {num} rapprochées pour le groupe de {taille}.","msg_repart":"Pas de table libre : {taille} pers. sont reparties.","msg_fin_service":"Le dernier client est parti. Fin de la journée.","msg_fin_forcee":"Il est tard : les derniers clients sont partis.","msg_plus":"+{n} messages","journal_titre":"Journal","journal_vide":"Rien pour l’instant.","journal_ligne":"Jour {jour} · {heure}","menu_titre":"Menu","menu_reglages":"Réglages","menu_pause_auto":"Pause automatique quand un volet est ouvert","menu_oui":"Oui","menu_non":"Non","menu_partie":"Partie","menu_accueil":"Retour à l’écran d’accueil","menu_version":"Bistrot {version} · {canal}","menu_sauve":"Sauvegarde automatique : dernière à {heure}.","menu_origine":"Partie reprise de l’ancien jeu (sauvegarde n°{v}).","fin_titre":"Fin du jour {jour}","fin_servis":"clients servis","fin_repartis":"repartis faute de place","fin_attente":"min d’attente moyenne avant la commande","fin_suivant":"Commencer le jour {jour}","portrait_titre":"Tourne ton téléphone","portrait_texte":"Bistrot se joue en mode paysage. La partie est en pause.","erreur_sauvegarde_recente":"Cette sauvegarde vient d’une version plus récente de Bistrot. Mets le jeu à jour pour la relire.","erreur_sauvegarde_illisible":"La sauvegarde n’a pas pu être relue. Elle est gardée de côté, rien n’est effacé.","erreur_stockage":"Impossible d’enregistrer la partie sur ce téléphone (mémoire pleine ou navigation privée).","btn_equipe":"Équipe","barre_ferme":"fermé","equipe_titre":"Équipe","equipe_avant_ouverture":"Avant d’ouvrir, recrute ton équipe. Il faut au moins une personne en salle et une en cuisine (le patron compte pour l’une des deux).","equipe_manque_salle":"Il manque quelqu’un en salle pour servir.","equipe_manque_cuisine":"Il manque quelqu’un en cuisine pour préparer les plats.","equipe_ouvrir":"Ouvrir le restaurant","equipe_ton_equipe":"Ton équipe","equipe_candidats":"Candidats","equipe_aucun_candidat":"Plus de candidat pour aujourd’hui. De nouveaux candidats se présentent chaque matin.","equipe_cout":"Salaires de l’équipe : environ {mois} brut par mois (39 h par semaine).","equipe_cout_info":"Les salaires seront payés à partir de l’étape « Argent ».","equipe_service_salle":"en salle","equipe_service_cuisine":"en cuisine","equipe_service_autre":"rôle à venir","equipe_patron_ligne":"Toi, le patron · {service}","equipe_patron_vers_salle":"Passer en salle","equipe_patron_vers_cuisine":"Passer en cuisine","equipe_patron_bloque":"Le patron ne peut pas quitter son poste : il serait seul à le tenir.","equipe_membre_ligne":"{poste} · {service} · note {note}/10 · {salaire}/h","equipe_candidat_ligne":"{poste} · {age} ans · {experience}","equipe_candidat_perso":"Plutôt {adj}","equipe_entretien":"Entretien","equipe_experience_0":"débutant","equipe_experience_0F":"débutante","equipe_experience_n":"{n} ans d’expérience","equipe_experience_1":"1 an d’expérience","entretien_titre":"Entretien avec {nom}","entretien_fiche":"{poste} · {age} ans · {experience} · plutôt {adj}","entretien_vitesse":"Vitesse","entretien_amabilite":"Sens du service","entretien_qualite":"Qualité en cuisine","entretien_salaire":"Salaire souhaité","entretien_inconnu":"? (pose la question)","entretien_note":"{n}/10","entretien_minimum":"Minimum de la grille pour ce poste : {min} brut de l’heure.","entretien_questions":"Tes questions","entretien_offre":"Ta proposition (brut de l’heure)","entretien_moins":"−10 c","entretien_plus":"+10 c","entretien_proposer":"Proposer {salaire}/h","entretien_retour":"Retour à l’équipe","entretien_par_mois":"soit environ {mois} brut par mois","entretien_accepte":"« Marché conclu ! Je commence tout de suite. »","entretien_contre":"« On s’en rapproche. J’accepterais pour {salaire} de l’heure. »","entretien_refus":"« Désolé, ça ne correspond pas à ce que je cherche. »","entretien_part":"« Je crois qu’on ne va pas s’entendre. Bonne continuation ! »","msg_embauche":"{nom} rejoint l’équipe ({poste}, {salaire}/h).","msg_candidat_parti":"{nom} a retiré sa candidature.","msg_nouveaux_candidats":"{n} nouveau(x) candidat(s) ce matin.","msg_recruter":"Le restaurant est fermé tant que l’équipe n’est pas prête : touche « Équipe ».","msg_ouverture":"Le restaurant ouvre ! Bonne journée.","msg_equipe_reprise":"{n} employés repris de l’ancien jeu.","msg_lea_partie":"Nouvelle version : tu démarres seul avec le patron. Recrute ton équipe dans « Équipe ».","q_parcours":"Parlez-moi de votre parcours.","q_rush":"Que faites-vous en plein coup de feu ?","q_qualite_salle":"Racontez-moi un client difficile.","q_qualite_cuisine":"Comment travaillez-vous vos plats ?","q_salaire":"Quel salaire souhaitez-vous ?","intro_serieux":["Alors, pour être précis : ","Je vais être honnête : ","Bien. "],"intro_souriant":["Avec plaisir ! ","Ah, bonne question ! ","Volontiers ! "],"intro_ambitieux":["Je vais être direct : ","Clairement, ","Disons-le franchement : "],"intro_discret":["Hmm… ","Eh bien… ",""],"intro_stresse":["Euh… alors… ","Pardon, je suis un peu {nerveux}… ","Oh là… bon. "],"intro_blagueur":["Attention, je vous raconte ma vie ! ","Question piège ? Allez : ","Promis, je ne mens qu’au poker : "],"intro_pose":["Laissez-moi réfléchir. ","Je dirais que ","Tranquillement : "],"r_parcours_salle_0":["Je n’ai jamais travaillé en salle, mais j’apprends vite et je suis motivé{e}.","Ce serait mon premier poste : j’ai fait quelques extras pour des mariages, c’est tout."],"r_parcours_salle_1":["J’ai {exp} ans de salle, surtout en brasserie et en saison.","{exp} ans en restaurant de quartier, je connais bien le rythme du midi."],"r_parcours_salle_2":["{exp} ans de métier, dont plusieurs dans de belles maisons. J’ai tout vu.","J’ai {exp} ans de salle derrière moi, j’ai même formé des commis."],"r_parcours_cuisine_0":["Je sors de l’école hôtelière, je n’ai pas encore d’expérience.","Pas d’expérience en restaurant, mais je cuisine depuis toujours à la maison."],"r_parcours_cuisine_1":["J’ai {exp} ans de cuisine, en brasserie et en traiteur.","{exp} ans derrière les fourneaux, surtout des plats du jour et du bistrot."],"r_parcours_cuisine_2":["{exp} ans de cuisine, dont plusieurs comme chef de partie.","J’ai {exp} ans de métier, j’ai tenu une cuisine seul{e} pendant deux ans."],"r_rush_0":["Je stresse un peu, je préfère qu’on me dise quoi faire.","J’essaie de suivre, mais je peux perdre le fil quand ça va trop vite."],"r_rush_1":["Je fais de mon mieux et je demande de l’aide si besoin.","Je garde mon rythme, je ne suis pas {le} plus rapide mais je suis réguli{ere}."],"r_rush_2":["Je garde la tête froide, je m’organise et j’aide les collègues.","C’est là que je suis {le} meilleur{e} : plus ça va vite, plus j’accélère."],"r_qualite_salle_0":["Je lui ai dit ma façon de penser… je ne regrette rien.","J’ai laissé tomber, ce n’était pas mon problème."],"r_qualite_salle_1":["J’ai appelé mon responsable, il a géré.","Je me suis excusé{e} et j’ai fait au mieux."],"r_qualite_salle_2":["Un client furieux est reparti avec un dessert offert et un grand sourire.","Je l’ai écouté, j’ai trouvé une solution, il est devenu un habitué."],"r_qualite_cuisine_0":["Je suis la recette, sans trop me poser de questions.","Je vais vite, la présentation, c’est secondaire."],"r_qualite_cuisine_1":["Je goûte tout et je respecte les fiches.","Des produits corrects, une cuisson juste, c’est déjà beaucoup."],"r_qualite_cuisine_2":["Produits frais, cuissons au cordeau, assiettes soignées : je ne transige pas.","Je travaille avec les producteurs et je goûte chaque sauce trois fois."],"r_salaire":["Je vise environ {salaire} brut de l’heure.","Autour de {salaire} de l’heure, ce serait bien.","Pour moi, c’est {salaire} brut de l’heure."],"fin_blagueur":[" Et je fais un très bon café !"," Mais je préviens : mes blagues sont gratuites.",""],"fin_ambitieux":[" Et je compte bien évoluer vite."," Je vise un poste à responsabilités.",""],"fin_stresse":[" Enfin… je crois."," Désolé{e}, je parle trop.",""],"placement_auto":"Placement : auto","placement_manuel":"Placement : moi","placement_aide":"Touche un groupe à la porte, puis une table libre.","placement_groupe_choisi":"{taille} · {groupe} : touche une table libre.","placement_trop_petite":"Table {num} : {places} places, trop petite pour {taille} pers.","placement_occupee":"Table {num} n’est pas libre.","placement_rallonge":"Pour {taille} pers., touche la table 2, 3, 8 ou 9 : on rapproche deux tables libres.","menu_placement":"Placer les clients moi-même","fin_salle_vide":"Restaurant fermé : recrute ton équipe avec le bouton « Équipe »."}};
 /* ==== src/moteur/outils.js ==== */
 /* outils.js — petites fonctions communes : hasard reproductible, textes, heures, euros. */
-B.VERSION_JEU = '0.1.0';
+B.VERSION_JEU = '0.2.0';
 
 /* Hasard reproductible : la graine est rangée dans la partie, donc une partie rechargée continue pareil. */
 B.hasard = function (S) {
@@ -303,7 +328,7 @@ B.clients.arrivee = function (S) {
     nom: noms[B.entier(S, 0, noms.length - 1)],
     etat: 'file', depuis: S.minute, arrivee: S.minute,
     patience: B.duree(S, B.DATA.clients.durees.patienceFile),
-    tables: null, x: e.x, y: e.y, chemin: [], duree: 0, serveur: null, pret: 0, aMange: false
+    tables: null, x: e.x, y: e.y, chemin: [], duree: 0, serveur: null, cuisinier: null, pret: null, aMange: false
   };
   S.groupes.push(g);
   S.stats.jour.groupes++;
@@ -316,14 +341,9 @@ B.clients.placer = function (S) {
   let enFile = 0;
   for (const g of S.groupes) {
     if (g.etat !== 'file') continue;
-    const ids = B.salle.chercher(S, g.taille);
+    const ids = S.placement === 'manuel' ? null : B.salle.chercher(S, g.taille);
     if (ids) {
-      ids.forEach(function (id) { B.salle.tableDe(S, id).groupe = g.id; });
-      g.tables = ids;
-      g.etat = 'marche';
-      g.depuis = S.minute;
-      g.chemin = B.salle.chemin(g, B.salle.centre(ids));
-      if (ids.length > 1) B.message(S, 'msg_installe_rallonge', { num: B.salle.nomTables(ids), taille: g.taille });
+      B.clients.installer(S, g, ids);
     } else if (S.minute - g.depuis > g.patience) {
       g.etat = 'repart';
       g.chemin = [{ x: B.DATA.salle.dehors.x, y: B.DATA.salle.dehors.y }];
@@ -332,6 +352,33 @@ B.clients.placer = function (S) {
     } else enFile++;
   }
   S.stats.jour.fileMax = Math.max(S.stats.jour.fileMax, enFile);
+};
+
+B.clients.installer = function (S, g, ids) {
+  ids.forEach(function (id) { B.salle.tableDe(S, id).groupe = g.id; });
+  g.tables = ids;
+  g.etat = 'marche';
+  g.depuis = S.minute;
+  g.chemin = B.salle.chemin(g, B.salle.centre(ids));
+  if (ids.length > 1) B.message(S, 'msg_installe_rallonge', { num: B.salle.nomTables(ids), taille: g.taille });
+};
+
+/* Placement par le joueur : un groupe de la file sur une table touchée. Renvoie { ok } ou { erreur, vars }. */
+B.clients.placerManuel = function (S, groupeId, tableId) {
+  const g = S.groupes.find(function (x) { return x.id === groupeId && x.etat === 'file'; });
+  const t = B.salle.tableDe(S, tableId);
+  if (!g || !t) return { erreur: 'placement_occupee', vars: { num: tableId } };
+  const libre = function (id) { const x = B.salle.tableDe(S, id); return x && !x.groupe && !x.sale; };
+  if (!libre(tableId)) return { erreur: 'placement_occupee', vars: { num: tableId } };
+  if (t.places >= g.taille) { B.clients.installer(S, g, [tableId]); return { ok: true }; }
+  const r = B.DATA.salle.rallonges.find(function (r) { return r.indexOf(tableId) >= 0; });
+  if (r) {
+    const total = r.reduce(function (s, id) { return s + B.salle.tableDe(S, id).places; }, 0);
+    if (total >= g.taille && r.every(libre)) { B.clients.installer(S, g, r.slice()); return { ok: true }; }
+    if (total >= g.taille) { const autre = r.find(function (id) { return id !== tableId; }); return { erreur: 'placement_occupee', vars: { num: autre } }; }
+  }
+  if (g.taille >= 5) return { erreur: 'placement_rallonge', vars: { taille: g.taille } };
+  return { erreur: 'placement_trop_petite', vars: { num: tableId, places: t.places, taille: g.taille } };
 };
 
 /* Le groupe quitte sa table : la table devient à débarrasser. */
@@ -356,7 +403,7 @@ B.clients.avancer = function (S, h) {
     } else if (g.etat === 'carte') {
       if (ecoule >= g.duree) { g.etat = 'commande'; g.depuis = S.minute; }
     } else if (g.etat === 'cuisine') {
-      if (S.minute >= g.pret) { g.etat = 'pret'; g.depuis = S.minute; }
+      if (g.cuisinier && g.pret != null && S.minute >= g.pret) { g.etat = 'pret'; g.depuis = S.minute; g.cuisinier = null; }
     } else if (g.etat === 'mange') {
       if (ecoule >= g.duree) { g.etat = 'addition'; g.depuis = S.minute; }
     } else if (g.etat === 'depart' || g.etat === 'repart') {
@@ -364,6 +411,239 @@ B.clients.avancer = function (S, h) {
     }
   }
   S.groupes = S.groupes.filter(function (g) { return !g.parti; });
+};
+
+/* ==== src/moteur/equipe.js ==== */
+/* equipe.js — l'équipe : le patron, les employés, les candidats, les entretiens et l'embauche.
+   Version simple : plannings, formations et contrats viendront à l'étape « Équipe ». */
+B.equipe = {};
+
+B.equipe.D = function () { return B.DATA.equipe; };
+B.equipe.poste = function (id) { return B.DATA.equipe.postes[id]; };
+B.equipe.nomPoste = function (p) {
+  const P = B.equipe.poste(p.poste);
+  if (!P) return p.poste;
+  return p.genre === 'f' ? P.nomF : P.nom;
+};
+
+/* Texte au choix dans une liste de textes.json, avec accords selon le genre. */
+B.tChoix = function (cle, n, vars, genre) {
+  let s = B.DATA.textes[cle];
+  if (s == null) { B.textesManquants[cle] = true; return ''; }
+  if (Array.isArray(s)) s = s[Math.abs(n | 0) % s.length];
+  const f = genre === 'f';
+  const accords = { e: f ? 'e' : '', ere: f ? 'ère' : 'er', le: f ? 'la' : 'le', nerveux: f ? 'nerveuse' : 'nerveux' };
+  return String(s).replace(/\{(\w+)\}/g, function (m, k) {
+    if (vars && vars[k] != null) return vars[k];
+    if (accords[k] != null) return accords[k];
+    return m;
+  });
+};
+
+/* ---------- Salaires : grille officielle HCR × coefficient du lieu ---------- */
+B.equipe.echelon = function (exp) {
+  for (const e of B.DATA.equipe.echelonSelonExperience) if (exp <= e.jusqua) return e.echelon;
+  return 3;
+};
+B.equipe.minimum = function (S, poste, exp) {
+  const P = B.equipe.poste(poste), G = B.DATA.equipe.grilleHCR;
+  let h = G[P.niveauHCR][B.equipe.echelon(exp) - 1];
+  if (P.partDuMinimum) h = G.I[0] * P.partDuMinimum;
+  return Math.round(h * Math.max(1, B.lieu(S.lieu).salaires) * 100) / 100;
+};
+B.equipe.parMois = function (horaire) { return horaire * B.DATA.equipe.heuresParMois39h; };
+B.equipe.euroHeure = function (n) { return n.toFixed(2).replace('.', ',') + '\u00A0€'; };
+
+/* ---------- Composition ---------- */
+B.equipe.salle = function (S) { return S.equipe.filter(function (p) { return p.service === 'salle'; }); };
+B.equipe.cuisine = function (S) { return S.equipe.filter(function (p) { return p.service === 'cuisine'; }); };
+B.equipe.patron = function (S) { return S.equipe.find(function (p) { return p.patron; }); };
+B.equipe.peutOuvrir = function (S) { return B.equipe.salle(S).length > 0 && B.equipe.cuisine(S).length > 0; };
+B.equipe.coutMensuel = function (S) {
+  return S.equipe.reduce(function (s, p) { return s + (p.patron ? 0 : B.equipe.parMois(p.salaire)); }, 0);
+};
+
+/* Place de repos d'une personne de salle (près de la passe) ou de cuisine (près des fourneaux). */
+B.equipe.base = function (S, p) {
+  const P = B.DATA.salle;
+  if (p.service === 'salle') {
+    const i = B.equipe.salle(S).indexOf(p);
+    return { x: P.passe.x - 12 - Math.floor(i / 2) * 36, y: i % 2 ? P.allee + 20 : P.allee - 20 };
+  }
+  const k = P.cuisine, j = Math.max(0, B.equipe.cuisine(S).indexOf(p));
+  return { x: k.x + 36 + (j % 2) * 60, y: k.y + 178 + Math.floor(j / 2) * 58 };
+};
+
+B.equipe.nouveauMembre = function (S, o) {
+  const p = {
+    id: S.prochainId++, nom: o.nom, genre: o.genre || 'm', poste: o.poste, patron: !!o.patron,
+    service: o.service || (B.equipe.poste(o.poste) ? B.equipe.poste(o.poste).service : 'salle'),
+    note: o.note, vitesse: o.vitesse, amabilite: o.amabilite, qualite: o.qualite,
+    salaire: o.salaire || 0, experience: o.experience || 0, perso: o.perso || null,
+    x: 0, y: 0, chemin: [], tache: null
+  };
+  S.equipe.push(p);
+  const b = B.equipe.base(S, p); p.x = b.x; p.y = b.y;
+  return p;
+};
+
+B.equipe.creerPatron = function (S) {
+  const d = B.DATA.equipe.patron;
+  return B.equipe.nouveauMembre(S, { nom: d.nom, poste: 'patron', patron: true, service: 'salle', note: 5, vitesse: d.vitesse, qualite: d.qualite, amabilite: d.amabilite });
+};
+
+/* Le patron change de poste (salle ↔ cuisine), sauf s'il laisserait un poste vide. */
+B.equipe.patronPeutChanger = function (S) {
+  const p = B.equipe.patron(S);
+  if (!p) return false;
+  return (p.service === 'salle' ? B.equipe.salle(S) : B.equipe.cuisine(S)).length > 1;
+};
+B.equipe.changerPatron = function (S) {
+  const p = B.equipe.patron(S);
+  if (!B.equipe.patronPeutChanger(S)) return false;
+  B.equipe.liberer(S, p);
+  p.service = p.service === 'salle' ? 'cuisine' : 'salle';
+  B.equipe.replacer(S);
+  return true;
+};
+
+/* Quand quelqu'un quitte son poste : ce qu'il faisait est repris par les autres. */
+B.equipe.liberer = function (S, p) {
+  if (p.tache) {
+    if (p.tache.groupe) { const g = S.groupes.find(function (x) { return x.id === p.tache.groupe; }); if (g) g.serveur = null; }
+    if (p.tache.table) { const t = B.salle.tableDe(S, p.tache.table); if (t) t.serveur = null; }
+  }
+  p.tache = null; p.chemin = [];
+  S.groupes.forEach(function (g) { if (g.cuisinier === p.id && g.etat === 'cuisine') { g.cuisinier = null; g.pret = null; } });
+};
+B.equipe.replacer = function (S) {
+  S.equipe.forEach(function (p) {
+    if (p.service !== 'salle') { const b = B.equipe.base(S, p); p.x = b.x; p.y = b.y; p.chemin = []; p.tache = null; }
+    else if (p.x > B.DATA.salle.cuisine.x - 20) { p.x = B.DATA.salle.passe.x; p.y = B.DATA.salle.allee; p.chemin = []; }
+  });
+};
+
+/* ---------- Candidats ---------- */
+B.equipe.candidat = function (S, poste) {
+  const D = B.DATA.equipe, P = D.postes[poste];
+  const pr = D.prenoms[B.entier(S, 0, D.prenoms.length - 1)];
+  const noms = D.noms.concat(B.lieu(S.lieu).nomsClients);
+  const note = B.entier(S, P.niveauJeu[0], P.niveauJeu[1]);
+  const age = B.entier(S, 19, 55);
+  const exp = Math.max(0, Math.min(age - 18, Math.round((note - 2) * 1.6 + B.entre(S, -2, 3))));
+  const varie = function () { return Math.max(1, Math.min(10, note + B.entier(S, -2, 2))); };
+  const perso = D.personnalites[B.entier(S, 0, D.personnalites.length - 1)];
+  const min = B.equipe.minimum(S, poste, exp);
+  const demande = Math.round(min * (1 + Math.max(0, (note - 4) * 0.03) + perso.exigence + B.entre(S, 0, 0.06)) * 10) / 10;
+  return {
+    id: S.prochainId++, nom: pr[0] + ' ' + noms[B.entier(S, 0, noms.length - 1)], genre: pr[1], poste: poste,
+    age: age, experience: exp, note: note, vitesse: varie(), amabilite: varie(), qualite: varie(),
+    perso: perso.id, minimum: min, demande: Math.max(min, demande), offre: min,
+    reponses: [], revele: {}, refus: 0, dernierMot: null, graineTexte: B.entier(S, 0, 9999)
+  };
+};
+
+B.equipe.genererDepart = function (S) {
+  S.candidats = B.DATA.equipe.candidatsDepart.map(function (p) { return B.equipe.candidat(S, p); });
+};
+
+B.equipe.nouveauxCandidats = function (S) {
+  const N = B.DATA.equipe.nouveauxCandidatsParJour;
+  let n = Math.min(B.entier(S, N.min, N.max), Math.max(0, N.plafond - S.candidats.length));
+  const postes = Object.keys(B.DATA.equipe.postes).filter(function (k) { return B.DATA.equipe.postes[k].recrutable; });
+  for (let i = 0; i < n; i++) S.candidats.push(B.equipe.candidat(S, postes[B.entier(S, 0, postes.length - 1)]));
+  if (n > 0) B.message(S, 'msg_nouveaux_candidats', { n: n });
+};
+
+B.equipe.perso = function (id) { return B.DATA.equipe.personnalites.find(function (p) { return p.id === id; }) || B.DATA.equipe.personnalites[0]; };
+B.equipe.adj = function (c) { const p = B.equipe.perso(c.perso); return c.genre === 'f' ? p.adjF : p.adj; };
+B.equipe.texteExperience = function (c) {
+  if (c.experience === 0) return B.t(c.genre === 'f' ? 'equipe_experience_0F' : 'equipe_experience_0');
+  if (c.experience === 1) return B.t('equipe_experience_1');
+  return B.t('equipe_experience_n', { n: c.experience });
+};
+
+/* ---------- Entretien ---------- */
+B.equipe.questions = function (c) {
+  const service = B.equipe.poste(c.poste).service;
+  return ['parcours', 'rush', service === 'cuisine' ? 'qualite_cuisine' : 'qualite_salle', 'salaire'];
+};
+B.equipe.niveau3 = function (v) { return v <= 3 ? 0 : v <= 6 ? 1 : 2; };
+
+B.equipe.repondre = function (S, c, q) {
+  if (c.reponses.some(function (r) { return r.q === q; })) return null;
+  const service = B.equipe.poste(c.poste).service, g = c.genre, n = c.graineTexte + c.reponses.length * 7;
+  let corps;
+  if (q === 'parcours') corps = B.tChoix('r_parcours_' + service + '_' + (c.experience === 0 ? 0 : c.experience < 5 ? 1 : 2), n, { exp: c.experience }, g);
+  else if (q === 'rush') { corps = B.tChoix('r_rush_' + B.equipe.niveau3(c.vitesse), n, null, g); c.revele.vitesse = true; }
+  else if (q === 'qualite_salle') { corps = B.tChoix('r_qualite_salle_' + B.equipe.niveau3(c.amabilite), n, null, g); c.revele.amabilite = true; }
+  else if (q === 'qualite_cuisine') { corps = B.tChoix('r_qualite_cuisine_' + B.equipe.niveau3(c.qualite), n, null, g); c.revele.qualite = true; }
+  else if (q === 'salaire') { corps = B.tChoix('r_salaire', n, { salaire: B.equipe.euroHeure(c.demande) }, g); c.revele.salaire = true; c.offre = Math.max(c.offre, c.demande); }
+  else return null;
+  const intro = B.tChoix('intro_' + c.perso, n + 1, null, g);
+  if (intro && !/[.!?…]\s*$/.test(intro)) corps = corps.charAt(0).toLowerCase() + corps.slice(1);
+  const fin = B.DATA.textes['fin_' + c.perso] ? B.tChoix('fin_' + c.perso, n + 2, null, g) : '';
+  const texte = '« ' + intro + corps + fin + ' »';
+  c.reponses.push({ q: q, texte: texte });
+  return texte;
+};
+
+/* Le joueur propose un salaire horaire. Réponse : accepte, contre-proposition ou refus. */
+B.equipe.proposer = function (S, c, offre) {
+  offre = Math.max(c.minimum, Math.round(offre * 100) / 100);
+  c.offre = offre;
+  const perso = B.equipe.perso(c.perso);
+  if (offre >= c.demande * (1 - perso.souplesse) - 0.001) {
+    const p = B.equipe.nouveauMembre(S, { nom: c.nom, genre: c.genre, poste: c.poste, note: c.note, vitesse: c.vitesse, amabilite: c.amabilite, qualite: c.qualite, salaire: offre, experience: c.experience, perso: c.perso });
+    S.candidats = S.candidats.filter(function (x) { return x.id !== c.id; });
+    B.message(S, 'msg_embauche', { nom: c.nom, poste: B.equipe.nomPoste(p), salaire: B.equipe.euroHeure(offre) });
+    c.dernierMot = B.t('entretien_accepte');
+    return { r: 'accepte', membre: p };
+  }
+  if (offre >= c.demande * 0.92) {
+    c.dernierMot = B.t('entretien_contre', { salaire: B.equipe.euroHeure(c.demande) });
+    c.revele.salaire = true;
+    return { r: 'contre' };
+  }
+  c.refus++;
+  if (c.refus >= B.DATA.equipe.refusAvantDepart) {
+    S.candidats = S.candidats.filter(function (x) { return x.id !== c.id; });
+    B.message(S, 'msg_candidat_parti', { nom: c.nom });
+    c.dernierMot = B.t('entretien_part');
+    return { r: 'part' };
+  }
+  c.dernierMot = B.t('entretien_refus');
+  return { r: 'refus' };
+};
+
+/* Facteur de vitesse d'une personne : 1 pour une vitesse de 5, plus rapide au-dessus. */
+B.equipe.facteurSalle = function (p) { return 0.8 + 0.04 * (p.vitesse || 5); };
+B.equipe.facteurCuisine = function (p) { return 1.25 - 0.05 * (p.vitesse || 5); };
+
+/* ==== src/moteur/cuisine.js ==== */
+/* cuisine.js — la cuisine prépare les commandes. Chaque personne en cuisine prépare 2 commandes à la fois.
+   S'il n'y a personne de libre, les commandes attendent leur tour (premier arrivé, premier servi). */
+B.cuisine = {};
+
+B.cuisine.avancer = function (S) {
+  const cuisiniers = B.equipe.cuisine(S);
+  if (!cuisiniers.length) return;
+  const cap = B.DATA.equipe.commandesParCuisinier;
+  const enCours = {};
+  S.groupes.forEach(function (g) { if (g.etat === 'cuisine' && g.cuisinier) enCours[g.cuisinier] = (enCours[g.cuisinier] || 0) + 1; });
+  const attente = S.groupes.filter(function (g) { return g.etat === 'cuisine' && !g.cuisinier; })
+    .sort(function (a, b) { return a.depuis - b.depuis || a.id - b.id; });
+  for (const g of attente) {
+    let choix = null;
+    for (const c of cuisiniers) {
+      const n = enCours[c.id] || 0;
+      if (n < cap && (!choix || n < (enCours[choix.id] || 0) || (n === (enCours[choix.id] || 0) && c.vitesse > choix.vitesse))) choix = c;
+    }
+    if (!choix) break;
+    enCours[choix.id] = (enCours[choix.id] || 0) + 1;
+    g.cuisinier = choix.id;
+    g.pret = S.minute + B.duree(S, B.DATA.clients.durees.cuisine) * B.equipe.facteurCuisine(choix);
+  }
 };
 
 /* ==== src/moteur/service.js ==== */
@@ -424,7 +704,7 @@ B.service.terminer = function (S, w) {
   if (tache.type === 'commande') {
     S.stats.jour.attenteCommande += S.minute - g.depuis;
     S.stats.jour.nbCommandes++;
-    g.etat = 'cuisine'; g.depuis = S.minute; g.pret = S.minute + B.duree(S, D.cuisine);
+    g.etat = 'cuisine'; g.depuis = S.minute; g.pret = null; g.cuisinier = null;
   } else if (tache.type === 'servir') {
     const type = B.clients.type(g.type);
     g.etat = 'mange'; g.depuis = S.minute; g.duree = B.duree(S, type.repas); g.aMange = true;
@@ -434,8 +714,8 @@ B.service.terminer = function (S, w) {
 };
 
 B.service.avancer = function (S, h) {
-  const v = B.DATA.clients.vitesses.serveurs;
-  S.serveurs.forEach(function (w, i) {
+  B.equipe.salle(S).forEach(function (w) {
+    const f = B.equipe.facteurSalle(w), v = B.DATA.clients.vitesses.serveurs * f;
     let reste = h;
     let garde = 0;
     while (reste > 1e-9 && garde++ < 20) {
@@ -443,7 +723,7 @@ B.service.avancer = function (S, h) {
         const t = B.service.choisir(S, w);
         if (t) B.service.preparer(S, w, t);
         else {
-          const base = B.DATA.salle.serveurs[i];
+          const base = B.equipe.base(S, w);
           if (!w.chemin.length && (Math.abs(w.x - base.x) > 1 || Math.abs(w.y - base.y) > 1)) w.chemin = B.salle.chemin(w, base);
           B.salle.bouger(w, v * reste);
           return;
@@ -457,8 +737,8 @@ B.service.avancer = function (S, h) {
         if (besoin <= reste) { reste -= besoin; w.x = e.aller.x; w.y = e.aller.y; w.chemin = []; w.tache.etapes.shift(); }
         else { B.salle.bouger(w, v * reste); reste = 0; }
       } else if (e.agir != null) {
-        if (e.agir <= reste) { reste -= e.agir; w.tache.etapes.shift(); }
-        else { e.agir -= reste; reste = 0; }
+        if (e.agir / f <= reste) { reste -= e.agir / f; w.tache.etapes.shift(); }
+        else { e.agir -= reste * f; reste = 0; }
       }
     }
   });
@@ -497,7 +777,11 @@ B.nouvellePartie = function (o) {
     prochainId: 1,
     tables: P.tables.map(function (t) { return { id: t.id, places: t.places, groupe: null, sale: false, serveur: null }; }),
     groupes: [],
-    serveurs: P.serveurs.map(function (s, i) { return { id: i + 1, nom: s.nom, x: s.x, y: s.y, chemin: [], tache: null }; }),
+    equipe: [],
+    candidats: [],
+    ouvert: false,
+    placement: 'auto',
+    equipeReprise: 0,
     stats: { jour: B.statsVides(), totalServis: 0, joursJoues: 0 },
     journal: [],
     finJour: false,
@@ -506,9 +790,24 @@ B.nouvellePartie = function (o) {
   };
 };
 
+/* Nouvelle partie complète : le patron seul, et des candidats qui attendent leur entretien. */
+B.creerPartie = function (o) {
+  const S = B.nouvellePartie(o);
+  B.equipe.creerPatron(S);
+  B.equipe.genererDepart(S);
+  return S;
+};
+
+B.ouvrir = function (S) {
+  if (S.ouvert || !B.equipe.peutOuvrir(S)) return false;
+  S.ouvert = true;
+  B.message(S, 'msg_ouverture');
+  return true;
+};
+
 /* Fait passer dt minutes de jeu, par petits pas d'un quart de minute. */
 B.avancer = function (S, dt) {
-  while (dt > 1e-9 && !S.finJour) {
+  while (dt > 1e-9 && !S.finJour && S.ouvert) {
     const h = Math.min(0.25, dt);
     dt -= h;
     B.pas(S, h);
@@ -525,6 +824,7 @@ B.pas = function (S, h) {
   if (parMinute > 0 && B.hasard(S) < parMinute * h) B.clients.arrivee(S);
   B.clients.placer(S);
   B.clients.avancer(S, h);
+  B.cuisine.avancer(S);
   B.service.avancer(S, h);
   B.finDeJournee(S);
 };
@@ -535,7 +835,7 @@ B.finDeJournee = function (S) {
     S.groupes.forEach(function (g) { if (g.aMange && g.etat !== 'depart') S.stats.jour.servis += g.taille; });
     S.groupes = [];
     S.tables.forEach(function (t) { t.groupe = null; t.sale = false; t.serveur = null; });
-    S.serveurs.forEach(function (w) { w.tache = null; w.chemin = []; });
+    S.equipe.forEach(function (w) { w.tache = null; w.chemin = []; });
     B.message(S, 'msg_fin_forcee');
   }
   const salePasFaite = S.tables.some(function (t) { return t.sale; });
@@ -561,7 +861,10 @@ B.jourSuivant = function (S) {
   S.bilan = null;
   S.groupes = [];
   S.tables.forEach(function (t) { t.groupe = null; t.sale = false; t.serveur = null; });
-  S.serveurs.forEach(function (w, i) { w.x = P.serveurs[i].x; w.y = P.serveurs[i].y; w.chemin = []; w.tache = null; });
+  S.equipe.forEach(function (w) { const b = B.equipe.base(S, w); w.x = b.x; w.y = b.y; w.chemin = []; w.tache = null; });
+  B.equipe.nouveauxCandidats(S);
+  S.ouvert = B.equipe.peutOuvrir(S);
+  void P;
 };
 
 /* Contrôle de cohérence, utilisé par le simulateur et les tests. Renvoie la liste des problèmes. */
@@ -594,10 +897,15 @@ B.verifier = function (S) {
       const places = g.tables.reduce(function (s, id) { return s + B.salle.geo(id).places; }, 0);
       if (places < g.taille) pb.push('groupe ' + g.id + ' trop nombreux pour sa table');
     }
-    if (['commande', 'pret', 'addition'].indexOf(g.etat) >= 0 && S.minute - g.depuis > 90) pb.push('groupe ' + g.id + ' oublié depuis plus de 90 min (' + g.etat + ')');
+    if (['commande', 'pret', 'addition', 'cuisine'].indexOf(g.etat) >= 0 && S.minute - g.depuis > 120) pb.push('groupe ' + g.id + ' oublié depuis plus de 90 min (' + g.etat + ')');
   });
-  S.serveurs.forEach(function (w) {
+  S.equipe.forEach(function (w) {
     if (w.tache && w.tache.groupe && !S.groupes.find(function (g) { return g.id === w.tache.groupe; })) pb.push('serveur ' + w.nom + ' sert un groupe disparu');
+    if (w.service === 'salle' && w.salaire < 0) pb.push('salaire négatif');
+  });
+  if (S.equipe.filter(function (p) { return p.patron; }).length !== 1) pb.push('il faut exactement un patron');
+  S.groupes.forEach(function (g) {
+    if (g.cuisinier && !S.equipe.find(function (p) { return p.id === g.cuisinier && p.service === 'cuisine'; })) pb.push('groupe ' + g.id + ' attend un cuisinier absent');
   });
   if (S.argent < 0 && S.difficulte === 'facile') pb.push('argent négatif');
   return pb;
@@ -607,10 +915,26 @@ B.verifier = function (S) {
 /* sauvegarde.js — enregistrer et relire une partie. Chaque sauvegarde porte un numéro de version.
    Quand le format change, on ajoute une étape dans B.MIGRATIONS (de la version n à n+1) :
    ainsi chaque nouvelle version du jeu sait relire toutes les anciennes. */
-B.VERSION_SAUVEGARDE = 1;
+B.VERSION_SAUVEGARDE = 2;
 
 B.MIGRATIONS = {
-  /* Exemple pour plus tard :  1: function (S) { S.nouveauChamp = 0; S.version = 2; return S; } */
+  /* v1 → v2 (Bistrot 0.2) : l'équipe arrive. Le patron démarre seul (Léa n'est plus là), avec des candidats.
+     La journée en cours repart au matin, car le service ne peut pas continuer sans cuisine. */
+  1: function (S) {
+    delete S.serveurs;
+    S.equipe = []; S.candidats = []; S.placement = 'auto';
+    S.groupes = [];
+    S.tables.forEach(function (t) { t.groupe = null; t.sale = false; t.serveur = null; });
+    S.minute = B.DATA.clients.journee.ouverture;
+    S.stats.jour = B.statsVides();
+    S.finJour = false; S.bilan = null;
+    B.equipe.creerPatron(S);
+    B.equipe.genererDepart(S);
+    S.ouvert = false;
+    B.message(S, 'msg_lea_partie');
+    S.version = 2;
+    return S;
+  }
 };
 
 B.serialiser = function (S) { return JSON.stringify(S); };
@@ -671,15 +995,47 @@ B.ancien.resumer = function (o) {
 B.ancien.convertir = function (o, infos) {
   const r = B.ancien.resumer(o);
   const S = B.nouvellePartie({ nom: r.nom, lieu: r.lieu, graine: infos && infos.graine, date: infos && infos.date });
+  B.equipe.creerPatron(S);
+  const n = B.ancien.reprendreEquipe(S, o);
+  const patron = B.equipe.patron(S);
+  if (!B.equipe.salle(S).filter(function (p) { return !p.patron; }).length) patron.service = 'salle';
+  else if (!B.equipe.cuisine(S).length) patron.service = 'cuisine';
+  B.equipe.replacer(S);
+  B.equipe.genererDepart(S);
+  S.ouvert = B.equipe.peutOuvrir(S);
+  S.equipeReprise = n;
   S.jour = Math.max(1, r.jour);
   S.argent = r.argent;
   S.note = Math.max(0, Math.min(5, r.note));
   S.origine = {
     jeu: 'Chez YaYa', versionSauvegarde: r.versionSauvegarde,
     cle: infos && infos.cle || null, reprisLe: infos && infos.date || null,
-    reprisPourLinstant: ['nom', 'lieu', 'jour', 'argent', 'note']
+    reprisPourLinstant: ['nom', 'lieu', 'jour', 'argent', 'note', 'equipe']
   };
   return S;
+};
+
+/* Reprend les employés lisibles de l'ancien jeu. Salaire recalculé sur la grille HCR (poste + expérience).
+   Bar, plonge et nettoyage sont gardés dans l'équipe, leur rôle viendra plus tard. Renvoie le nombre repris. */
+B.ancien.reprendreEquipe = function (S, o) {
+  const staff = Array.isArray(o.staff) ? o.staff : [];
+  const fem = B.DATA.equipe.prenomsFemininsAncienJeu.concat(B.DATA.equipe.prenoms.filter(function (p) { return p[1] === 'f'; }).map(function (p) { return p[0]; }));
+  const borne = function (v, d) { v = Math.round(+v); return isFinite(v) ? Math.max(1, Math.min(10, v)) : d; };
+  const persos = { 'sérieux': 'serieux', 'souriant': 'souriant', 'ambitieux': 'ambitieux', 'discret': 'discret', 'stressé': 'stresse', 'blagueur': 'blagueur', 'posé': 'pose' };
+  let n = 0;
+  staff.forEach(function (s) {
+    if (!s || typeof s.name !== 'string' || !s.name.trim()) return;
+    let poste = B.DATA.equipe.postes[s.post] ? s.post : (s.role === 'cook' ? 'commis' : s.role === 'waiter' ? 'serv' : null);
+    if (!poste) return;
+    const sub = s.sub || {}, note = borne(s.skill, 5), exp = Math.max(0, Math.min(45, Math.round(+s.exp) || 0));
+    B.equipe.nouveauMembre(S, {
+      nom: s.name.trim().slice(0, 40), genre: fem.indexOf(s.name.split(' ')[0]) >= 0 ? 'f' : 'm', poste: poste,
+      note: note, vitesse: borne(sub.vit, note), amabilite: borne(sub.ami, note), qualite: borne(sub.qua, note),
+      salaire: B.equipe.minimum(S, poste, exp), experience: exp, perso: persos[s.pers] || null
+    });
+    n++;
+  });
+  return n;
 };
 
 /* Liste les anciennes parties trouvées, sans doublon (la sauvegarde principale recopie souvent un emplacement). */
@@ -738,6 +1094,8 @@ UI.initBarre = function () {
     UI.S.vitesse = +b.dataset.v;
     UI.majBarre();
   });
+  UI.$('btn-equipe').textContent = B.t('btn_equipe');
+  UI.$('btn-equipe').addEventListener('click', function () { UI.ouvrirVolet('equipe'); });
   UI.$('btn-journal').textContent = B.t('btn_journal');
   UI.$('btn-menu').textContent = B.t('btn_menu');
   UI.$('btn-journal').addEventListener('click', function () { UI.ouvrirVolet('journal'); });
@@ -750,7 +1108,8 @@ UI.majBarre = function () {
   UI.$('b-nom').textContent = S.nom;
   UI.$('b-lieu').textContent = B.lieu(S.lieu).nom;
   let h = B.t('barre_jour_heure', { jour: S.jour, heure: B.heure(S.minute) });
-  if (UI.enPause()) h += ' · ' + B.t('barre_en_pause');
+  if (!S.ouvert) h += ' · ' + B.t('barre_ferme');
+  else if (UI.enPause()) h += ' · ' + B.t('barre_en_pause');
   UI.$('b-heure').textContent = h;
   UI.$('b-argent').textContent = B.euros(S.argent);
   UI.$('vitesses').querySelectorAll('button').forEach(function (b) {
@@ -766,7 +1125,14 @@ UI.majDetail = function () {
   if (!S) return;
   let html = '';
   const sel = UI.selection && B.salle.tableDe(S, UI.selection);
-  if (sel) {
+  const gFile = UI.groupeChoisi && S.groupes.find(function (g) { return g.id === UI.groupeChoisi && g.etat === 'file'; });
+  if (!gFile) UI.groupeChoisi = null;
+  if (!S.ouvert) {
+    html += '<div class="ferme">' + UI.esc(B.t('fin_salle_vide')) + '</div>';
+  } else if (gFile) {
+    const taille = gFile.taille === 1 ? B.t('pers_1') : B.t('pers_n', { n: gFile.taille });
+    html += '<div class="choisi">' + UI.esc(B.t('placement_groupe_choisi', { taille: taille, groupe: B.t('groupe_' + gFile.type, { nom: gFile.nom }) })) + '</div>';
+  } else if (sel) {
     const g = sel.groupe && S.groupes.find(function (x) { return x.id === sel.groupe; });
     const ids = g ? g.tables : [sel.id];
     html += '<b>' + UI.esc(B.t('detail_table', { num: B.salle.nomTables(ids) })) + '</b>';
@@ -788,13 +1154,31 @@ UI.majDetail = function () {
       if (g.etat === 'file') file++;
       else if (g.etat !== 'repart' && g.etat !== 'depart') enSalle += g.taille;
     });
-    html += '<div class="aide">' + UI.esc(B.t('detail_aucune')) + '</div>';
+    const aide = S.placement === 'manuel' && S.groupes.some(function (g) { return g.etat === 'file'; }) ? 'placement_aide' : 'detail_aucune';
+    html += '<div class="aide">' + UI.esc(B.t(aide)) + '</div>';
     html += '<div>' + UI.esc(B.t('detail_en_salle', { n: enSalle })) + '</div>';
     html += '<div>' + UI.esc(B.t('detail_file', { n: file })) + '</div>';
     html += '<div>' + UI.esc(B.t('detail_servis', { n: S.stats.jour.servis })) + '</div>';
     html += '<div>' + UI.esc(B.t('detail_repartis', { n: S.stats.jour.repartis })) + '</div>';
   }
   if (el._html !== html) { el.innerHTML = html; el._html = html; }
+};
+
+UI.majPlacement = function () {
+  const b = UI.$('btn-placement'), S = UI.S;
+  if (!S) return;
+  const manuel = S.placement === 'manuel';
+  b.textContent = B.t(manuel ? 'placement_manuel' : 'placement_auto');
+  b.classList.toggle('manuel', manuel);
+  b.setAttribute('aria-pressed', manuel ? 'true' : 'false');
+};
+UI.initPlacement = function () {
+  UI.$('btn-placement').addEventListener('click', function () {
+    if (!UI.S) return;
+    UI.S.placement = UI.S.placement === 'manuel' ? 'auto' : 'manuel';
+    UI.groupeChoisi = null;
+    UI.majPlacement(); UI.majDetail(); UI.sauver();
+  });
 };
 
 UI.classeAttente = function (g) {
@@ -819,8 +1203,7 @@ UI.dessin.fond = function () {
   for (let y = k.y; y < k.y + k.hauteur; y += 33) s += '<line x1="' + k.x + '" y1="' + y + '" x2="' + (k.x + k.largeur) + '" y2="' + y + '" stroke="#cfd6d9" stroke-width="2"/>';
   s += '<rect x="' + (k.x + 30) + '" y="' + (k.y + 30) + '" width="80" height="56" rx="6" fill="#555"/>';
   s += '<circle cx="' + (k.x + 52) + '" cy="' + (k.y + 58) + '" r="13" fill="#333" stroke="#888" stroke-width="3"/><circle cx="' + (k.x + 88) + '" cy="' + (k.y + 58) + '" r="13" fill="#333" stroke="#888" stroke-width="3"/>';
-  s += '<rect x="' + (k.x + 30) + '" y="' + (k.y + k.hauteur - 90) + '" width="80" height="60" rx="6" fill="#9aa5ab"/>';
-  s += '<text x="' + (k.x + k.largeur / 2 + 6) + '" y="' + (k.y + k.hauteur / 2 + 9) + '" class="lieu-txt">' + UI.esc(B.t('salle_cuisine')) + '</text>';
+  s += '<text x="' + (k.x + k.largeur / 2) + '" y="' + (k.y + 124) + '" class="lieu-txt">' + UI.esc(B.t('salle_cuisine')) + '</text>';
   /* Passe : le comptoir où les plats sortent de la cuisine */
   s += '<rect x="' + (k.x - 16) + '" y="' + (P.allee - 87) + '" width="16" height="174" rx="4" fill="#9b9b9b"/>';
   s += '<text x="' + (k.x - 8) + '" y="' + (P.allee - 97) + '" class="petit-txt">' + UI.esc(B.t('salle_passe')) + '</text>';
@@ -851,7 +1234,7 @@ UI.dessin.yFile = function (S, rang) {
   for (const g of S.groupes) {
     if (g.etat !== 'file') continue;
     if (i === rang) return y + (Math.ceil(g.taille / 2) - 1) * 11;
-    y += Math.ceil(g.taille / 2) * 22 + 8; i++;
+    y += Math.ceil(g.taille / 2) * 22 + 22; i++;
   }
   return y;
 };
@@ -908,13 +1291,18 @@ UI.dessin.dynamique = function () {
     haut += '<text x="' + t.x + '" y="' + (t.y + 11) + '" class="num">' + t.id + '</text>';
   });
   /* Clients */
-  let rangFile = 0, nbFile = 0;
+  let rangFile = 0, nbFile = 0, touchesFile = '';
+  const manuel = S.placement === 'manuel' && S.ouvert;
   S.groupes.forEach(function (g) {
     const assis = ['carte', 'commande', 'cuisine', 'pret', 'mange', 'addition'].indexOf(g.etat) >= 0;
     if (g.etat === 'file') {
       nbFile++;
-      const yf = UI.dessin.yFile(S, rangFile);
-      if (yf + Math.ceil(g.taille / 2) * 11 <= 428) bas += UI.dessin.paquet(g, P.file.x, yf);
+      const yf = UI.dessin.yFile(S, rangFile), demi = Math.ceil(g.taille / 2) * 11;
+      if (yf + demi <= 428) {
+        if (UI.groupeChoisi === g.id) haut += '<rect x="' + (P.file.x - 30) + '" y="' + (yf - demi - 8) + '" width="60" height="' + (2 * demi + 16) + '" rx="10" fill="none" stroke="#1d6fd8" stroke-width="5"/>';
+        bas += UI.dessin.paquet(g, P.file.x, yf);
+        if (manuel) touchesFile += '<rect data-groupe="' + g.id + '" x="' + (P.file.x - 40) + '" y="' + (yf - demi - 11) + '" width="80" height="' + (2 * demi + 22) + '" fill="transparent"/>';
+      }
       rangFile++;
     } else if (assis) {
       const places = [];
@@ -937,25 +1325,48 @@ UI.dessin.dynamique = function () {
     etiq += UI.dessin.etiquette(geo.x, y, B.t('etat_court_sale'), UI.dessin.couleurs.sale);
   });
   if (nbFile) etiq += '<text x="22" y="' + (P.file.y - 30) + '" class="petit-txt gauche">' + UI.esc(B.t('salle_file', { n: nbFile })) + '</text>';
-  /* Serveurs : rond foncé avec tablier blanc, et leur prénom */
-  S.serveurs.forEach(function (w) {
+  /* Cuisine : veste blanche et toque */
+  B.equipe.cuisine(S).forEach(function (w) {
+    const x = w.x, y = w.y, occupe = S.groupes.some(function (g) { return g.cuisinier === w.id; });
+    haut += '<rect x="' + (x - 11) + '" y="' + (y - 33) + '" width="22" height="14" rx="4" fill="#fff" stroke="#555" stroke-width="2"/>';
+    haut += '<circle cx="' + x + '" cy="' + y + '" r="16" fill="' + (w.patron ? '#8e2a22' : '#ffffff') + '" stroke="' + (occupe ? '#d9811c' : '#555') + '" stroke-width="3"/>';
+  });
+  /* Salle : rond foncé avec tablier blanc (le patron en rouge foncé) */
+  B.equipe.salle(S).forEach(function (w) {
     const x = w.x.toFixed(1), y = w.y.toFixed(1);
-    haut += '<circle cx="' + x + '" cy="' + y + '" r="17" fill="#1f1f1f" stroke="#f2c14e" stroke-width="3"/>';
+    haut += '<circle cx="' + x + '" cy="' + y + '" r="17" fill="' + (w.patron ? '#8e2a22' : '#1f1f1f') + '" stroke="#f2c14e" stroke-width="3"/>';
     haut += '<rect x="' + (w.x - 7).toFixed(1) + '" y="' + (w.y - 2).toFixed(1) + '" width="14" height="14" rx="2" fill="#fff"/>';
     const e = w.tache && w.tache.etapes[0];
     if (e && e.porte === 'assiette') haut += '<circle cx="' + (w.x + 20).toFixed(1) + '" cy="' + (w.y - 14).toFixed(1) + '" r="10" fill="#fff" stroke="#bbb" stroke-width="2"/>';
     if (e && e.porte === 'addition') haut += '<rect x="' + (w.x + 12).toFixed(1) + '" y="' + (w.y - 26).toFixed(1) + '" width="14" height="20" fill="#fff" stroke="#bbb" stroke-width="2"/>';
   });
+  const tf = UI.$('touches-file');
+  if (tf._html !== touchesFile) { tf.innerHTML = touchesFile; tf._html = touchesFile; }
   const html = bas + haut + etiq;
   const dyn = UI.$('dyn');
   if (dyn._html !== html) { dyn.innerHTML = html; dyn._html = html; }
 };
 
 UI.dessin.initTouches = function () {
+  UI.$('touches-file').addEventListener('click', function (e) {
+    const r = e.target.closest('[data-groupe]');
+    if (!r || !UI.S) return;
+    const id = +r.dataset.groupe;
+    UI.groupeChoisi = UI.groupeChoisi === id ? null : id;
+    UI.selection = null;
+    UI.majDetail(); UI.dessin.dynamique();
+  });
   UI.$('touches').addEventListener('click', function (e) {
     const r = e.target.closest('[data-table]');
-    if (!r) return;
+    if (!r || !UI.S) return;
     const id = +r.dataset.table;
+    if (UI.groupeChoisi) {
+      const res = B.clients.placerManuel(UI.S, UI.groupeChoisi, id);
+      if (res.ok) UI.groupeChoisi = null;
+      else B.flux.push({ jour: UI.S.jour, minute: Math.floor(UI.S.minute), texte: B.t(res.erreur, res.vars) });
+      UI.majDetail(); UI.dessin.dynamique();
+      return;
+    }
     UI.selection = UI.selection === id ? null : id;
     UI.majDetail();
     UI.dessin.dynamique();
@@ -1002,8 +1413,12 @@ UI.voletOuvert = null;
 UI.ouvrirVolet = function (quoi) {
   UI.voletOuvert = quoi;
   const v = UI.$('volet');
-  UI.$('volet-titre').textContent = B.t(quoi === 'journal' ? 'journal_titre' : 'menu_titre');
-  UI.$('volet-corps').innerHTML = quoi === 'journal' ? UI.htmlJournal() : UI.htmlMenu();
+  v.classList.toggle('large', quoi === 'equipe');
+  if (quoi === 'equipe') { UI.candidatCourant = null; UI.rafraichirEquipe(true); }
+  else {
+    UI.$('volet-titre').textContent = B.t(quoi === 'journal' ? 'journal_titre' : 'menu_titre');
+    UI.$('volet-corps').innerHTML = quoi === 'journal' ? UI.htmlJournal() : UI.htmlMenu();
+  }
   UI.$('voile').hidden = false;
   v.hidden = false;
   requestAnimationFrame(function () { v.classList.add('ouvert'); });
@@ -1017,7 +1432,9 @@ UI.fermerVolet = function () {
   UI.$('voile').hidden = true;
   setTimeout(function () { if (!v.classList.contains('ouvert')) v.hidden = true; }, 220);
   UI.voletOuvert = null;
+  UI.candidatCourant = null;
   UI.pause('volet', false);
+  UI.majDetail();
 };
 
 UI.htmlMenu = function () {
@@ -1026,6 +1443,9 @@ UI.htmlMenu = function () {
   h += '<div class="ligne-reglage"><span>' + UI.esc(B.t('menu_pause_auto')) + '</span>' +
     '<button type="button" class="bascule' + (UI.reglages.pauseAuto ? ' on' : '') + '" data-action="pause-auto">' +
     UI.esc(B.t(UI.reglages.pauseAuto ? 'menu_oui' : 'menu_non')) + '</button></div>';
+  const manuel = S && S.placement === 'manuel';
+  h += '<div class="ligne-reglage"><span>' + UI.esc(B.t('menu_placement')) + '</span>' +
+    '<button type="button" class="bascule' + (manuel ? ' on' : '') + '" data-action="placement">' + UI.esc(B.t(manuel ? 'menu_oui' : 'menu_non')) + '</button></div>';
   h += '<h3>' + UI.esc(B.t('menu_partie')) + '</h3>';
   if (UI.derniereSauvegarde != null) h += '<p>' + UI.esc(B.t('menu_sauve', { heure: B.heure(UI.derniereSauvegarde) })) + '</p>';
   if (S && S.origine) h += '<p>' + UI.esc(B.t('menu_origine', { v: S.origine.versionSauvegarde })) + '</p>';
@@ -1046,6 +1466,11 @@ UI.initVolets = function () {
       UI.sauverReglages();
       if (!UI.reglages.pauseAuto) UI.pause('volet', false);
       UI.$('volet-corps').innerHTML = UI.htmlMenu();
+    } else if (b.dataset.action === 'placement' && UI.S) {
+      UI.S.placement = UI.S.placement === 'manuel' ? 'auto' : 'manuel';
+      UI.groupeChoisi = null;
+      UI.majPlacement(); UI.sauver();
+      UI.$('volet-corps').innerHTML = UI.htmlMenu();
     } else if (b.dataset.action === 'accueil') {
       UI.fermerVolet();
       UI.sauver();
@@ -1058,6 +1483,113 @@ UI.initVolets = function () {
   v.addEventListener('pointerdown', function (e) { x0 = e.clientX; });
   v.addEventListener('pointerup', function (e) { if (x0 != null && e.clientX - x0 > 60) UI.fermerVolet(); x0 = null; });
   v.addEventListener('pointercancel', function () { x0 = null; });
+};
+
+/* ==== src/interface/equipe.js ==== */
+/* equipe.js (écran) — volet Équipe : ton équipe, les candidats, les entretiens et l'ouverture du restaurant. */
+UI.candidatCourant = null;
+
+UI.htmlEquipe = function () {
+  const S = UI.S;
+  if (UI.candidatCourant) return UI.htmlEntretien(UI.candidatCourant);
+  let h = '';
+  if (!S.ouvert) {
+    h += '<div class="alerte-equipe">' + UI.esc(B.t('equipe_avant_ouverture'));
+    if (!B.equipe.salle(S).length) h += '<br><b>' + UI.esc(B.t('equipe_manque_salle')) + '</b>';
+    if (!B.equipe.cuisine(S).length) h += '<br><b>' + UI.esc(B.t('equipe_manque_cuisine')) + '</b>';
+    h += '</div>';
+    h += '<button type="button" class="gros principal" data-eq="ouvrir"' + (B.equipe.peutOuvrir(S) ? '' : ' disabled') + '>' + UI.esc(B.t('equipe_ouvrir')) + '</button>';
+  }
+  h += '<h3>' + UI.esc(B.t('equipe_ton_equipe')) + '</h3>';
+  S.equipe.forEach(function (p) {
+    const service = B.t('equipe_service_' + p.service);
+    if (p.patron) {
+      const peut = B.equipe.patronPeutChanger(S);
+      h += '<div class="personne"><div><div class="nom">' + UI.esc(B.t('equipe_patron_ligne', { service: service })) + '</div>' +
+        (peut ? '' : '<div class="sous">' + UI.esc(B.t('equipe_patron_bloque')) + '</div>') + '</div>' +
+        '<button type="button" class="petit-btn" data-eq="patron"' + (peut ? '' : ' disabled') + '>' +
+        UI.esc(B.t(p.service === 'salle' ? 'equipe_patron_vers_cuisine' : 'equipe_patron_vers_salle')) + '</button></div>';
+    } else {
+      h += '<div class="personne"><div><div class="nom">' + UI.esc(p.nom) + '</div><div class="sous">' +
+        UI.esc(B.t('equipe_membre_ligne', { poste: B.equipe.nomPoste(p), service: service, note: p.note, salaire: B.equipe.euroHeure(p.salaire) })) + '</div></div></div>';
+    }
+  });
+  if (S.equipe.length > 1) h += '<p>' + UI.esc(B.t('equipe_cout', { mois: B.euros(B.equipe.coutMensuel(S)) })) + ' <i>' + UI.esc(B.t('equipe_cout_info')) + '</i></p>';
+  h += '<h3>' + UI.esc(B.t('equipe_candidats')) + '</h3>';
+  if (!S.candidats.length) h += '<p>' + UI.esc(B.t('equipe_aucun_candidat')) + '</p>';
+  S.candidats.forEach(function (c) {
+    h += '<div class="personne"><div><div class="nom">' + UI.esc(c.nom) + '</div><div class="sous">' +
+      UI.esc(B.t('equipe_candidat_ligne', { poste: B.equipe.nomPoste(c), age: c.age, experience: B.equipe.texteExperience(c) })) + ' · ' +
+      UI.esc(B.t('equipe_candidat_perso', { adj: B.equipe.adj(c) })) + '</div></div>' +
+      '<button type="button" class="petit-btn principal" data-eq="entretien" data-id="' + c.id + '">' + UI.esc(B.t('equipe_entretien')) + '</button></div>';
+  });
+  return h;
+};
+
+UI.htmlEntretien = function (c) {
+  const S = UI.S, service = B.equipe.poste(c.poste).service;
+  const encore = S.candidats.some(function (x) { return x.id === c.id; });
+  const val = function (cle, v) { return c.revele[cle] ? B.t('entretien_note', { n: v }) : B.t('entretien_inconnu'); };
+  let h = '<p><b>' + UI.esc(B.t('entretien_fiche', { poste: B.equipe.nomPoste(c), age: c.age, experience: B.equipe.texteExperience(c), adj: B.equipe.adj(c) })) + '</b></p>';
+  h += '<div class="fiche"><span>' + UI.esc(B.t('entretien_vitesse')) + '</span><span>' + UI.esc(val('vitesse', c.vitesse)) + '</span>';
+  if (service === 'cuisine') h += '<span>' + UI.esc(B.t('entretien_qualite')) + '</span><span>' + UI.esc(val('qualite', c.qualite)) + '</span>';
+  else h += '<span>' + UI.esc(B.t('entretien_amabilite')) + '</span><span>' + UI.esc(val('amabilite', c.amabilite)) + '</span>';
+  h += '<span>' + UI.esc(B.t('entretien_salaire')) + '</span><span>' + UI.esc(c.revele.salaire ? B.equipe.euroHeure(c.demande) : B.t('entretien_inconnu')) + '</span></div>';
+  c.reponses.forEach(function (r) {
+    h += '<div class="reponse"><span class="q">' + UI.esc(B.t('q_' + r.q)) + '</span>' + UI.esc(r.texte) + '</div>';
+  });
+  if (encore) {
+    const reste = B.equipe.questions(c).filter(function (q) { return !c.reponses.some(function (r) { return r.q === q; }); });
+    if (reste.length) {
+      h += '<h3>' + UI.esc(B.t('entretien_questions')) + '</h3><div class="questions">';
+      reste.forEach(function (q) { h += '<button type="button" class="petit-btn" data-eq="question" data-q="' + q + '">' + UI.esc(B.t('q_' + q)) + '</button>'; });
+      h += '</div>';
+    }
+    h += '<h3>' + UI.esc(B.t('entretien_offre')) + '</h3>';
+    h += '<p class="sous">' + UI.esc(B.t('entretien_minimum', { min: B.equipe.euroHeure(c.minimum) })) + '</p>';
+    h += '<div class="offre"><button type="button" class="petit-btn" data-eq="moins"' + (c.offre <= c.minimum + 0.001 ? ' disabled' : '') + '>' + UI.esc(B.t('entretien_moins')) + '</button>' +
+      '<b>' + UI.esc(B.equipe.euroHeure(c.offre)) + '</b>' +
+      '<button type="button" class="petit-btn" data-eq="plus">' + UI.esc(B.t('entretien_plus')) + '</button>' +
+      '<button type="button" class="petit-btn principal" data-eq="proposer">' + UI.esc(B.t('entretien_proposer', { salaire: B.equipe.euroHeure(c.offre) })) + '</button></div>';
+    h += '<p class="sous">' + UI.esc(B.t('entretien_par_mois', { mois: B.euros(B.equipe.parMois(c.offre)) })) + '</p>';
+  }
+  if (c.dernierMot) h += '<p class="mot">' + UI.esc(c.dernierMot) + '</p>';
+  h += '<button type="button" class="gros" data-eq="retour">' + UI.esc(B.t('entretien_retour')) + '</button>';
+  return h;
+};
+
+UI.rafraichirEquipe = function (enHaut) {
+  if (UI.voletOuvert !== 'equipe') return;
+  UI.$('volet-titre').textContent = UI.candidatCourant ? B.t('entretien_titre', { nom: UI.candidatCourant.nom }) : B.t('equipe_titre');
+  const corps = UI.$('volet-corps'), y = corps.scrollTop;
+  corps.innerHTML = UI.htmlEquipe();
+  corps.scrollTop = enHaut ? 0 : y;
+};
+
+UI.initEquipe = function () {
+  UI.$('volet-corps').addEventListener('click', function (e) {
+    const b = e.target.closest('[data-eq]');
+    if (!b || !UI.S || b.disabled) return;
+    const S = UI.S, a = b.dataset.eq, c = UI.candidatCourant;
+    if (a === 'ouvrir') {
+      if (B.ouvrir(S)) { UI.sauver(); UI.fermerVolet(); UI.majBarre(); UI.majDetail(); }
+      return;
+    }
+    if (a === 'patron') { B.equipe.changerPatron(S); UI.sauver(); UI.rafraichirEquipe(); return; }
+    if (a === 'entretien') {
+      UI.candidatCourant = S.candidats.find(function (x) { return x.id === +b.dataset.id; }) || null;
+      if (UI.candidatCourant) UI.candidatCourant.dernierMot = null;
+      UI.rafraichirEquipe(true); return;
+    }
+    if (a === 'retour') { UI.candidatCourant = null; UI.rafraichirEquipe(true); return; }
+    if (!c) return;
+    if (a === 'question') B.equipe.repondre(S, c, b.dataset.q);
+    else if (a === 'moins') c.offre = Math.max(c.minimum, Math.round((c.offre - 0.1) * 100) / 100);
+    else if (a === 'plus') c.offre = Math.round((c.offre + 0.1) * 100) / 100;
+    else if (a === 'proposer') B.equipe.proposer(S, c, c.offre);
+    UI.sauver();
+    UI.rafraichirEquipe(a === 'proposer');
+  });
 };
 
 /* ==== src/interface/stockage.js ==== */
@@ -1176,7 +1708,9 @@ UI.demarrer = function (S, cle, vars) {
   UI.sauver();
   UI.cacherAccueil();
   UI.majDetail();
+  UI.majPlacement();
   UI.majFin();
+  if (!S.ouvert) UI.ouvrirVolet('equipe');
 };
 
 UI.initAccueil = function () {
@@ -1184,11 +1718,11 @@ UI.initAccueil = function () {
     const b = e.target.closest('[data-a]');
     if (!b) return;
     const a = b.dataset.a;
-    if (a === 'continuer') { UI.cacherAccueil(); UI.majFin(); }
+    if (a === 'continuer') { UI.cacherAccueil(); UI.majPlacement(); UI.majFin(); if (!UI.S.ouvert) UI.ouvrirVolet('equipe'); }
     else if (a === 'nouvelle' || a === 'ancien' || a === 'menu') UI.montrerAccueil(a);
     else if (a === 'ouvrir') {
       if (!UI.remplacerOk()) return;
-      const S = B.nouvellePartie({ nom: UI.$('n-nom').value || B.t('nouvelle_nom_defaut'), lieu: UI.$('n-lieu').value, date: new Date().toISOString() });
+      const S = B.creerPartie({ nom: UI.$('n-nom').value || B.t('nouvelle_nom_defaut'), lieu: UI.$('n-lieu').value, date: new Date().toISOString() });
       UI.erreurChargement = null;
       UI.demarrer(S, 'msg_bienvenue', { chez: B.chezNom(S.nom), heure: B.heure(B.DATA.clients.affluence[0].de) });
     } else if (a === 'importer') {
@@ -1197,6 +1731,7 @@ UI.initAccueil = function () {
       const S = B.ancien.convertir(JSON.parse(choix.texte), { cle: choix.cle, date: new Date().toISOString(), graine: Math.floor(Math.random() * 2147483647) });
       try { UI.ecrireCase(UI.cles().copieAncien, choix.texte); } catch (err) { /* la copie de réserve est un plus, pas une obligation */ }
       UI.erreurChargement = null;
+      if (S.equipeReprise) B.message(S, 'msg_equipe_reprise', { n: S.equipeReprise });
       UI.demarrer(S, 'msg_import', { nom: S.nom, jour: S.jour });
     }
   });
@@ -1258,6 +1793,8 @@ UI.init = function () {
   UI.dessin.initTouches();
   UI.initVolets();
   UI.initAccueil();
+  UI.initEquipe();
+  UI.initPlacement();
   UI.initPortrait();
   const r = UI.chargerPartie();
   if (r.partie) { UI.S = r.partie; B.message(UI.S, 'msg_reprise', { nom: UI.S.nom, jour: UI.S.jour }); }

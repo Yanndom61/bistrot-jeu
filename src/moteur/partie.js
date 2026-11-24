@@ -24,7 +24,11 @@ B.nouvellePartie = function (o) {
     prochainId: 1,
     tables: P.tables.map(function (t) { return { id: t.id, places: t.places, groupe: null, sale: false, serveur: null }; }),
     groupes: [],
-    serveurs: P.serveurs.map(function (s, i) { return { id: i + 1, nom: s.nom, x: s.x, y: s.y, chemin: [], tache: null }; }),
+    equipe: [],
+    candidats: [],
+    ouvert: false,
+    placement: 'auto',
+    equipeReprise: 0,
     stats: { jour: B.statsVides(), totalServis: 0, joursJoues: 0 },
     journal: [],
     finJour: false,
@@ -33,9 +37,24 @@ B.nouvellePartie = function (o) {
   };
 };
 
+/* Nouvelle partie complète : le patron seul, et des candidats qui attendent leur entretien. */
+B.creerPartie = function (o) {
+  const S = B.nouvellePartie(o);
+  B.equipe.creerPatron(S);
+  B.equipe.genererDepart(S);
+  return S;
+};
+
+B.ouvrir = function (S) {
+  if (S.ouvert || !B.equipe.peutOuvrir(S)) return false;
+  S.ouvert = true;
+  B.message(S, 'msg_ouverture');
+  return true;
+};
+
 /* Fait passer dt minutes de jeu, par petits pas d'un quart de minute. */
 B.avancer = function (S, dt) {
-  while (dt > 1e-9 && !S.finJour) {
+  while (dt > 1e-9 && !S.finJour && S.ouvert) {
     const h = Math.min(0.25, dt);
     dt -= h;
     B.pas(S, h);
@@ -52,6 +71,7 @@ B.pas = function (S, h) {
   if (parMinute > 0 && B.hasard(S) < parMinute * h) B.clients.arrivee(S);
   B.clients.placer(S);
   B.clients.avancer(S, h);
+  B.cuisine.avancer(S);
   B.service.avancer(S, h);
   B.finDeJournee(S);
 };
@@ -62,7 +82,7 @@ B.finDeJournee = function (S) {
     S.groupes.forEach(function (g) { if (g.aMange && g.etat !== 'depart') S.stats.jour.servis += g.taille; });
     S.groupes = [];
     S.tables.forEach(function (t) { t.groupe = null; t.sale = false; t.serveur = null; });
-    S.serveurs.forEach(function (w) { w.tache = null; w.chemin = []; });
+    S.equipe.forEach(function (w) { w.tache = null; w.chemin = []; });
     B.message(S, 'msg_fin_forcee');
   }
   const salePasFaite = S.tables.some(function (t) { return t.sale; });
@@ -88,7 +108,10 @@ B.jourSuivant = function (S) {
   S.bilan = null;
   S.groupes = [];
   S.tables.forEach(function (t) { t.groupe = null; t.sale = false; t.serveur = null; });
-  S.serveurs.forEach(function (w, i) { w.x = P.serveurs[i].x; w.y = P.serveurs[i].y; w.chemin = []; w.tache = null; });
+  S.equipe.forEach(function (w) { const b = B.equipe.base(S, w); w.x = b.x; w.y = b.y; w.chemin = []; w.tache = null; });
+  B.equipe.nouveauxCandidats(S);
+  S.ouvert = B.equipe.peutOuvrir(S);
+  void P;
 };
 
 /* Contrôle de cohérence, utilisé par le simulateur et les tests. Renvoie la liste des problèmes. */
@@ -121,10 +144,15 @@ B.verifier = function (S) {
       const places = g.tables.reduce(function (s, id) { return s + B.salle.geo(id).places; }, 0);
       if (places < g.taille) pb.push('groupe ' + g.id + ' trop nombreux pour sa table');
     }
-    if (['commande', 'pret', 'addition'].indexOf(g.etat) >= 0 && S.minute - g.depuis > 90) pb.push('groupe ' + g.id + ' oublié depuis plus de 90 min (' + g.etat + ')');
+    if (['commande', 'pret', 'addition', 'cuisine'].indexOf(g.etat) >= 0 && S.minute - g.depuis > 120) pb.push('groupe ' + g.id + ' oublié depuis plus de 90 min (' + g.etat + ')');
   });
-  S.serveurs.forEach(function (w) {
+  S.equipe.forEach(function (w) {
     if (w.tache && w.tache.groupe && !S.groupes.find(function (g) { return g.id === w.tache.groupe; })) pb.push('serveur ' + w.nom + ' sert un groupe disparu');
+    if (w.service === 'salle' && w.salaire < 0) pb.push('salaire négatif');
+  });
+  if (S.equipe.filter(function (p) { return p.patron; }).length !== 1) pb.push('il faut exactement un patron');
+  S.groupes.forEach(function (g) {
+    if (g.cuisinier && !S.equipe.find(function (p) { return p.id === g.cuisinier && p.service === 'cuisine'; })) pb.push('groupe ' + g.id + ' attend un cuisinier absent');
   });
   if (S.argent < 0 && S.difficulte === 'facile') pb.push('argent négatif');
   return pb;

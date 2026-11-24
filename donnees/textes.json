@@ -1,11 +1,9 @@
 {
   "_explication": "Tous les textes affichés au joueur. Les mots entre accolades {comme_ceci} sont remplacés par le jeu.",
-
   "jeu_nom": "Bistrot",
   "jeu_sous_titre": "Ton restaurant, en direct",
   "canal_test": "Version de test",
   "canal_officiel": "",
-
   "btn_pause": "Pause",
   "btn_1x": "1×",
   "btn_2x": "2×",
@@ -14,15 +12,12 @@
   "btn_menu": "Menu",
   "btn_fermer": "Fermer",
   "aria_vitesse": "Vitesse du jeu",
-
   "barre_jour_heure": "Jour {jour} · {heure}",
   "barre_en_pause": "en pause",
-
   "accueil_continuer": "Continuer : {nom} · {lieu} · jour {jour}",
   "accueil_nouvelle": "Nouvelle partie",
   "accueil_ancien": "Reprendre une partie de l’ancien jeu",
   "accueil_retour": "Retour",
-
   "nouvelle_titre": "Nouvelle partie",
   "nouvelle_nom": "Nom de ton restaurant",
   "nouvelle_nom_defaut": "Chez YaYa",
@@ -33,7 +28,6 @@
   "nouvelle_difficulte": "Difficulté : Facile (tu es propriétaire, avec {capital} de départ).",
   "nouvelle_ouvrir": "Ouvrir le restaurant",
   "nouvelle_remplace": "Ta partie en cours ({nom}, jour {jour}) sera remplacée. Continuer ?",
-
   "ancien_titre": "Reprendre une partie de l’ancien jeu",
   "ancien_rassure": "Ton ancienne partie n’est ni effacée ni modifiée : Bistrot en fait seulement une copie.",
   "ancien_contenu": "Pour l’instant, Bistrot reprend le nom, le lieu, le jour, l’argent et la note. La carte, les stocks et l’équipe seront repris aux prochaines étapes.",
@@ -43,7 +37,6 @@
   "ancien_derniere": "Dernière partie jouée",
   "ancien_reprendre": "Reprendre",
   "ancien_illisible": "Cette sauvegarde est illisible, elle est ignorée.",
-
   "detail_aucune": "Touche une table pour voir ce qui s’y passe.",
   "detail_en_salle": "En salle : {n} clients",
   "detail_file": "À la porte : {n} groupes",
@@ -55,17 +48,14 @@
   "detail_groupe": "{taille} · {groupe}",
   "detail_attend": "attend depuis {min} min",
   "detail_depuis": "depuis {min} min",
-
   "pers_1": "1 pers.",
   "pers_n": "{n} pers.",
-
   "groupe_solo": "{nom}, client seul",
   "groupe_couple": "couple {nom}",
   "groupe_amis": "amis de {nom}",
   "groupe_famille": "famille {nom}",
   "groupe_affaires": "repas d’affaires de {nom}",
   "groupe_touristes": "touristes ({nom})",
-
   "etat_court_marche": "arrive",
   "etat_court_carte": "carte",
   "etat_court_commande": "commande",
@@ -74,7 +64,6 @@
   "etat_court_mange": "mange",
   "etat_court_addition": "addition",
   "etat_court_sale": "à nettoyer",
-
   "etat_long_marche": "s’installe",
   "etat_long_carte": "lit la carte",
   "etat_long_commande": "veut commander",
@@ -82,14 +71,11 @@
   "etat_long_pret": "plat prêt à servir",
   "etat_long_mange": "mange",
   "etat_long_addition": "demande l’addition",
-
   "salle_entree": "Entrée",
   "salle_cuisine": "Cuisine",
   "salle_passe": "Passe",
   "salle_file": "File : {n}",
-
   "serveur_libre": "{nom} : libre",
-
   "msg_bienvenue": "Bienvenue {chez} ! Ouverture des portes à {heure}.",
   "msg_reprise": "Partie reprise : {nom}, jour {jour}.",
   "msg_import": "Ancienne partie reprise : {nom}, jour {jour}. L’ancien jeu n’a pas été modifié.",
@@ -104,11 +90,9 @@
   "msg_fin_service": "Le dernier client est parti. Fin de la journée.",
   "msg_fin_forcee": "Il est tard : les derniers clients sont partis.",
   "msg_plus": "+{n} messages",
-
   "journal_titre": "Journal",
   "journal_vide": "Rien pour l’instant.",
   "journal_ligne": "Jour {jour} · {heure}",
-
   "menu_titre": "Menu",
   "menu_reglages": "Réglages",
   "menu_pause_auto": "Pause automatique quand un volet est ouvert",
@@ -119,17 +103,197 @@
   "menu_version": "Bistrot {version} · {canal}",
   "menu_sauve": "Sauvegarde automatique : dernière à {heure}.",
   "menu_origine": "Partie reprise de l’ancien jeu (sauvegarde n°{v}).",
-
   "fin_titre": "Fin du jour {jour}",
   "fin_servis": "clients servis",
   "fin_repartis": "repartis faute de place",
   "fin_attente": "min d’attente moyenne avant la commande",
   "fin_suivant": "Commencer le jour {jour}",
-
   "portrait_titre": "Tourne ton téléphone",
   "portrait_texte": "Bistrot se joue en mode paysage. La partie est en pause.",
-
   "erreur_sauvegarde_recente": "Cette sauvegarde vient d’une version plus récente de Bistrot. Mets le jeu à jour pour la relire.",
   "erreur_sauvegarde_illisible": "La sauvegarde n’a pas pu être relue. Elle est gardée de côté, rien n’est effacé.",
-  "erreur_stockage": "Impossible d’enregistrer la partie sur ce téléphone (mémoire pleine ou navigation privée)."
+  "erreur_stockage": "Impossible d’enregistrer la partie sur ce téléphone (mémoire pleine ou navigation privée).",
+  "btn_equipe": "Équipe",
+  "barre_ferme": "fermé",
+  "equipe_titre": "Équipe",
+  "equipe_avant_ouverture": "Avant d’ouvrir, recrute ton équipe. Il faut au moins une personne en salle et une en cuisine (le patron compte pour l’une des deux).",
+  "equipe_manque_salle": "Il manque quelqu’un en salle pour servir.",
+  "equipe_manque_cuisine": "Il manque quelqu’un en cuisine pour préparer les plats.",
+  "equipe_ouvrir": "Ouvrir le restaurant",
+  "equipe_ton_equipe": "Ton équipe",
+  "equipe_candidats": "Candidats",
+  "equipe_aucun_candidat": "Plus de candidat pour aujourd’hui. De nouveaux candidats se présentent chaque matin.",
+  "equipe_cout": "Salaires de l’équipe : environ {mois} brut par mois (39 h par semaine).",
+  "equipe_cout_info": "Les salaires seront payés à partir de l’étape « Argent ».",
+  "equipe_service_salle": "en salle",
+  "equipe_service_cuisine": "en cuisine",
+  "equipe_service_autre": "rôle à venir",
+  "equipe_patron_ligne": "Toi, le patron · {service}",
+  "equipe_patron_vers_salle": "Passer en salle",
+  "equipe_patron_vers_cuisine": "Passer en cuisine",
+  "equipe_patron_bloque": "Le patron ne peut pas quitter son poste : il serait seul à le tenir.",
+  "equipe_membre_ligne": "{poste} · {service} · note {note}/10 · {salaire}/h",
+  "equipe_candidat_ligne": "{poste} · {age} ans · {experience}",
+  "equipe_candidat_perso": "Plutôt {adj}",
+  "equipe_entretien": "Entretien",
+  "equipe_experience_0": "débutant",
+  "equipe_experience_0F": "débutante",
+  "equipe_experience_n": "{n} ans d’expérience",
+  "equipe_experience_1": "1 an d’expérience",
+  "entretien_titre": "Entretien avec {nom}",
+  "entretien_fiche": "{poste} · {age} ans · {experience} · plutôt {adj}",
+  "entretien_vitesse": "Vitesse",
+  "entretien_amabilite": "Sens du service",
+  "entretien_qualite": "Qualité en cuisine",
+  "entretien_salaire": "Salaire souhaité",
+  "entretien_inconnu": "? (pose la question)",
+  "entretien_note": "{n}/10",
+  "entretien_minimum": "Minimum de la grille pour ce poste : {min} brut de l’heure.",
+  "entretien_questions": "Tes questions",
+  "entretien_offre": "Ta proposition (brut de l’heure)",
+  "entretien_moins": "−10 c",
+  "entretien_plus": "+10 c",
+  "entretien_proposer": "Proposer {salaire}/h",
+  "entretien_retour": "Retour à l’équipe",
+  "entretien_par_mois": "soit environ {mois} brut par mois",
+  "entretien_accepte": "« Marché conclu ! Je commence tout de suite. »",
+  "entretien_contre": "« On s’en rapproche. J’accepterais pour {salaire} de l’heure. »",
+  "entretien_refus": "« Désolé, ça ne correspond pas à ce que je cherche. »",
+  "entretien_part": "« Je crois qu’on ne va pas s’entendre. Bonne continuation ! »",
+  "msg_embauche": "{nom} rejoint l’équipe ({poste}, {salaire}/h).",
+  "msg_candidat_parti": "{nom} a retiré sa candidature.",
+  "msg_nouveaux_candidats": "{n} nouveau(x) candidat(s) ce matin.",
+  "msg_recruter": "Le restaurant est fermé tant que l’équipe n’est pas prête : touche « Équipe ».",
+  "msg_ouverture": "Le restaurant ouvre ! Bonne journée.",
+  "msg_equipe_reprise": "{n} employés repris de l’ancien jeu.",
+  "msg_lea_partie": "Nouvelle version : tu démarres seul avec le patron. Recrute ton équipe dans « Équipe ».",
+  "q_parcours": "Parlez-moi de votre parcours.",
+  "q_rush": "Que faites-vous en plein coup de feu ?",
+  "q_qualite_salle": "Racontez-moi un client difficile.",
+  "q_qualite_cuisine": "Comment travaillez-vous vos plats ?",
+  "q_salaire": "Quel salaire souhaitez-vous ?",
+  "intro_serieux": [
+    "Alors, pour être précis : ",
+    "Je vais être honnête : ",
+    "Bien. "
+  ],
+  "intro_souriant": [
+    "Avec plaisir ! ",
+    "Ah, bonne question ! ",
+    "Volontiers ! "
+  ],
+  "intro_ambitieux": [
+    "Je vais être direct : ",
+    "Clairement, ",
+    "Disons-le franchement : "
+  ],
+  "intro_discret": [
+    "Hmm… ",
+    "Eh bien… ",
+    ""
+  ],
+  "intro_stresse": [
+    "Euh… alors… ",
+    "Pardon, je suis un peu {nerveux}… ",
+    "Oh là… bon. "
+  ],
+  "intro_blagueur": [
+    "Attention, je vous raconte ma vie ! ",
+    "Question piège ? Allez : ",
+    "Promis, je ne mens qu’au poker : "
+  ],
+  "intro_pose": [
+    "Laissez-moi réfléchir. ",
+    "Je dirais que ",
+    "Tranquillement : "
+  ],
+  "r_parcours_salle_0": [
+    "Je n’ai jamais travaillé en salle, mais j’apprends vite et je suis motivé{e}.",
+    "Ce serait mon premier poste : j’ai fait quelques extras pour des mariages, c’est tout."
+  ],
+  "r_parcours_salle_1": [
+    "J’ai {exp} ans de salle, surtout en brasserie et en saison.",
+    "{exp} ans en restaurant de quartier, je connais bien le rythme du midi."
+  ],
+  "r_parcours_salle_2": [
+    "{exp} ans de métier, dont plusieurs dans de belles maisons. J’ai tout vu.",
+    "J’ai {exp} ans de salle derrière moi, j’ai même formé des commis."
+  ],
+  "r_parcours_cuisine_0": [
+    "Je sors de l’école hôtelière, je n’ai pas encore d’expérience.",
+    "Pas d’expérience en restaurant, mais je cuisine depuis toujours à la maison."
+  ],
+  "r_parcours_cuisine_1": [
+    "J’ai {exp} ans de cuisine, en brasserie et en traiteur.",
+    "{exp} ans derrière les fourneaux, surtout des plats du jour et du bistrot."
+  ],
+  "r_parcours_cuisine_2": [
+    "{exp} ans de cuisine, dont plusieurs comme chef de partie.",
+    "J’ai {exp} ans de métier, j’ai tenu une cuisine seul{e} pendant deux ans."
+  ],
+  "r_rush_0": [
+    "Je stresse un peu, je préfère qu’on me dise quoi faire.",
+    "J’essaie de suivre, mais je peux perdre le fil quand ça va trop vite."
+  ],
+  "r_rush_1": [
+    "Je fais de mon mieux et je demande de l’aide si besoin.",
+    "Je garde mon rythme, je ne suis pas {le} plus rapide mais je suis réguli{ere}."
+  ],
+  "r_rush_2": [
+    "Je garde la tête froide, je m’organise et j’aide les collègues.",
+    "C’est là que je suis {le} meilleur{e} : plus ça va vite, plus j’accélère."
+  ],
+  "r_qualite_salle_0": [
+    "Je lui ai dit ma façon de penser… je ne regrette rien.",
+    "J’ai laissé tomber, ce n’était pas mon problème."
+  ],
+  "r_qualite_salle_1": [
+    "J’ai appelé mon responsable, il a géré.",
+    "Je me suis excusé{e} et j’ai fait au mieux."
+  ],
+  "r_qualite_salle_2": [
+    "Un client furieux est reparti avec un dessert offert et un grand sourire.",
+    "Je l’ai écouté, j’ai trouvé une solution, il est devenu un habitué."
+  ],
+  "r_qualite_cuisine_0": [
+    "Je suis la recette, sans trop me poser de questions.",
+    "Je vais vite, la présentation, c’est secondaire."
+  ],
+  "r_qualite_cuisine_1": [
+    "Je goûte tout et je respecte les fiches.",
+    "Des produits corrects, une cuisson juste, c’est déjà beaucoup."
+  ],
+  "r_qualite_cuisine_2": [
+    "Produits frais, cuissons au cordeau, assiettes soignées : je ne transige pas.",
+    "Je travaille avec les producteurs et je goûte chaque sauce trois fois."
+  ],
+  "r_salaire": [
+    "Je vise environ {salaire} brut de l’heure.",
+    "Autour de {salaire} de l’heure, ce serait bien.",
+    "Pour moi, c’est {salaire} brut de l’heure."
+  ],
+  "fin_blagueur": [
+    " Et je fais un très bon café !",
+    " Mais je préviens : mes blagues sont gratuites.",
+    ""
+  ],
+  "fin_ambitieux": [
+    " Et je compte bien évoluer vite.",
+    " Je vise un poste à responsabilités.",
+    ""
+  ],
+  "fin_stresse": [
+    " Enfin… je crois.",
+    " Désolé{e}, je parle trop.",
+    ""
+  ],
+  "placement_auto": "Placement : auto",
+  "placement_manuel": "Placement : moi",
+  "placement_aide": "Touche un groupe à la porte, puis une table libre.",
+  "placement_groupe_choisi": "{taille} · {groupe} : touche une table libre.",
+  "placement_trop_petite": "Table {num} : {places} places, trop petite pour {taille} pers.",
+  "placement_occupee": "Table {num} n’est pas libre.",
+  "placement_rallonge": "Pour {taille} pers., touche la table 2, 3, 8 ou 9 : on rapproche deux tables libres.",
+  "menu_placement": "Placer les clients moi-même",
+  "fin_salle_vide": "Restaurant fermé : recrute ton équipe avec le bouton « Équipe »."
 }

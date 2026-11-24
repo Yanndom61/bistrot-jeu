@@ -32,6 +32,8 @@ UI.initBarre = function () {
     UI.S.vitesse = +b.dataset.v;
     UI.majBarre();
   });
+  UI.$('btn-equipe').textContent = B.t('btn_equipe');
+  UI.$('btn-equipe').addEventListener('click', function () { UI.ouvrirVolet('equipe'); });
   UI.$('btn-journal').textContent = B.t('btn_journal');
   UI.$('btn-menu').textContent = B.t('btn_menu');
   UI.$('btn-journal').addEventListener('click', function () { UI.ouvrirVolet('journal'); });
@@ -44,7 +46,8 @@ UI.majBarre = function () {
   UI.$('b-nom').textContent = S.nom;
   UI.$('b-lieu').textContent = B.lieu(S.lieu).nom;
   let h = B.t('barre_jour_heure', { jour: S.jour, heure: B.heure(S.minute) });
-  if (UI.enPause()) h += ' · ' + B.t('barre_en_pause');
+  if (!S.ouvert) h += ' · ' + B.t('barre_ferme');
+  else if (UI.enPause()) h += ' · ' + B.t('barre_en_pause');
   UI.$('b-heure').textContent = h;
   UI.$('b-argent').textContent = B.euros(S.argent);
   UI.$('vitesses').querySelectorAll('button').forEach(function (b) {
@@ -60,7 +63,14 @@ UI.majDetail = function () {
   if (!S) return;
   let html = '';
   const sel = UI.selection && B.salle.tableDe(S, UI.selection);
-  if (sel) {
+  const gFile = UI.groupeChoisi && S.groupes.find(function (g) { return g.id === UI.groupeChoisi && g.etat === 'file'; });
+  if (!gFile) UI.groupeChoisi = null;
+  if (!S.ouvert) {
+    html += '<div class="ferme">' + UI.esc(B.t('fin_salle_vide')) + '</div>';
+  } else if (gFile) {
+    const taille = gFile.taille === 1 ? B.t('pers_1') : B.t('pers_n', { n: gFile.taille });
+    html += '<div class="choisi">' + UI.esc(B.t('placement_groupe_choisi', { taille: taille, groupe: B.t('groupe_' + gFile.type, { nom: gFile.nom }) })) + '</div>';
+  } else if (sel) {
     const g = sel.groupe && S.groupes.find(function (x) { return x.id === sel.groupe; });
     const ids = g ? g.tables : [sel.id];
     html += '<b>' + UI.esc(B.t('detail_table', { num: B.salle.nomTables(ids) })) + '</b>';
@@ -82,13 +92,31 @@ UI.majDetail = function () {
       if (g.etat === 'file') file++;
       else if (g.etat !== 'repart' && g.etat !== 'depart') enSalle += g.taille;
     });
-    html += '<div class="aide">' + UI.esc(B.t('detail_aucune')) + '</div>';
+    const aide = S.placement === 'manuel' && S.groupes.some(function (g) { return g.etat === 'file'; }) ? 'placement_aide' : 'detail_aucune';
+    html += '<div class="aide">' + UI.esc(B.t(aide)) + '</div>';
     html += '<div>' + UI.esc(B.t('detail_en_salle', { n: enSalle })) + '</div>';
     html += '<div>' + UI.esc(B.t('detail_file', { n: file })) + '</div>';
     html += '<div>' + UI.esc(B.t('detail_servis', { n: S.stats.jour.servis })) + '</div>';
     html += '<div>' + UI.esc(B.t('detail_repartis', { n: S.stats.jour.repartis })) + '</div>';
   }
   if (el._html !== html) { el.innerHTML = html; el._html = html; }
+};
+
+UI.majPlacement = function () {
+  const b = UI.$('btn-placement'), S = UI.S;
+  if (!S) return;
+  const manuel = S.placement === 'manuel';
+  b.textContent = B.t(manuel ? 'placement_manuel' : 'placement_auto');
+  b.classList.toggle('manuel', manuel);
+  b.setAttribute('aria-pressed', manuel ? 'true' : 'false');
+};
+UI.initPlacement = function () {
+  UI.$('btn-placement').addEventListener('click', function () {
+    if (!UI.S) return;
+    UI.S.placement = UI.S.placement === 'manuel' ? 'auto' : 'manuel';
+    UI.groupeChoisi = null;
+    UI.majPlacement(); UI.majDetail(); UI.sauver();
+  });
 };
 
 UI.classeAttente = function (g) {
