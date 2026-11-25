@@ -469,38 +469,38 @@ Tailles de référence testées (en pixels « CSS », téléphone en paysage) :
 - Ces chiffres sont mesurés automatiquement par `outils/tester.py` à chaque version.
 - Installé sur l'écran d'accueil, le jeu s'ouvre **en plein écran et en paysage**.
 
-## 10. Équilibre mesuré (simulateur, 30 jours, v0.8)
+## 10. Équilibre mesuré (simulateur, 30 jours, v0.8.1)
 
-Joueur moyen : patron en salle + 1 serveur + 1 commis de cuisine, prix conseillés, **commande automatique** et **intérim automatique** activés (ils le sont d'office en Facile ; en Normal et Difficile, il faut activer ces options ou s'en occuper soi-même), partie commencée le 25 novembre (météo, calendrier et événements compris depuis la v0.8 : il dit oui aux menus de fête, propose le prix conseillé aux événements privés et répond un événement du jour sur deux). Les jours de repos du commis, un commis intérimaire est appelé ; ceux du serveur, le patron sert seul. Pas d'agent de nettoyage.
+Joueur moyen : patron en salle + 1 serveur + 1 commis de cuisine, prix conseillés, **commande automatique** et **intérim automatique** activés (ils le sont d'office en Facile ; en Normal et Difficile, il faut activer ces options ou s'en occuper soi-même), partie commencée le 25 novembre (météo, calendrier et événements compris depuis la v0.8 : il dit oui aux menus de fête, propose le prix conseillé aux événements privés et répond un événement du jour sur deux ; depuis la v0.8.1, les 13 événements ont leur effet). Les jours de repos du commis, un commis intérimaire est appelé ; ceux du serveur, le patron sert seul. Pas d'agent de nettoyage.
 
 **Bénéfice réel par jour** (celui du bilan du soir, après tout ce qui est payé) :
 
 | Lieu | Facile | Normal | Difficile | Caisse au jour 30 (Facile / Normal / Difficile) |
 |---|---|---|---|---|
-| Mayotte | **554 €** | **383 €** | **207 €** | 616 139 € / 51 007 € / 20 726 € |
-| La Réunion | **1 594 €** | **1 293 €** | **923 €** | 647 052 € / 78 015 € / 41 938 € |
-| Bretagne | **1 094 €** | **848 €** | **592 €** | 632 228 € / 64 839 € / 32 168 € |
-| Île-de-France | **1 310 €** | **973 €** | **651 €** | 638 488 € / 68 389 € / 33 716 € |
-| Paris | **2 203 €** | **1 660 €** | **1 330 €** | 664 745 € / 88 444 € / 53 558 € |
-| Tokyo | **2 309 €** | **1 698 €** | **1 332 €** | 668 009 € / 89 671 € / 53 681 € |
-| New York | **2 790 €** | **2 034 €** | **1 702 €** | 681 814 € / 99 118 € / 64 169 € |
+| Mayotte | **516 €** | **343 €** | **218 €** | 615 000 € / 49 812 € / 21 053 € |
+| La Réunion | **1 658 €** | **1 351 €** | **1 006 €** | 648 960 € / 79 772 € / 44 410 € |
+| Bretagne | **1 069 €** | **824 €** | **551 €** | 631 465 € / 64 131 € / 30 934 € |
+| Île-de-France | **1 397 €** | **1 049 €** | **683 €** | 641 090 € / 70 649 € / 34 694 € |
+| Paris | **2 148 €** | **1 610 €** | **1 251 €** | 663 071 € / 86 947 € / 51 181 € |
+| Tokyo | **2 267 €** | **1 659 €** | **1 348 €** | 666 743 € / 88 500 € / 54 170 € |
+| New York | **2 853 €** | **2 081 €** | **1 610 €** | 683 695 € / 100 548 € / 61 403 € |
 
-**Facile, les 44 lieux** (bénéfice réel par jour, 30 jours, v0.8) : tous bénéficiaires. Les plus serrés : Mayotte 554 €, Guyane 596 €, Brasilia 651 €, Dakar 725 €, Canberra 860 €, Centre 861 € ; les plus forts : New York 2 790 €, Londres 2 498 €, Tokyo 2 309 €, Paris 2 203 €. Détail lieu par lieu dans `tests/resultat-simulation-30-jours.txt`.
+**Facile, les 44 lieux** (bénéfice réel par jour, 30 jours, v0.8.1) : tous bénéficiaires. Les plus serrés : Mayotte 516 €, Brasilia 635 €, Guyane 685 €, Dakar 751 €, Hauts-de-France 919 €, Canberra 924 € ; les plus forts : New York 2 853 €, Londres 2 558 €, Tokyo 2 267 €, Paris 2 148 €. Détail lieu par lieu dans `tests/resultat-simulation-30-jours.txt`.
 
-- **Facile : un joueur moyen reste bénéficiaire partout** (contrôle automatique). Paris, par jour : recettes 3 263 €, produits 729 €, salaires 198 € + intérim 45 €, charges 87 €.
-- **Normal : plus serré** (≈ 25 à 30 % de moins), mais encore bénéficiaire partout. Paris, en plus : loyer 197 €, cotisations 50 €, TVA 297 € par jour.
+- **Facile : un joueur moyen reste bénéficiaire partout** (contrôle automatique). Paris, par jour : recettes 3 198 €, produits 704 €, salaires 198 € + intérim 45 €, charges 87 €.
+- **Normal : plus serré** (≈ 25 à 30 % de moins), mais encore bénéficiaire partout. Paris, en plus : loyer 197 €, cotisations 50 €, TVA 291 €, événements (écran, amendes, réparations…) 16 € par jour.
 - **Difficile : encore plus serré** (≈ 35 à 60 % de moins que Facile) : 20 % de clients en moins, prêt (≈ 50 € par jour) et seulement 15 000 € en caisse au départ. **Les erreurs coûtent cher** (Difficile, 30 jours, par jour) :
 
 | Erreur | Paris | Mayotte |
 |---|---|---|
-| Aucune (joueur moyen) | 1 330 € | 207 € |
-| Prix de toute la carte 50 % trop hauts | 501 € | **−81 €** |
-| Oublier de commander les produits | **−403 €** | **−330 €** |
-| Embaucher tout le monde (16 employés) | **−166 €** | **−1 044 €**, faillite le jour 21 |
+| Aucune (joueur moyen) | 1 251 € | 218 € |
+| Prix de toute la carte 50 % trop hauts | 398 € | **−51 €** |
+| Oublier de commander les produits | **−384 €** | **−328 €** |
+| Embaucher tout le monde (16 employés) | **−183 €** | **−1 036 €**, faillite le jour 20 |
 
 - Ce que le simulateur ne sait pas faire : un « très bon joueur ». Avec le moteur actuel, un 2e serveur ne fait pas gagner plus (la cuisine limite) ; la marge vient surtout d'une équipe à la bonne taille, de bons prix et de commandes régulières.
-- **Équipe complète en Facile** (Paris, on embauche chaque candidat qui a une place) : 16/16 au bout de 20 jours ; 93 servis par jour, salaires ≈ 1 460 € par jour, **bénéfice réel ≈ 987 € par jour** (moins que le joueur moyen : une grosse équipe coûte cher).
-- **Autres contrôles automatiques** : les salaires, l'intérim, le loyer et le prêt du soir sont exacts ; indemnités (0 € en période d'essai, 3 jours de salaire après, loi après 8 mois) ; faillite seulement après 7 soirs sous zéro avec une alerte chaque soir, partie relue avec la faillite ; le compteur repart à zéro quand la caisse remonte ; achats refusés au-delà du découvert ; bilan de la semaine = somme des 7 bilans du jour ; sauvegarde 0.6 reprise en plein service, en Facile ; *(v0.8)* 44 lieux contrôlés sur 2 ans (météo, fériés, vacances, touristes, affluence sans valeur absurde), samedi plus fort que lundi, saisons inversées au sud, 14 juillet férié à Paris et 22 mai en Martinique, plus de plats frais vendus les jours chauds (Provence : 35 % contre 13 % les jours froids), menus de fête et événements privés menés jusqu'au bout, sauvegarde 0.7 reprise en plein service.
+- **Équipe complète en Facile** (Paris, on embauche chaque candidat qui a une place) : 16/16 au bout de 20 jours ; 95 servis par jour, salaires ≈ 1 440 € par jour, **bénéfice réel ≈ 1 104 € par jour** (moins que le joueur moyen : une grosse équipe coûte cher).
+- **Autres contrôles automatiques** : les salaires, l'intérim, le loyer et le prêt du soir sont exacts ; indemnités (0 € en période d'essai, 3 jours de salaire après, loi après 8 mois) ; faillite seulement après 7 soirs sous zéro avec une alerte chaque soir, partie relue avec la faillite ; le compteur repart à zéro quand la caisse remonte ; achats refusés au-delà du découvert ; bilan de la semaine = somme des 7 bilans du jour ; sauvegarde 0.6 reprise en plein service, en Facile ; *(v0.8)* 44 lieux contrôlés sur 2 ans (météo, fériés, vacances, touristes, affluence sans valeur absurde), samedi plus fort que lundi, saisons inversées au sud, 14 juillet férié à Paris et 22 mai en Martinique, plus de plats frais vendus les jours chauds (Provence : 38 % contre 14 % les jours froids), menus de fête et événements privés menés jusqu'au bout, sauvegarde 0.7 reprise en plein service ; *(v0.8.1)* chacun des 9 nouveaux événements déclenché avec chaque réponse et son effet vérifié (inspection, critique, panne, grève, influenceuse, augmentation et démission, promo, flambée, malade).
 - **Effets mesurés** (Paris, 8 jours) : serveur aimable (9) ≈ 102 € de pourboires par jour contre ≈ 32 € (2) ; sommelier : 862 → 948 boissons ; propreté après 20 jours sans agent 36/100, avec un agent 100/100 ; chef ou second : +1 en qualité ; plongeur : cuisine × 1,15 → × 1,07 ; barman : 9 s → 2 s par boisson.
 - Les recettes ont augmenté depuis la v0.4 (boissons et menu du jour) ; les achats font 20 à 29 % des recettes.
 - **Menu du jour modifié** (contrôle automatique) : un plat faisable est accepté, un plat sans ingrédients est refusé avec la liste de ce qui manque, « pas de dessert » donne la formule entrée + plat, le plat est obligatoire, le choix tient dans la sauvegarde, et le lendemain un nouveau menu est proposé automatiquement.
