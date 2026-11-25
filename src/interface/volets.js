@@ -5,8 +5,14 @@ UI.voletOuvert = null;
 UI.ouvrirVolet = function (quoi) {
   UI.voletOuvert = quoi;
   const v = UI.$('volet');
-  v.classList.toggle('large', quoi === 'equipe');
+  v.classList.toggle('large', quoi === 'equipe' || quoi === 'carte');
   if (quoi === 'equipe') { UI.candidatCourant = null; UI.renvoiCourant = null; UI.renvoiRefus = null; UI.rafraichirEquipe(true); }
+  else if (quoi === 'carte') { UI.platCourant = null; UI.carteRefus = null; UI.rafraichirCarte(true); }
+  else if (quoi === 'ticket') {
+    const g = UI.S.groupes.find(function (x) { return x.id === UI.ticketGroupe; });
+    UI.$('volet-titre').textContent = B.t('ticket_titre');
+    UI.$('volet-corps').innerHTML = g ? UI.htmlTicket(g) : '';
+  }
   else {
     UI.$('volet-titre').textContent = B.t(quoi === 'journal' ? 'journal_titre' : 'menu_titre');
     UI.$('volet-corps').innerHTML = quoi === 'journal' ? UI.htmlJournal() : UI.htmlMenu();
@@ -27,6 +33,9 @@ UI.fermerVolet = function () {
   UI.candidatCourant = null;
   UI.renvoiCourant = null;
   UI.renvoiRefus = null;
+  UI.platCourant = null;
+  UI.carteRefus = null;
+  UI.ticketGroupe = null;
   UI.pause('volet', false);
   UI.majDetail();
 };

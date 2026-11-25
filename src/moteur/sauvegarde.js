@@ -1,7 +1,7 @@
 /* sauvegarde.js — enregistrer et relire une partie. Chaque sauvegarde porte un numéro de version.
    Quand le format change, on ajoute une étape dans B.MIGRATIONS (de la version n à n+1) :
    ainsi chaque nouvelle version du jeu sait relire toutes les anciennes. */
-B.VERSION_SAUVEGARDE = 3;
+B.VERSION_SAUVEGARDE = 4;
 
 B.MIGRATIONS = {
   /* v1 → v2 (Bistrot 0.2) : l'équipe arrive. Le patron démarre seul (Léa n'est plus là), avec des candidats.
@@ -35,6 +35,22 @@ B.MIGRATIONS = {
       S.ouvert = S.ouvert && B.equipe.peutOuvrir(S);
     }
     S.version = 3;
+    return S;
+  },
+  /* v3 → v4 (Bistrot 0.4) : la carte, les prix et le paiement arrivent. Carte de départ du lieu ;
+     les clients déjà attablés reçoivent leur commande (sans erreur de cuisson) et paieront à la fin. */
+  3: function (S) {
+    B.carte.creer(S);
+    S.cagnotte = 0; S.tickets = [];
+    const v = B.statsVides();
+    for (const k in v) if (S.stats.jour[k] == null) S.stats.jour[k] = v[k];
+    S.groupes.forEach(function (g) {
+      if (['cuisine', 'pret', 'mange', 'addition'].indexOf(g.etat) >= 0 && !g.commande) {
+        B.carte.commander(S, g);
+        g.commande.forEach(function (l) { if (l.cuisson) l.servie = l.cuisson; });
+      }
+    });
+    S.version = 4;
     return S;
   }
 };

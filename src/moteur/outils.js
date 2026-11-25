@@ -1,5 +1,5 @@
 /* outils.js — petites fonctions communes : hasard reproductible, textes, heures, euros. */
-B.VERSION_JEU = '0.3.0';
+B.VERSION_JEU = '0.4.0';
 
 /* Hasard reproductible : la graine est rangée dans la partie, donc une partie rechargée continue pareil. */
 B.hasard = function (S) {
@@ -33,6 +33,12 @@ B.euros = function (n) {
   return (r < 0 ? '-' : '') + s + '\u00A0€';
 };
 
+/* Prix au centime : « 19,50 € ». */
+B.prix = function (n) {
+  const r = Math.round(n * 100) / 100, e = Math.floor(Math.abs(r)), c = Math.round((Math.abs(r) - e) * 100);
+  return (r < 0 ? '-' : '') + String(e).replace(/\B(?=(\d{3})+(?!\d))/g, '\u202F') + ',' + String(c).padStart(2, '0') + '\u00A0€';
+};
+
 /* « Bienvenue chez YaYa », « Bienvenue au Petit Zinc », « Bienvenue à la Brasserie »… */
 B.chezNom = function (nom) {
   const n = String(nom || '').trim();
@@ -51,6 +57,11 @@ B.lieu = function (id) {
 
 /* Messages : rangés dans le journal de la partie, et transmis à l'écran (B.flux). */
 B.flux = [];
+/* Note dans le journal seulement (sans bulle à l'écran), pour les événements fréquents comme les paiements. */
+B.noter = function (S, cle, vars) {
+  S.journal.push({ jour: S.jour, minute: Math.floor(S.minute), texte: B.t(cle, vars) });
+  if (S.journal.length > 300) S.journal.splice(0, S.journal.length - 300);
+};
 B.message = function (S, cle, vars) {
   const m = { jour: S.jour, minute: Math.floor(S.minute), texte: B.t(cle, vars) };
   S.journal.push(m);

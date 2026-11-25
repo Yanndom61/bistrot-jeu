@@ -1,5 +1,12 @@
 # Changements
 
+## v0.4 — étape 2 : la carte, les prix et le paiement (lien TEST)
+- Nouveau bouton **Carte** : 20 classiques du bistrot + les spécialités de chaque lieu (616 sur 44 lieux), reprises de l'ancien jeu → REGLES §4b.
+- Prix réglables (− / + 50 c), prix conseillé, coût matière estimé et marge ; fiche de chaque plat avec allergènes (14), origine de la viande, fait maison, cuissons.
+- Les clients choisissent selon le prix et leurs goûts, demandent une cuisson ; une cuisson ratée (selon la qualité du cuisinier) est renvoyée et refaite.
+- Les tables paient à la fin : **l'argent monte avec les recettes**. Ticket de chaque table, pourboires selon le pays (zéro à Tokyo) dans la cagnotte de l'équipe, bilan du jour enrichi.
+- Sauvegarde format 4 : les parties 0.3 continuent ; la carte des parties de l'ancien jeu est reprise.
+
 ## v0.3 — effectif de 16, intérim, renvoi (lien TEST)
 - Effectif de Chez YaYa : 16 employés (salle 8, cuisine 6, nettoyage 2), patron en plus ; « Poste complet » quand une place est prise → REGLES §4.
 - Nouveaux postes à recruter : responsable de salle, second et aide de cuisine.

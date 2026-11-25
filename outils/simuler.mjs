@@ -30,11 +30,12 @@ function recruter(S, postes) {
 }
 
 function jouer(S, etiquette, jours, afficher) {
-  const cumul = { arrives: 0, servis: 0, repartis: 0, attente: 0 };
+  const cumul = { arrives: 0, servis: 0, repartis: 0, attente: 0, recettes: 0, couverts: 0, tickets: 0, pourboires: 0, coutMatiere: 0, renvois: 0, jours: 0 };
   for (let j = 1; j <= jours; j++) {
     if (!S.ouvert) B.ouvrir(S);
     if (!S.ouvert) { probleme(etiquette + ' : impossible d’ouvrir'); return cumul; }
     let pas = 0;
+    const argent0 = S.argent;
     while (!S.finJour && pas < 4000) {
       B.avancer(S, 0.5);
       pas++;
@@ -47,10 +48,13 @@ function jouer(S, etiquette, jours, afficher) {
     }
     if (!S.finJour) probleme(`${etiquette} jour ${j} : la journée ne se termine pas`);
     const st = S.stats.jour, b = S.bilan || {};
-    if (afficher) console.log(`${etiquette.padEnd(26)} ${String(j).padStart(4)} ${String(st.groupes).padStart(8)} ${String(st.arrives).padStart(8)} ${String(st.servis).padStart(7)} ${String(st.repartis).padStart(9)} ${String(st.fileMax).padStart(9)} ${String(b.attente ?? '-').padStart(9)} min  ${B.heure(S.minute)}`);
+    if (afficher) console.log(`${etiquette.padEnd(14)} ${String(j).padStart(4)} ${String(st.groupes).padStart(8)} ${String(st.arrives).padStart(8)} ${String(st.servis).padStart(7)} ${String(st.repartis).padStart(9)} ${String(b.attente ?? '-').padStart(7)} min ${B.euros(st.recettes).padStart(10)} ${B.prix(b.ticketMoyen || 0).padStart(10)} ${String(st.platsRenvoyes).padStart(7)} ${B.prix(st.pourboires).padStart(11)}  ${B.heure(S.minute)}`);
+    if (Math.abs(S.argent - argent0 - st.recettes) > 0.01) probleme(`${etiquette} jour ${j} : l’argent a bougé de ${S.argent - argent0} mais les recettes sont de ${st.recettes}`);
+    if (st.couverts !== st.servis) probleme(`${etiquette} jour ${j} : ${st.servis} servis mais ${st.couverts} couverts payés`);
     if (st.servis + st.repartis !== st.arrives) probleme(`${etiquette} jour ${j} : ${st.arrives} arrivés mais ${st.servis} servis + ${st.repartis} repartis`);
     for (const pb of B.verifier(S)) probleme(`${etiquette} jour ${j} fin : ${pb}`);
     cumul.arrives += st.arrives; cumul.servis += st.servis; cumul.repartis += st.repartis; cumul.attente += b.attente || 0;
+    cumul.recettes += st.recettes; cumul.couverts += st.couverts; cumul.tickets += st.tickets; cumul.pourboires += st.pourboires; cumul.coutMatiere += st.coutMatiere; cumul.renvois += st.platsRenvoyes; cumul.jours++;
     B.jourSuivant(S);
   }
   return cumul;
@@ -58,13 +62,21 @@ function jouer(S, etiquette, jours, afficher) {
 
 console.log(`Simulation : ${jours} jours × ${lieux.length} lieux (difficulté Facile)\n`);
 console.log('Équipe : patron en salle + 1 serveur + 1 commis de cuisine');
-console.log('lieu                       jour  groupes  arrivés  servis  repartis  file max  attente cmd  fin');
+console.log('lieu           jour  groupes  arrivés  servis  repartis  attente     recettes  ticket moy. renvois  pourboires  fin');
+const resumeLieux = [];
 for (const lieu of lieux) {
   if (!B.DATA.lieux.lieux.find((l) => l.id === lieu)) { probleme('lieu inconnu ' + lieu); continue; }
   const S = B.creerPartie({ nom: 'Test', lieu, graine: 12345 + lieu.length * 7919 + lieu.charCodeAt(0) });
   if (B.ouvrir(S)) probleme('le restaurant ne devrait pas ouvrir sans cuisinier');
   recruter(S, ['serv', 'commis']);
-  jouer(S, lieu, jours, true);
+  const c = jouer(S, lieu, jours, true);
+  resumeLieux.push([lieu, c]);
+  if (B.DATA.catalogue.pourboires[lieu] && !B.DATA.catalogue.pourboires[lieu][0] && c.pourboires > 0) probleme(lieu + ' : des pourboires alors que l’usage du lieu est zéro');
+}
+console.log('\nMoyenne par jour : lieu · clients servis · recettes · ticket moyen par table · coût matière estimé · plats renvoyés · pourboires (cagnotte)');
+for (const [lieu, c] of resumeLieux) {
+  const n = c.jours || 1;
+  console.log(`  ${lieu.padEnd(12)} ${String(Math.round(c.servis / n)).padStart(4)} servis  ${B.euros(c.recettes / n).padStart(9)}  ${B.prix(c.recettes / Math.max(1, c.tickets)).padStart(9)}  coût ${String(Math.round(c.coutMatiere / Math.max(1, c.recettes) * 100)).padStart(2)} %  ${(c.renvois / n).toFixed(1).padStart(4)} renvois  ${B.prix(c.pourboires / n).padStart(9)}`);
 }
 
 // Comparaison de différentes équipes à Paris (moyennes par jour).
@@ -211,12 +223,66 @@ for (const [nom, postes] of equipes) {
   if (!r.partie) probleme('sauvegarde 0.2 illisible : ' + r.erreur);
   else {
     const T = r.partie;
-    if (T.version !== 3 || !T.dejaOuvert || T.interimAuto !== true || T.equipe.some((p) => p.nom === 'Intérimaire')) probleme('sauvegarde 0.2 mal convertie');
+    if (T.version !== 4 || !T.dejaOuvert || T.interimAuto !== true || T.equipe.some((p) => p.nom === 'Intérimaire')) probleme('sauvegarde 0.2 mal convertie');
     B.verifier(T).forEach((pb) => probleme('sauvegarde 0.2 : ' + pb));
     let pas = 0; while (!T.finJour && pas++ < 4000) B.avancer(T, 0.5);
     if (!T.finJour) probleme('sauvegarde 0.2 : la journée ne se termine pas');
     console.log(`\nSauvegarde Bistrot 0.2 relue : format ${T.version}, équipe de ${T.equipe.length} (patron compris), service repris là où il était, journée terminée.`);
   }
+}
+
+// Carte et paiement : données de tous les lieux, limites, prix, cuissons.
+{
+  const ALG = new Set(B.DATA.catalogue.allergenes.map((a) => a.id)), CU = B.DATA.carte.cuissons.options;
+  let nPlats = 0;
+  for (const l of B.DATA.lieux.lieux) {
+    const S = B.creerPartie({ nom: 'Test', lieu: l.id, graine: 3 });
+    const cat = B.carte.catalogue(S);
+    nPlats += cat.length;
+    for (const c of B.carte.CATS) {
+      const n = B.carte.surCarte(S, c).length, L = B.DATA.carte.limites;
+      if (n < L.min[c] || n > L.max[c]) probleme(`carte ${l.id} : ${n} ${c} au départ`);
+    }
+    for (const d of cat) {
+      d.allergenes.forEach((a) => { if (!ALG.has(a)) probleme(`${l.id} ${d.nom} : allergène inconnu ${a}`); });
+      if (d.cuisson && !CU[d.cuisson]) probleme(`${l.id} ${d.nom} : cuisson inconnue`);
+      const pc = B.carte.prixConseille(S, d), co = B.carte.cout(S, d);
+      if (!(pc > 0) || !(co > 0) || co >= pc) probleme(`${l.id} ${d.nom} : prix conseillé ${pc} / coût ${co}`);
+    }
+  }
+  console.log(`\nCarte : ${B.DATA.lieux.lieux.length} lieux, ${nPlats} plats proposés au total (spécialités + classiques), données complètes.`);
+  const S = B.creerPartie({ nom: 'Test', lieu: 'paris', graine: 4 });
+  const ent = B.carte.surCarte(S, 'entree');
+  const S2 = B.creerPartie({ nom: 'Test', lieu: 'new-york', graine: 4 });
+  const horsCarte = () => B.carte.catalogue(S2).filter((d) => d.cat === 'entree' && !S2.carte.plats[d.id].on);
+  while (B.carte.surCarte(S2, 'entree').length < 6 && horsCarte().length) B.carte.basculer(S2, horsCarte()[0].id);
+  if (!horsCarte().length || B.carte.basculer(S2, horsCarte()[0].id) !== 'carte_max_entree') probleme('carte : la limite de 6 entrées ne bloque pas');
+  while (B.carte.surCarte(S, 'dessert').length > 2) B.carte.basculer(S, B.carte.surCarte(S, 'dessert')[0]);
+  if (B.carte.basculer(S, B.carte.surCarte(S, 'dessert')[0]) !== 'carte_min_dessert') probleme('carte : le minimum de 2 desserts ne bloque pas');
+}
+// Prix : trop bas, conseillés, trop hauts (Paris, 10 jours, patron + serveur + commis).
+{
+  console.log('\nEffet des prix à Paris (10 jours, moyenne par jour) :');
+  for (const f of [0.7, 1, 1.3, 1.6]) {
+    const S = B.creerPartie({ nom: 'Test', lieu: 'paris', graine: 555 });
+    recruter(S, ['serv', 'commis']);
+    for (const id in S.carte.plats) S.carte.plats[id].prix = Math.round(B.carte.prixConseille(S, B.carte.plat(S, id)) * f * 2) / 2;
+    const c = jouer(S, 'prix ×' + f, 10, false);
+    console.log(`  prix × ${String(f).padEnd(4)} : ${String(Math.round(c.servis / 10)).padStart(3)} clients servis, recettes ${B.euros(c.recettes / 10).padStart(8)}, coût matière estimé ${B.euros(c.coutMatiere / 10).padStart(7)}, marge brute ${B.euros((c.recettes - c.coutMatiere) / 10).padStart(8)}, pourboires ${B.prix(c.pourboires / 10)}`);
+  }
+}
+// Cuissons : un cuisinier peu soigneux rate plus de cuissons, et chaque plat raté est refait.
+{
+  const res = [];
+  for (const q of [2, 9]) {
+    const S = B.creerPartie({ nom: 'Test', lieu: 'new-york', graine: 777 });
+    recruter(S, ['serv', 'commis']);
+    S.equipe.find((p) => p.poste === 'commis').qualite = q;
+    const renvois = jouer(S, 'cuisson q' + q, 10, false).renvois;
+    res.push([q, renvois]);
+  }
+  console.log(`\nCuissons ratées puis refaites (New York, 10 jours, commis seul en cuisine) : qualité 2 → ${res[0][1]} plats renvoyés, qualité 9 → ${res[1][1]} plats renvoyés.`);
+  if (!(res[0][1] > res[1][1])) probleme('cuissons : un cuisinier soigneux devrait rater moins de cuissons');
 }
 
 // Entretiens : réponses variées, accords corrects.
@@ -264,7 +330,8 @@ for (const f of fs.readdirSync(dossier).filter((x) => x.endsWith('.json')).sort(
   pb.forEach((p) => probleme(f + ' : ' + p));
   const r = B.relire(B.serialiser(S));
   if (!r.partie) probleme(f + ' : la partie convertie ne se relit pas');
-  console.log(`  ✓ ${f} → ${S.nom}, ${B.lieu(S.lieu).nom}, jour ${S.jour}, ${B.euros(S.argent)}, note ${S.note}, ${S.equipeReprise} employés repris (salle ${sal} et cuisine ${cui}, patron compris ; ${aut} en attente de rôle)`);
+  const ca = S.origine.carte || {};
+  console.log(`  ✓ ${f} → ${S.nom}, ${B.lieu(S.lieu).nom}, jour ${S.jour}, ${B.euros(S.argent)}, note ${S.note}, ${S.equipeReprise} employés repris (salle ${sal} et cuisine ${cui}, patron compris ; ${aut} en attente de rôle), carte : ${ca.lus || 0} plats relus, ${ca.ignores || 0} plats de l’ancien jeu pas encore dans Bistrot${ca.ajustes ? ', carte ajustée aux limites 6/9/6' : ''}`);
 }
 
 // Sauvegarde venant d'une version future : refusée proprement, sans plantage.

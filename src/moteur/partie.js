@@ -1,6 +1,7 @@
 /* partie.js — créer une partie, faire passer le temps, finir la journée. */
 B.statsVides = function () {
-  return { groupes: 0, arrives: 0, servis: 0, repartis: 0, fileMax: 0, attenteCommande: 0, nbCommandes: 0 };
+  return { groupes: 0, arrives: 0, servis: 0, repartis: 0, fileMax: 0, attenteCommande: 0, nbCommandes: 0,
+    recettes: 0, pourboires: 0, couverts: 0, tickets: 0, coutMatiere: 0, platsRenvoyes: 0, platsVendus: {} };
 };
 
 B.nouvellePartie = function (o) {
@@ -31,6 +32,9 @@ B.nouvellePartie = function (o) {
     dejaOuvert: false,
     interimAuto: !!B.DATA.equipe.interim.autoParDefaut.facile,
     equipeReprise: 0,
+    carte: null,
+    cagnotte: 0,
+    tickets: [],
     stats: { jour: B.statsVides(), totalServis: 0, joursJoues: 0 },
     journal: [],
     finJour: false,
@@ -44,6 +48,7 @@ B.creerPartie = function (o) {
   const S = B.nouvellePartie(o);
   B.equipe.creerPatron(S);
   B.equipe.genererDepart(S);
+  B.carte.creer(S);
   return S;
 };
 
@@ -83,7 +88,9 @@ B.pas = function (S, h) {
 B.finDeJournee = function (S) {
   const J = B.DATA.clients.journee;
   if (S.minute >= J.finForcee && S.groupes.length) {
-    S.groupes.forEach(function (g) { if (g.aMange && g.etat !== 'depart') S.stats.jour.servis += g.taille; });
+    S.groupes.forEach(function (g) {
+      if (g.aMange && g.etat !== 'depart') { S.stats.jour.servis += g.taille; B.carte.payer(S, g); }
+    });
     S.groupes = [];
     S.tables.forEach(function (t) { t.groupe = null; t.sale = false; t.serveur = null; });
     S.equipe.forEach(function (w) { w.tache = null; w.chemin = []; });
@@ -95,7 +102,11 @@ B.finDeJournee = function (S) {
     const st = S.stats.jour;
     S.bilan = {
       jour: S.jour, servis: st.servis, repartis: st.repartis,
-      attente: st.nbCommandes ? Math.round(st.attenteCommande / st.nbCommandes) : 0
+      attente: st.nbCommandes ? Math.round(st.attenteCommande / st.nbCommandes) : 0,
+      recettes: st.recettes, couverts: st.couverts, tickets: st.tickets, pourboires: st.pourboires,
+      ticketMoyen: st.tickets ? Math.round(st.recettes / st.tickets * 100) / 100 : 0,
+      coutMatiere: Math.round(st.coutMatiere * 100) / 100, platsRenvoyes: st.platsRenvoyes,
+      meilleurPlat: B.carte.meilleurPlat(S)
     };
     S.stats.totalServis += st.servis;
     S.stats.joursJoues++;
@@ -130,7 +141,8 @@ B.verifier = function (S) {
     if (o && typeof o === 'object') for (const k in o) scan(o[k], chemin + '.' + k);
   })(S, 'partie');
   const st = S.stats.jour;
-  ['groupes', 'arrives', 'servis', 'repartis', 'fileMax', 'attenteCommande', 'nbCommandes'].forEach(function (k) {
+  if (!isFinite(S.argent)) pb.push('argent impossible');
+  ['groupes', 'arrives', 'servis', 'repartis', 'fileMax', 'attenteCommande', 'nbCommandes', 'recettes', 'pourboires', 'couverts', 'coutMatiere', 'platsRenvoyes'].forEach(function (k) {
     if (st[k] < 0) pb.push('compteur négatif : ' + k);
   });
   if (st.servis + st.repartis > st.arrives) pb.push('plus de clients sortis que de clients entrés');

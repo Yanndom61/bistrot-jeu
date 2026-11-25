@@ -32,6 +32,8 @@ UI.initBarre = function () {
     UI.S.vitesse = +b.dataset.v;
     UI.majBarre();
   });
+  UI.$('btn-carte').textContent = B.t('btn_carte');
+  UI.$('btn-carte').addEventListener('click', function () { UI.ouvrirVolet('carte'); });
   UI.$('btn-equipe').textContent = B.t('btn_equipe');
   UI.$('btn-equipe').addEventListener('click', function () { UI.ouvrirVolet('equipe'); });
   UI.$('btn-journal').textContent = B.t('btn_journal');
@@ -81,6 +83,11 @@ UI.majDetail = function () {
       const min = Math.floor(S.minute - g.depuis);
       const attend = ['commande', 'pret', 'addition', 'cuisine'].indexOf(g.etat) >= 0;
       html += '<div class="' + UI.classeAttente(g) + '">' + UI.esc(B.t(attend ? 'detail_attend' : 'detail_depuis', { min: min })) + '</div>';
+      if (g.commande) {
+        const total = g.commande.reduce(function (s, l) { return s + l.prix; }, 0);
+        html += '<div>' + UI.esc(B.t('detail_addition', { total: B.prix(total), n: g.commande.length })) + '</div>';
+        html += '<button type="button" class="petit-btn btn-ticket" data-ticket="' + g.id + '">' + UI.esc(B.t('detail_ticket')) + '</button>';
+      }
     } else if (sel.sale) {
       html += '<div>' + UI.esc(B.t('detail_a_debarrasser')) + '</div>';
     } else {
@@ -98,6 +105,7 @@ UI.majDetail = function () {
     html += '<div>' + UI.esc(B.t('detail_file', { n: file })) + '</div>';
     html += '<div>' + UI.esc(B.t('detail_servis', { n: S.stats.jour.servis })) + '</div>';
     html += '<div>' + UI.esc(B.t('detail_repartis', { n: S.stats.jour.repartis })) + '</div>';
+    html += '<div>' + UI.esc(B.t('detail_recettes', { total: B.euros(S.stats.jour.recettes) })) + '</div>';
   }
   if (el._html !== html) { el.innerHTML = html; el._html = html; }
 };

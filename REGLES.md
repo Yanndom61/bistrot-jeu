@@ -149,10 +149,50 @@ Version décrite : **0.3 (étape 1 + retours de Yann : placement manuel, équipe
 - Bar, plonge, nettoyage et apprentis existent seulement pour les employés repris de l'ancien jeu : ils sont gardés dans l'équipe et comptent dans les 16, mais leur rôle (et leur recrutement) viendra plus tard.
 - L'intérim ne remplace pas encore les absences (il n'y a pas encore de jours de repos).
 
+## 4b. La carte et le paiement *(v0.4)*
+
+Tout vient de l'ancien jeu (`bistrot/bistrot.html`, lu sans le modifier) et est rangé dans `donnees/catalogue.json` (les plats) et `donnees/carte.json` (les règles). L'outil `outils/extraction/extraire-carte.py` refait ce fichier.
+
+### Les plats
+- **20 classiques du bistrot** (soupe à l'oignon, œufs mayo, steak frites, bourguignon, blanquette, crème brûlée, tarte Tatin…) proposés partout.
+- **Les spécialités de chaque lieu** : 616 au total sur les 44 lieux (par exemple pastéis de nata à Lisbonne, rougail saucisse à La Réunion). Elles portent le badge « Spécialité ».
+- Pas encore là : plats de saison, menu du jour, boissons.
+
+### Ta carte
+- Au départ, la carte reprend celle de l'ancien jeu pour ce lieu (classiques + spécialités).
+- Entre **2 et 6 entrées**, **3 et 9 plats**, **2 et 6 desserts** (limites de l'ancien jeu). Un message explique pourquoi on ne peut pas retirer ou ajouter un plat.
+- Bouton **Carte** en haut : chaque plat montre son prix, le prix conseillé, le coût et la marge. Boutons − / + : 50 centimes par appui (entre 1 € et 3 fois le prix conseillé). Toucher un plat ouvre sa **fiche**.
+- **Prix conseillé** = prix de référence de l'ancien jeu × coefficient du lieu (Paris × 1,2), arrondi à 50 centimes.
+- **Coût matière** = ingrédients de la recette × prix provisoires de l'ancien jeu × coefficient du lieu. C'est une **estimation affichée seulement** : rien n'est retiré de ton argent avant l'étape 3 (stocks).
+- **Marge brute** = prix − coût matière. La TVA n'est pas encore comptée : les recettes sont TTC.
+
+### La fiche d'un plat
+- Ingrédients, **allergènes** parmi les 14 obligatoires (seulement affichés : pas encore de client allergique).
+- **Origine de la viande** : celle du lieu par défaut (France en France) jusqu'à l'arrivée des fournisseurs.
+- **Fait maison** : tous les plats le sont, comme dans l'ancien jeu (pas encore d'effet).
+- **Cuisson** : seulement pour les pièces grillées ou rôties. Bœuf : bleu, saignant, à point, bien cuit ; agneau pareil ; veau et canard : saignant/rosé, à point, bien cuit ; porc et volaille : à point ou bien cuit. Les plats mijotés n'ont pas de question.
+
+### Ce que commandent les clients
+- Chaque client prend un **plat**, et parfois une **entrée** (4 sur 10) et un **dessert** (presque 1 sur 2). Moins souvent si c'est cher.
+- Le choix du plat dépend de sa **popularité** (ancien jeu) et de son **prix** comparé au conseillé : un plat 2 fois trop cher est choisi environ 8 fois moins. Les touristes préfèrent les spécialités.
+- Les cuissons demandées suivent les goûts de la région du monde (ancien jeu : plus de saignant en France, plus de bien cuit ailleurs).
+- **Prix de la carte et affluence** : si ta carte est en moyenne plus chère que conseillé, il vient moins de monde : à 1,3 fois le prix conseillé, environ 40 % de clients en moins ; à 1,6 fois, environ 60 % en moins. Moins chère, il en vient un peu plus (au plus + 25 %, car les tables limitent vite).
+
+### Cuisson ratée, plat renvoyé
+- Un cuisinier rate une cuisson selon sa **qualité** : 14 % pour une qualité de 1, 2 % pour 8, jamais moins de 1 %. 2 fois sur 3, c'est trop cuit.
+- Une cuisson ratée est **toujours renvoyée** : message, la table attend que le plat soit refait (en moitié moins de temps), le second est toujours réussi, et la matière est comptée deux fois.
+
+### Paiement
+- La table paie **à la fin du repas** (bouton « Voir le ticket » dans le détail d'une table). À la fermeture, ceux qui ont mangé paient aussi.
+- **L'argent monte avec les recettes.** Salaires, loyer et charges restent pour l'étape « Argent ».
+- **Pourboires** selon les usages du lieu (ancien jeu) : en France on laisse souvent la monnaie, aux États-Unis 15 à 20 %, **zéro à Tokyo, Pékin et Séoul**. Ils vont dans la **cagnotte de l'équipe**, pas dans ton argent (comme dans l'ancien jeu).
+- La satisfaction (attente, plat renvoyé, prix) ne joue pour l'instant que sur le pourboire, pas encore sur la note du restaurant.
+- Le **bilan de fin de journée** montre clients servis, recettes, ticket moyen par table, coût matière estimé, marge brute, plats renvoyés, pourboires et plat le plus vendu.
+
 ## 5. Les lieux
 
 - Les **44 lieux** de l'ancien jeu sont repris tels quels : 14 en France, 7 en Outre-mer et 23 capitales du monde. Fichier : `donnees/lieux.json`.
-- À cette étape, le lieu change seulement **l'affluence** et **les noms des clients**. Les salaires, les prix, la météo, le calendrier et les spécialités viendront à l'étape 6.
+- À cette étape, le lieu change seulement **l'affluence** et **les noms des clients**. Il change aussi les prix conseillés, les spécialités à la carte et les pourboires (v0.4). Les salaires suivent son coefficient. La météo et le calendrier viendront à l'étape 6.
 
 ## 6. La difficulté
 
@@ -169,7 +209,8 @@ Version décrite : **0.3 (étape 1 + retours de Yann : placement manuel, équipe
 
 - La partie est **enregistrée toute seule** : toutes les 5 minutes de jeu, quand on ouvre un volet, en fin de journée, et quand on quitte l'appli.
 - L'avant-dernière sauvegarde est gardée en secours. Si la dernière est abîmée, le jeu reprend la précédente.
-- Chaque sauvegarde porte un **numéro de version** (actuellement 3). Quand une version change le format, elle sait convertir les anciennes sauvegardes.
+- Chaque sauvegarde porte un **numéro de version** (actuellement 4). Quand une version change le format, elle sait convertir les anciennes sauvegardes.
+- **Format 3 → 4 (Bistrot 0.4)** : une partie de la v0.3 reçoit la carte de départ de son lieu, une cagnotte vide, et les tables déjà assises reçoivent leur commande.
 - **Format 2 → 3 (Bistrot 0.3)** : une partie de la v0.2 reprend là où elle était. L'option d'intérim automatique prend la valeur par défaut (activée en Facile). Un employé nommé « Intérimaire » repris par erreur de l'ancien jeu (remplaçant d'un jour) est retiré.
 - **Format 1 → 2 (Bistrot 0.2)** : une partie de la v0.1 est relue ainsi : le patron reste seul (Léa part), 8 candidats arrivent, et la journée en cours repart au matin, restaurant fermé jusqu'au recrutement. Le nom, le lieu, le jour, l'argent et le journal sont gardés. Une sauvegarde venant d'une version plus récente n'est jamais écrasée sans prévenir : un message demande de mettre le jeu à jour.
 - **Cases séparées** sur le téléphone :
@@ -183,7 +224,7 @@ Version décrite : **0.3 (étape 1 + retours de Yann : placement manuel, équipe
 - Bistrot reprend : le **nom** du restaurant, le **lieu**, le **jour**, l'**argent**, la **note** et **l'équipe**. La partie repart au matin de ce jour.
 - **Équipe reprise** : chaque employé lisible garde son nom, son poste, sa note, sa vitesse, son sens du service, sa qualité, son expérience et sa personnalité. Les serveurs, commis de salle et responsables vont en salle ; les chefs, seconds, commis, aides et apprentis vont en cuisine. Les barmans, plongeurs et agents de nettoyage sont gardés en attente de leur rôle. Le genre est déduit du prénom. Les intérimaires d'un jour de l'ancien jeu ne sont pas repris.
 - Le salaire est **recalculé sur la grille officielle** (poste + expérience), car l'ancien jeu comptait autrement.
-- Si l'ancienne équipe n'a personne en cuisine, le patron y passe. Si elle est vide, le restaurant reste fermé jusqu'au recrutement. La carte, les stocks, les plannings et le plan seront repris aux étapes suivantes, à partir de la copie.
+- Si l'ancienne équipe n'a personne en cuisine, le patron y passe. Si elle est vide, le restaurant reste fermé jusqu'au recrutement. **La carte est reprise** (v0.4) : chaque plat de l'ancienne carte qui existe dans Bistrot garde sa place et son prix (si le prix est raisonnable) ; ensuite la carte est ramenée aux limites 6/9/6 et complétée si besoin. Les plats de l'ancien jeu absents de Bistrot (saison, menu du jour, boissons) sont gardés dans la copie pour plus tard. Les stocks, les plannings et le plan seront repris aux étapes suivantes.
 - Les anciennes sauvegardes testées vont de la version 9 à la version 11 de l'ancien format (Chez YaYa v8 à v10.2), dont une partie au « Jour 0 » sans équipe, et une partie à Tokyo.
 
 ## 9. Affichage sur téléphone
@@ -202,25 +243,38 @@ Tailles de référence testées (en pixels « CSS », téléphone en paysage) :
 
 ## 10. Équilibre mesuré (simulateur, 30 jours, Facile)
 
-Équipe testée : patron en salle + 1 serveur + 1 commis de cuisine.
+Équipe testée : patron en salle + 1 serveur + 1 commis de cuisine, prix conseillés.
 
-| Lieu | Clients par jour | Servis | Repartis faute de place |
+| Lieu | Clients servis par jour | Repartis faute de place | Recettes par jour | Ticket moyen par table | Coût matière | Plats renvoyés | Pourboires |
+|---|---|---|---|---|---|---|---|
+| Mayotte | 40 | 2 % | 1 029 € | 70,50 € | 24 % | 0,5 | 14,65 € |
+| La Réunion | 63 | 4 % | 1 563 € | 66,21 € | 23 % | 1,2 | 20,10 € |
+| Bretagne | 68 | 4 % | 1 512 € | 59,36 € | 26 % | 0,1 | 22,15 € |
+| Île-de-France | 77 | 6 % | 2 010 € | 68,84 € | 27 % | 1,6 | 24,53 € |
+| Paris | 93 | 10 % | 2 712 € | 75,84 € | 26 % | 2,1 | 38,10 € |
+| Tokyo | 99 | 13 % | 2 767 € | 73,19 € | 24 % | 1,9 | 0 € |
+| New York | 100 | 14 % | 3 391 € | 88,38 € | 27 % | 3,0 | 540,90 € |
+
+Effet des prix à Paris (même équipe, 10 jours, moyenne par jour) :
+
+| Prix de toute la carte | Clients servis | Recettes | Marge brute estimée |
 |---|---|---|---|
-| Mayotte | 39 | 38 | 1 % |
-| La Réunion | 64 | 62 | 3 % |
-| Île-de-France | 82 | 78 | 5 % |
-| Bretagne | 71 | 68 | 4 % |
-| Paris | 100 | 91 | 9 % |
-| Tokyo | 113 | 98 | 13 % |
-| New York | 117 | 101 | 14 % |
+| × 0,7 | 106 | 2 343 € | 1 503 € |
+| × 1 (conseillé) | 94 | 2 726 € | 2 022 € |
+| × 1,3 | 61 | 2 080 € | 1 658 € |
+| × 1,6 | 41 | 1 591 € | 1 326 € |
+
+Le prix conseillé rapporte le plus : trop bas, la salle est pleine mais on gagne peu par assiette ; trop haut, elle se vide.
+
+Cuissons à New York (10 jours, un seul commis) : qualité 2 → 36 plats renvoyés, qualité 9 → 3.
 
 Selon l'équipe, à Paris (moyenne par jour) :
 
 | Équipe | Servis | Repartis | Attente avant la commande |
 |---|---|---|---|
-| Patron seul en salle + 1 commis | 81 | 15 % | 5 min |
-| Patron + 1 serveur + 1 commis | 88 | 10 % | 3 min |
-| Patron + 2 serveurs + chef + commis | 89 | 8 % | 3 min |
+| Patron seul en salle + 1 commis | 82 | 13 % | 5 min |
+| Patron + 1 serveur + 1 commis | 87 | 12 % | 3 min |
+| Patron + 2 serveurs + chef + commis | 86 | 8 % | 3 min |
 
-Avec 10 tables, c'est surtout le nombre de tables qui limite les clients. L'équipe joue sur l'attente.
+Contrôles automatiques : l'argent monte exactement des recettes, chaque client servi paie, zéro pourboire là où ce n'est pas l'usage, les 44 cartes sont complètes (allergènes, cuissons, prix > coût).
 Aucune valeur impossible, et toutes les journées se terminent. Détail complet : `tests/resultat-simulation-30-jours.txt`.

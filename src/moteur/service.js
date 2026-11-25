@@ -55,11 +55,15 @@ B.service.terminer = function (S, w) {
   if (tache.type === 'commande') {
     S.stats.jour.attenteCommande += S.minute - g.depuis;
     S.stats.jour.nbCommandes++;
+    g.attenteCommande = S.minute - g.depuis;
+    if (!g.commande) B.carte.commander(S, g);
     g.etat = 'cuisine'; g.depuis = S.minute; g.pret = null; g.cuisinier = null;
   } else if (tache.type === 'servir') {
+    if (B.carte.verifierService(S, g)) return;
     const type = B.clients.type(g.type);
     g.etat = 'mange'; g.depuis = S.minute; g.duree = B.duree(S, type.repas); g.aMange = true;
   } else if (tache.type === 'addition') {
+    B.carte.payer(S, g);
     B.clients.partir(S, g);
   }
 };

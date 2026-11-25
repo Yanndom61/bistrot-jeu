@@ -19,6 +19,6 @@ B.cuisine.avancer = function (S) {
     if (!choix) break;
     enCours[choix.id] = (enCours[choix.id] || 0) + 1;
     g.cuisinier = choix.id;
-    g.pret = S.minute + B.duree(S, B.DATA.clients.durees.cuisine) * B.equipe.facteurCuisine(choix);
+    g.pret = S.minute + B.duree(S, B.DATA.clients.durees.cuisine) * B.equipe.facteurCuisine(choix) * (g.refait ? B.DATA.carte.cuissons.refaireFacteur : 1);
   }
 };

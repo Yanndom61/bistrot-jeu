@@ -14,8 +14,14 @@ UI.majFin = function () {
   const b = S.bilan;
   el.innerHTML = '<div class="carte-fin"><h2>' + UI.esc(B.t('fin_titre', { jour: b.jour })) + '</h2><div class="chiffres">' +
     '<div><b>' + b.servis + '</b><span>' + UI.esc(B.t('fin_servis')) + '</span></div>' +
-    '<div><b>' + b.repartis + '</b><span>' + UI.esc(B.t('fin_repartis')) + '</span></div>' +
-    '<div><b>' + b.attente + '</b><span>' + UI.esc(B.t('fin_attente')) + '</span></div></div>' +
+    '<div><b>' + UI.esc(B.euros(b.recettes || 0)) + '</b><span>' + UI.esc(B.t('fin_recettes')) + '</span></div>' +
+    '<div><b>' + UI.esc(B.prix(b.ticketMoyen || 0)) + '</b><span>' + UI.esc(B.t('fin_ticket_moyen')) + '</span></div></div>' +
+    '<div class="fin-detail">' + [
+      B.t('fin_d_repartis', { n: b.repartis }), B.t('fin_d_attente', { n: b.attente }),
+      B.t('fin_d_cout', { cout: B.euros(b.coutMatiere || 0) }), B.t('fin_d_marge', { marge: B.euros((b.recettes || 0) - (b.coutMatiere || 0)) }),
+      B.t('fin_d_renvois', { n: b.platsRenvoyes || 0 }), B.t('fin_d_pourboires', { total: B.prix(b.pourboires || 0) }),
+      b.meilleurPlat ? B.t('fin_d_meilleur', { nom: b.meilleurPlat.nom, n: b.meilleurPlat.n }) : ''
+    ].filter(Boolean).map(function (x) { return '<span>' + UI.esc(x) + '</span>'; }).join('') + '</div>' +
     '<button type="button" class="gros principal" id="fin-suivant">' + UI.esc(B.t('fin_suivant', { jour: b.jour + 1 })) + '</button></div>';
   el.hidden = false;
   UI.sauver();
@@ -55,6 +61,7 @@ UI.init = function () {
   UI.initVolets();
   UI.initAccueil();
   UI.initEquipe();
+  UI.initCarte();
   UI.initPlacement();
   UI.initPortrait();
   const r = UI.chargerPartie();

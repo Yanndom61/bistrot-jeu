@@ -9,7 +9,7 @@ B.clients.type = function (id) {
 B.clients.affluence = function (S, minute) {
   const tr = B.DATA.clients.affluence.find(function (a) { return minute >= a.de && minute < a.a; });
   if (!tr) return 0;
-  return tr.groupesParHeure * B.lieu(S.lieu).affluence;
+  return tr.groupesParHeure * B.lieu(S.lieu).affluence * (S.carte ? B.carte.facteurAffluence(S) : 1);
 };
 
 B.clients.tirerType = function (S) {
@@ -105,7 +105,7 @@ B.clients.avancer = function (S, h) {
     } else if (g.etat === 'carte') {
       if (ecoule >= g.duree) { g.etat = 'commande'; g.depuis = S.minute; }
     } else if (g.etat === 'cuisine') {
-      if (g.cuisinier && g.pret != null && S.minute >= g.pret) { g.etat = 'pret'; g.depuis = S.minute; g.cuisinier = null; }
+      if (g.cuisinier && g.pret != null && S.minute >= g.pret) { B.carte.finirCuisson(S, g); g.etat = 'pret'; g.depuis = S.minute; g.cuisinier = null; }
     } else if (g.etat === 'mange') {
       if (ecoule >= g.duree) { g.etat = 'addition'; g.depuis = S.minute; }
     } else if (g.etat === 'depart' || g.etat === 'repart') {

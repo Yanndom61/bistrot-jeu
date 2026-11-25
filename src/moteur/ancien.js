@@ -41,6 +41,8 @@ B.ancien.convertir = function (o, infos) {
   B.equipe.genererDepart(S);
   S.ouvert = B.equipe.peutOuvrir(S);
   S.dejaOuvert = S.ouvert;
+  B.carte.creer(S);
+  const carte = B.ancien.reprendreCarte(S, o);
   S.equipeReprise = n;
   S.jour = Math.max(1, r.jour);
   S.argent = r.argent;
@@ -48,7 +50,8 @@ B.ancien.convertir = function (o, infos) {
   S.origine = {
     jeu: 'Chez YaYa', versionSauvegarde: r.versionSauvegarde,
     cle: infos && infos.cle || null, reprisLe: infos && infos.date || null,
-    reprisPourLinstant: ['nom', 'lieu', 'jour', 'argent', 'note', 'equipe']
+    reprisPourLinstant: ['nom', 'lieu', 'jour', 'argent', 'note', 'equipe', 'carte'],
+    carte: carte
   };
   return S;
 };
@@ -75,6 +78,31 @@ B.ancien.reprendreEquipe = function (S, o) {
     n++;
   });
   return n;
+};
+
+/* Reprend la carte de l'ancienne partie : plats présents dans Bistrot (mêmes identifiants), à la carte ou non, et leur prix.
+   Les plats de saison, du menu du jour et les boissons de l'ancien jeu ne sont pas encore dans Bistrot. */
+B.ancien.reprendreCarte = function (S, o) {
+  const m = o && o.menu && typeof o.menu === 'object' ? o.menu : null;
+  const r = { lus: 0, ignores: 0, ajustes: 0 };
+  if (!m) return r;
+  const P = B.DATA.carte.prix;
+  let touche = false;
+  B.carte.catalogue(S).forEach(function (d) {
+    const a = m[d.id];
+    if (!a || typeof a !== 'object' || typeof a.on !== 'boolean') return;
+    if (!touche) { B.carte.CATS.forEach(function (c) { B.carte.surCarte(S, c).forEach(function (id) { S.carte.plats[id].on = false; }); }); touche = true; }
+    S.carte.plats[d.id].on = a.on;
+    const conseille = B.carte.prixConseille(S, d), prix = +a.price;
+    if (isFinite(prix) && prix >= P.minimum && prix <= conseille * P.maxFoisConseille) S.carte.plats[d.id].prix = Math.round(prix * 2) / 2;
+    r.lus++;
+  });
+  if (!touche) return r;
+  Object.keys(m).forEach(function (id) { if (m[id] && m[id].on && !S.carte.plats[id]) r.ignores++; });
+  const avant = JSON.stringify(B.carte.surCarte(S));
+  B.carte.completer(S);
+  if (JSON.stringify(B.carte.surCarte(S)) !== avant) r.ajustes = 1;
+  return r;
 };
 
 /* Liste les anciennes parties trouvées, sans doublon (la sauvegarde principale recopie souvent un emplacement). */
