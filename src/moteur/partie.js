@@ -55,7 +55,8 @@ B.nouvellePartie = function (o) {
     semaine: null,
     semaines: [],
     reporte: {},
-    cal: B.ev.etatVide()
+    cal: B.ev.etatVide(),
+    objectifs: { faits: {} }
   };
 };
 
@@ -77,6 +78,7 @@ B.ouvrir = function (S) {
   S.ouvert = true;
   S.dejaOuvert = true;
   B.message(S, 'msg_ouverture');
+  if (S.objectifs) B.objectifs.verifier(S);
   return true;
 };
 
@@ -101,6 +103,7 @@ B.pas = function (S, h) {
   B.stock.livrer(S);
   B.menuJour.emporter(S, h);
   B.clients.placer(S);
+  if (S.objectifs) B.objectifs.verifier(S);
   B.clients.avancer(S, h);
   B.cuisine.avancer(S);
   B.service.avancer(S, h);
@@ -152,6 +155,7 @@ B.finDeJournee = function (S) {
     B.message(S, 'msg_fin_service');
     if (cl.faillite) { S.ouvert = false; B.message(S, 'msg_faillite'); }
     else if (cl.alerte) B.message(S, 'msg_decouvert', { soir: cl.alerte.soir, max: cl.alerte.max });
+    if (S.objectifs) B.objectifs.verifier(S);
   }
 };
 

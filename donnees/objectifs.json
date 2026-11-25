@@ -1,0 +1,17 @@
+{
+  "_explication": "v0.9 (étape 7) : objectifs simples et progressifs. L'ancien jeu n'avait pas de liste d'objectifs (seulement le but général « rendre le bistrot rentable et éviter la faillite ») : cette liste est un choix de Bistrot. Ils sont rangés du plus facile au plus long ; on voit toujours le premier pas encore réussi. Aucune récompense : juste un message de bravo.",
+  "liste": [
+    { "id": "cuisinier", "type": "equipe", "service": "cuisine", "n": 1 },
+    { "id": "ouvrir", "type": "ouvert" },
+    { "id": "servis20", "type": "servis", "n": 20 },
+    { "id": "benefice", "type": "benefice_jour" },
+    { "id": "serveur", "type": "poste", "poste": "serv", "n": 1 },
+    { "id": "semaine", "type": "jours", "n": 7 },
+    { "id": "servis300", "type": "servis", "n": 300 },
+    { "id": "propre", "type": "proprete", "n": 80 },
+    { "id": "prive", "type": "prive" },
+    { "id": "semaine_benef", "type": "benefice_semaine" },
+    { "id": "mois", "type": "jours", "n": 30 },
+    { "id": "servis1000", "type": "servis", "n": 1000 }
+  ]
+}

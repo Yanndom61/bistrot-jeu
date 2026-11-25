@@ -56,6 +56,7 @@ B.ancien.convertir = function (o, infos) {
     reprisPourLinstant: ['nom', 'lieu', 'jour', 'argent', 'note', 'equipe', 'carte', 'stocks'],
     carte: carte, stocks: stocks
   };
+  B.objectifs.verifier(S, true);   /* v0.9 : ce qui est déjà acquis est coché sans message */
   return S;
 };
 

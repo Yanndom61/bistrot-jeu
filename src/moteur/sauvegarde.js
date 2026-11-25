@@ -136,6 +136,7 @@ B.relire = function (texte) {
     if (!m) return { erreur: 'erreur_sauvegarde_illisible' };
     S = m(S);
   }
+  if (!S.objectifs) { S.objectifs = { faits: {} }; B.objectifs.verifier(S, true); }   /* v0.9 : champ facultatif, ce qui est déjà acquis est coché sans message */
   S.jeu = B.VERSION_JEU;
   return { partie: S };
 };
