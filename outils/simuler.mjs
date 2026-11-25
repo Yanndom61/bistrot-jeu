@@ -757,7 +757,10 @@ console.log('\nÉtape 5 — Argent :');
       const r = c.resultat / Math.max(1, c.jours);
       res.push(`${nom} ${B.euros(r)}${c.faillite ? ` (faillite le jour ${c.faillite})` : ''}`);
       if (!(r < base)) probleme(`Difficile ${lieu} : « ${nom} » devrait coûter de l’argent`);
-      if (nom !== 'prix 50 % trop hauts' && r >= 0) probleme(`Difficile ${lieu} : « ${nom} » devrait faire perdre de l’argent`);
+      /* v1.0 : avec la réputation, une brigade complète à Paris (le plus gros marché) attire tant de clients qu'elle ne perd plus ;
+         elle doit rester une grosse erreur (au moins 80 % de bénéfice en moins) et faire perdre de l'argent à Mayotte. */
+      if (nom === 'embauche tout le monde' && lieu === 'paris') { if (!(r < base * 0.2)) probleme(`Difficile ${lieu} : « ${nom} » devrait coûter au moins 80 % du bénéfice`); }
+      else if (nom !== 'prix 50 % trop hauts' && r >= 0) probleme(`Difficile ${lieu} : « ${nom} » devrait faire perdre de l’argent`);
     }
     console.log(`    ${lieu.padEnd(10)} bien joué ${B.euros(base)} · ` + res.join(' · '));
   }
