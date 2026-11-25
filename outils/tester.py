@@ -36,7 +36,7 @@ MESURES_JS = r"""() => {
   (dessus || document).querySelectorAll('button').forEach(b => {
     if (!b.offsetParent) return;
     const r = b.getBoundingClientRect();
-    const defile = b.closest('#volet-corps, #accueil');
+    const defile = b.closest('#volet-corps, #accueil, .carte-fin');
     if (r.left < -0.5 || r.right > vw + 0.5 || (!defile && (r.top < -0.5 || r.bottom > vh + 0.5))) pb.push('bouton hors écran : ' + b.textContent);
     if (r.height < 43.5 || r.width < 43.5) pb.push('bouton trop petit (' + Math.round(r.width) + '×' + Math.round(r.height) + ') : ' + b.textContent);
     if (r.bottom > vh || r.top < 0) return;
@@ -301,8 +301,9 @@ async def main():
         paye = await p.evaluate("() => B.UI.S.tickets.find(t => t.pourboire > 0) || B.UI.S.tickets[0]")
         argent1 = await p.evaluate('() => B.UI.S.argent')
         rec = await p.evaluate('() => B.UI.S.stats.jour.recettes')
-        print(f'  argent : {argent0:.2f} → {argent1:.2f} (recettes {rec:.2f}), tickets payés : {len(await p.evaluate("() => B.UI.S.tickets"))}')
-        if abs(argent1 - argent0 - rec) > 0.01 or rec <= 0: problemes.append("paiement : l'argent ne bouge pas avec les recettes")
+        ach = await p.evaluate('() => B.UI.S.stats.jour.achats')
+        print(f'  argent : {argent0:.2f} → {argent1:.2f} (recettes {rec:.2f}, achats {ach:.2f}), tickets payés : {len(await p.evaluate("() => B.UI.S.tickets"))}')
+        if abs(argent1 - argent0 - rec + ach) > 0.01 or rec <= 0: problemes.append("paiement : l'argent ne bouge pas avec les recettes")
         await p.get_by_role('button', name='Journal').click(); await p.wait_for_timeout(300)
         await p.screenshot(path=str(CAPTURES / '25-journal-paiements-780x360.png'))
         jtxt = await p.locator('#volet-corps').inner_text()
@@ -322,6 +323,60 @@ async def main():
         await p.screenshot(path=str(CAPTURES / '26b-bilan-780x300.png'))
         verifier('bilan 780×300', await p.evaluate(MESURES_JS), p)
         problemes.extend('carte 300 : ' + e for e in p.erreurs)
+        await c.close()
+
+        print('1e) Stocks, commande, boissons et menu du jour :')
+        c, p = await nouveau_contexte(b, 780, 360)
+        await lancer_partie(p)
+        await au_coeur_du_service(p, 60)
+        await p.get_by_role('button', name='Stocks').click(); await p.wait_for_timeout(400)
+        await p.screenshot(path=str(CAPTURES / '27-stocks-reserve-780x360.png'))
+        verifier('stocks réserve', await p.evaluate(MESURES_JS), p)
+        txt = await p.locator('#volet-corps').inner_text()
+        for mot in ('Chambre froide', 'Congélateur', 'Étagères'):
+            if mot not in txt: problemes.append(f'stocks : « {mot} » absent')
+        await p.locator('[data-st-onglet="commander"]').click(); await p.wait_for_timeout(250)
+        await p.locator('[data-st-four="marche"]').click(); await p.wait_for_timeout(250)
+        await p.locator('[data-st="plus"][data-id="boeuf"]').click(); await p.locator('[data-st="plus"][data-id="boeuf"]').click()
+        await p.locator('[data-st="plus"][data-id="legumes"]').click(); await p.wait_for_timeout(250)
+        await p.locator('#volet-corps').evaluate('e => e.scrollTop = 0'); await p.wait_for_timeout(150)
+        await p.screenshot(path=str(CAPTURES / '28-stocks-commande-780x360.png'))
+        verifier('stocks commande', await p.evaluate(MESURES_JS), p)
+        a0 = await p.evaluate('() => B.UI.S.argent')
+        await p.locator('[data-st="commander"]').click(); await p.wait_for_timeout(300)
+        a1 = await p.evaluate('() => B.UI.S.argent')
+        cmd = await p.evaluate('() => B.UI.S.stocks.commandes.filter(c => !c.auto).map(c => ({four: c.four, cout: c.cout, lignes: c.lignes}))')
+        print(f'  commande au marché : {cmd} ; argent {a0:.2f} → {a1:.2f}')
+        if not cmd or abs(a0 - a1 - cmd[-1]['cout']) > 0.01: problemes.append("stocks : l'argent ne baisse pas du prix de la commande")
+        await p.screenshot(path=str(CAPTURES / '28b-commande-payee-780x360.png'))
+        await p.locator('[data-st-onglet="reglages"]').click(); await p.wait_for_timeout(250)
+        await p.screenshot(path=str(CAPTURES / '31-stocks-reglages-780x360.png'))
+        verifier('stocks réglages', await p.evaluate(MESURES_JS), p)
+        if 'Rungis' not in await p.locator('#volet-corps').inner_text(): problemes.append('stocks : la source des prix n’est pas affichée')
+        await p.get_by_role('button', name='Fermer').click(); await p.wait_for_timeout(200)
+        await p.get_by_role('button', name='Carte').click(); await p.wait_for_timeout(300)
+        await p.locator('[data-ca-onglet="boissons"]').click(); await p.wait_for_timeout(250)
+        await p.screenshot(path=str(CAPTURES / '29-carte-boissons-780x360.png'))
+        verifier('carte boissons', await p.evaluate(MESURES_JS), p)
+        if 'Vins au verre' not in await p.locator('#volet-corps').inner_text(): problemes.append('carte : pas de boissons')
+        await p.locator('[data-ca-onglet="mdj"]').click(); await p.wait_for_timeout(250)
+        await p.screenshot(path=str(CAPTURES / '30-menu-du-jour-780x360.png'))
+        verifier('menu du jour', await p.evaluate(MESURES_JS), p)
+        mdj = await p.locator('#volet-corps').inner_text()
+        if 'Entrée + plat' not in mdj and 'entrée + plat' not in mdj: problemes.append('menu du jour : pas de formule affichée')
+        await p.get_by_role('button', name='Fermer').click(); await p.wait_for_timeout(200)
+        # un ticket avec menu du jour ou boisson
+        gid = await p.evaluate("() => { const g = B.UI.S.groupes.find(g => g.commande && g.tables && g.commande.some(l => l.mdj) && g.commande.some(l => l.cat === 'boisson')) || B.UI.S.groupes.find(g => g.commande && g.tables && g.commande.some(l => l.cat === 'boisson')); return g ? g.id : null; }")
+        if gid:
+            await p.evaluate(f'() => B.UI.ouvrirTicket({gid})'); await p.wait_for_timeout(300)
+            await p.screenshot(path=str(CAPTURES / '32-ticket-menu-boissons-780x360.png'))
+            await p.get_by_role('button', name='Fermer').click(); await p.wait_for_timeout(200)
+        else: problemes.append('aucune table avec une boisson')
+        await p.evaluate('() => B.avancer(B.UI.S, 900)'); await p.wait_for_timeout(600)
+        await p.screenshot(path=str(CAPTURES / '33-bilan-achats-780x360.png'))
+        verifier('bilan avec achats', await p.evaluate(MESURES_JS), p)
+        if 'Achats' not in await p.locator('#fin').inner_text(): problemes.append('bilan : achats absents')
+        problemes.extend('stocks : ' + e for e in p.erreurs)
         await c.close()
 
         print('2) Téléphone tenu en portrait :')
@@ -354,6 +409,9 @@ async def main():
             print('  différences :', [(k, len(A.get(k) or ''), len(Z.get(k) or '')) for k in set(A) | set(Z) if A.get(k) != Z.get(k)])
             problemes.append("l'ancienne sauvegarde a été modifiée !")
         if info['jour'] != 9: problemes.append('jour repris incorrect')
+        st = await p.evaluate("() => B.UI.S.origine.stocks")
+        print('  stocks repris :', st)
+        if not st or not st.get('produits'): problemes.append("les stocks de l'ancien jeu ne sont pas repris")
         problemes.extend('import : ' + e for e in p.erreurs)
         await c.close()
 
@@ -364,7 +422,7 @@ async def main():
         await p.get_by_role('button', name='Continuer : Chez YaYa · Bretagne · jour 1').click(); await p.wait_for_timeout(400)
         etat = await p.evaluate("() => ({v: B.UI.S.version, equipe: B.UI.S.equipe.map(x => x.nom), volet: B.UI.voletOuvert})")
         print('  partie 0.1 relue :', etat)
-        if etat['v'] != 4 or etat['equipe'] != ['Patron'] or etat['volet'] != 'equipe': problemes.append('la sauvegarde 0.1 est mal relue')
+        if etat['v'] != 5 or etat['equipe'] != ['Patron'] or etat['volet'] != 'equipe': problemes.append('la sauvegarde 0.1 est mal relue')
         problemes.extend('sauvegarde 0.1 : ' + e for e in p.erreurs)
         await c.close()
 

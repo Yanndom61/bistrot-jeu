@@ -1,0 +1,30 @@
+# MIN de Rungis : marée congelée — mercuriale officielle RNM / FranceAgriMer (code M 0503)
+# Séance du 05/11/2026 · relevé le 25/11/2026 sur https://hallesx.com/mercuriale/min-de-rungis-maree-congelee (prix moyen de gros, € HT par kg sauf mention)
+CHIEN DE MER moyen U.E. = 4,50 €
+COQUILLE SAINT JACQUES congelée décortiquée blanche Import = 28,50 €
+COQUILLE SAINT JACQUES congelée décortiquée coraillée Import = 28,50 €
+CRABE KING congelé (patte) fagot Import = 63,00 €
+CRABE KING congelé (patte) Import = 70,00 €
+CREVETTE grise congelée cuite triée sauvage moyenne Europe du nord = 18,00 €
+ENCORNET congelé (entier) moyen Import = 9,50 €
+ENCORNET congelé (entier) petit Import = 14,00 €
+ESPADON congelé (filet) sous vide = 10,50 €
+GAMBAS congelée taille 1 Import = 29,00 €
+GAMBAS congelée taille 2 Import = 27,00 €
+GAMBAS congelée taille 3 Import = 25,00 €
+GAMBAS congelée taille 4 Import = 19,50 €
+GRENOUILLE congelée (cuisse) Import = 17,00 €
+JULIENNE congelée (filet) Import = 12,00 €
+LANGOUSTE rose congelée vivante Import = 63,00 €
+LANGOUSTE verte congelée vivante -500g Import = 57,00 €
+LANGOUSTINE congelée cuite rangée 20-40 pièces/kg Import = 23,00 €
+LIEU noir congelé (filet) Import = 6,50 €
+LOTTE congelée (queue) - de 1 kg Import = 14,50 €
+MERLU congelé (filet) - de 1 kg Import = 6,50 €
+PERCHE (filet) Import = 6,00 €
+POULPE Import = 13,50 €
+SAUMON congelé (entier) vidé sauvage 2-3kg Import = 8,00 €
+SEICHE congelée (blanc) tranchée Import = 10,00 €
+SEICHE congelée (entière) U.E. = 6,50 €
+SURIMI congelé boudin 1 kg = 7,50 €
+TOURTEAU congelé (pince) = 23,00 €

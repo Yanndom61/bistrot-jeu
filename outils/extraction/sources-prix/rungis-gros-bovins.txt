@@ -1,0 +1,21 @@
+# MIN de Rungis — gros bovins — mercuriale officielle RNM / FranceAgriMer (code M 0157)
+# Séance du 12/11/2026 · relevé le 25/11/2026 sur https://hallesx.com/mercuriale/rungis-gros-bovins (prix moyen de gros, € HT par kg sauf mention)
+BOEUF génisse (carcasse) France cat. E = 8,80 €
+BOEUF génisse (carcasse) France cat. R = 8,40 €
+BOEUF génisse (carcasse) France cat. U = 8,70 €
+BOEUF génisse (quartier arrière) France cat. E = 11,80 €
+BOEUF génisse (quartier arrière) France cat. R = 10,50 €
+BOEUF génisse (quartier arrière) France cat. U = 11,30 €
+BOEUF génisse (quartier avant) France cat. E = 7,00 €
+BOEUF génisse (quartier avant) France cat. R = 6,60 €
+BOEUF génisse (quartier avant) France cat. U = 6,80 €
+BOEUF vache (carcasse) France cat. R = 7,90 €
+BOEUF vache (carcasse) France cat. U = 8,10 €
+BOEUF vache (quartier arrière) France cat. E = 9,90 €
+BOEUF vache (quartier arrière) France cat. R = 9,40 €
+BOEUF vache (quartier arrière) France cat. U = 9,60 €
+BOEUF vache (quartier arrière) U.E. cat. E = 10,80 €
+BOEUF vache (quartier arrière) U.E. cat. R = 8,90 €
+BOEUF vache (quartier arrière) U.E. cat. U = 9,30 €
+BOEUF vache (quartier avant) France cat. R = 6,00 €
+BOEUF vache (quartier avant) France cat. U = 6,30 €

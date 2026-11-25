@@ -156,19 +156,19 @@ Tout vient de l'ancien jeu (`bistrot/bistrot.html`, lu sans le modifier) et est 
 ### Les plats
 - **20 classiques du bistrot** (soupe à l'oignon, œufs mayo, steak frites, bourguignon, blanquette, crème brûlée, tarte Tatin…) proposés partout.
 - **Les spécialités de chaque lieu** : 616 au total sur les 44 lieux (par exemple pastéis de nata à Lisbonne, rougail saucisse à La Réunion). Elles portent le badge « Spécialité ».
-- Pas encore là : plats de saison, menu du jour, boissons.
+- **Plats de saison** (v0.5) : 4 par lieu, voir §4c.
 
 ### Ta carte
 - Au départ, la carte reprend celle de l'ancien jeu pour ce lieu (classiques + spécialités).
 - Entre **2 et 6 entrées**, **3 et 9 plats**, **2 et 6 desserts** (limites de l'ancien jeu). Un message explique pourquoi on ne peut pas retirer ou ajouter un plat.
 - Bouton **Carte** en haut : chaque plat montre son prix, le prix conseillé, le coût et la marge. Boutons − / + : 50 centimes par appui (entre 1 € et 3 fois le prix conseillé). Toucher un plat ouvre sa **fiche**.
 - **Prix conseillé** = prix de référence de l'ancien jeu × coefficient du lieu (Paris × 1,2), arrondi à 50 centimes.
-- **Coût matière** = ingrédients de la recette × prix provisoires de l'ancien jeu × coefficient du lieu. C'est une **estimation affichée seulement** : rien n'est retiré de ton argent avant l'étape 3 (stocks).
+- **Coût matière** = ingrédients de la recette × prix d'achat du jour chez ton fournisseur habituel (§4c). Depuis la v0.5, l'argent est retiré **à l'achat** des produits, pas à la vente.
 - **Marge brute** = prix − coût matière. La TVA n'est pas encore comptée : les recettes sont TTC.
 
 ### La fiche d'un plat
 - Ingrédients, **allergènes** parmi les 14 obligatoires (seulement affichés : pas encore de client allergique).
-- **Origine de la viande** : celle du lieu par défaut (France en France) jusqu'à l'arrivée des fournisseurs.
+- **Origine de la viande** : celle du fournisseur du lot en réserve (§4c).
 - **Fait maison** : tous les plats le sont, comme dans l'ancien jeu (pas encore d'effet).
 - **Cuisson** : seulement pour les pièces grillées ou rôties. Bœuf : bleu, saignant, à point, bien cuit ; agneau pareil ; veau et canard : saignant/rosé, à point, bien cuit ; porc et volaille : à point ou bien cuit. Les plats mijotés n'ont pas de question.
 
@@ -184,10 +184,66 @@ Tout vient de l'ancien jeu (`bistrot/bistrot.html`, lu sans le modifier) et est 
 
 ### Paiement
 - La table paie **à la fin du repas** (bouton « Voir le ticket » dans le détail d'une table). À la fermeture, ceux qui ont mangé paient aussi.
-- **L'argent monte avec les recettes.** Salaires, loyer et charges restent pour l'étape « Argent ».
+- **L'argent monte avec les recettes** et baisse quand tu achètes des produits (§4c). Salaires, loyer et charges restent pour l'étape « Argent ».
 - **Pourboires** selon les usages du lieu (ancien jeu) : en France on laisse souvent la monnaie, aux États-Unis 15 à 20 %, **zéro à Tokyo, Pékin et Séoul**. Ils vont dans la **cagnotte de l'équipe**, pas dans ton argent (comme dans l'ancien jeu).
 - La satisfaction (attente, plat renvoyé, prix) ne joue pour l'instant que sur le pourboire, pas encore sur la note du restaurant.
-- Le **bilan de fin de journée** montre clients servis, recettes, ticket moyen par table, coût matière estimé, marge brute, plats renvoyés, pourboires et plat le plus vendu.
+- Le **bilan de fin de journée** montre clients servis, recettes, ticket moyen par table, coût des produits utilisés, marge brute, plats renvoyés, pourboires, plat le plus vendu, et depuis la v0.5 : achats, recettes − achats, gaspillage, menus du jour, boissons et ruptures (avec leur cause).
+
+## 4c. Stocks, fournisseurs, menu du jour et boissons *(v0.5)*
+
+Données : `donnees/stocks.json` (réserve, fournisseurs, règles), `donnees/prix-gros.json` (prix d'achat et leurs sources), `donnees/catalogue.json` (plats de saison, menu du jour, boissons). Outil qui refait ces fichiers : `outils/extraction/extraire-stocks.py` (lit l'ancien jeu sans le modifier).
+
+### Les prix d'achat (prix de gros)
+- **Source** : mercuriales officielles du **MIN de Rungis**, publiées par le Réseau des Nouvelles des Marchés (**RNM, FranceAgriMer**). Séances du 2 au 12 novembre 2026, relevées le 25/11/2026. Copie des cotes utilisées : `outils/extraction/sources-prix/` (11 fichiers : fruits et légumes, découpes de viande, veau, agneau, gros bovins, volaille, porc, marée, filets, marée congelée, œufs).
+- **23 produits** ont un prix calculé sur ces cotes (prix au kilo × poids d'une portion ; par exemple faux-filet 14,55 €/kg × 200 g = 2,91 € la portion ; poulet label 5,70 €/kg × 400 g = 2,28 €). Le détail de chaque calcul (libellé, prix, date de séance) est dans `prix-gros.json`.
+- **31 produits non cotés à Rungis** (pain, jambon, fromage, épicerie, beurre, boissons…) gardent le prix de l'ancien jeu.
+- **Saison** : un produit de saison coûte **15 % de moins**, hors saison **30 % de plus** (fruits, légumes, salades, herbes, pommes). Les mois sont inversés dans l'hémisphère sud (La Réunion, Mayotte, Nouvelle-Calédonie, Canberra…).
+- Tous les prix sont × le coefficient « prix » du lieu (Paris × 1,2). Le jeu reste hors ligne : aucun prix n'est téléchargé pendant la partie.
+
+### Les fournisseurs (repris de l'ancien jeu)
+| Fournisseur | Prix | Livré en | Livraison | Qualité | Viande (France) |
+|---|---|---|---|---|---|
+| 🧺 Marché | +20 % | 2 h | 8 € | 4,6/5 | France |
+| 🚚 Grossiste (habituel) | prix de base | 8 h | 25 € | 3,4/5 | Union européenne |
+| 🏷️ Discount | −22 % | 1 jour | 12 € | 2,2/5 | Hors UE |
+| 🌾 Bio | +45 % | 12 h | 15 € | 5/5 | France, Label Rouge |
+- Chaque lieu a ses propres noms de fournisseurs et ses origines (ancien jeu). Le bio ne vend ni poisson, ni café, ni alcool.
+- **Qualité** : un produit du marché ou du bio se garde **1 jour de plus** ; du discount, **1 jour de moins**.
+- **Offres** : chaque soir, 2 ou 3 offres pour le lendemain (−15 à −40 % sur un produit chez un fournisseur). Elles servent au menu du jour et à la commande automatique.
+- **Payer** : l'argent est retiré **au moment de la commande** (produits + livraison). Rien n'est remboursé.
+
+### La réserve
+- 3 rangements : **chambre froide** (1 000 portions : viande, poisson, laitages, légumes frais), **congélateur** (200 : glaces, fruits de mer surgelés), **étagères** (2 000 : pain, épicerie, pommes de terre, boissons).
+- Chaque livraison forme un **lot** avec sa **date limite** (durées de l’ancien jeu : pain et poisson 2 jours, viande et légumes 5, crème et œufs 9, fromage 16, surgelés 180…). On utilise toujours le lot le plus ancien d'abord.
+- **Gaspillage** : chaque matin, les lots qui ont dépassé leur date limite sont **jetés** (message + bilan). Leur prix est perdu.
+- Une commande qui ne rentre pas dans la réserve est réduite.
+- Au tout début, les **premières courses** (2 jours de besoins) sont livrées et payées avant l'ouverture (sans frais de livraison).
+
+### Commander
+- Bouton **Stocks** → onglet **Commander** : choisis le fournisseur, règle les quantités (de 5 en 5) ou touche « Proposer les quantités », puis « Commander et payer ». Le jeu dit à quelle heure ça arrive.
+- **Commande automatique** (onglet Réglages) : **activée par défaut en Facile seulement**. Chaque soir, elle rachète ce qu'il faut pour **1 jour** (produits qui se gardent 3 jours ou moins), **2 jours** (jusqu'à 16 jours) ou **4 jours** (le reste), **+ la marge de sécurité** (15 % par défaut, de 0 à 50 %), moins ce qui sera encore bon demain et ce qui est déjà en route. Elle ajoute ce qu'il faut pour le menu du jour prévu le lendemain. Elle passe par le fournisseur habituel (réglable), ou par une offre moins chère si elle arrive à temps. Livraison avant l'ouverture.
+- **Prévision des ventes** : moyenne des 3 derniers jours (en comptant les clients refusés pour rupture), jamais moins de 70 % de ce que la carte laisse prévoir.
+
+### Ruptures
+- Quand il manque un ingrédient, le plat (ou la boisson) **disparaît de la carte** pour les clients suivants, avec un message qui dit **pourquoi** : commande en route (avec l'heure), rien commandé (commande automatique coupée), dernière commande trop petite, réserve pleine, ou plus de ventes que prévu.
+- Le client choisit autre chose. **S'il n'y a plus rien à manger**, la table repart sans manger (message).
+- Le plat revient tout seul à la livraison. Le bilan liste les ruptures du jour et leur cause.
+
+### Plats de saison
+- **4 par lieu**, repris de l'ancien jeu (par exemple à Paris : asperges en mars-mai, tomates et burrata en juin-août, omelette aux cèpes en septembre-novembre, petit salé en décembre-février).
+- Ils ne sont proposés **qu'à leurs mois** : au changement de mois, ceux qui ne sont plus de saison quittent la carte et les nouveaux prennent la place libre (sinon un message propose de les ajouter). Les clients les choisissent **25 % plus souvent**.
+- Le calendrier commence le jour de création de la partie (jour 1 = cette date). La date du jour est affichée dans les Stocks et le menu du jour.
+
+### Menu du jour
+- Composé **chaque matin** automatiquement (entrée, plat, dessert) parmi les plats du jour de l'ancien jeu : 6 propres au lieu + 37 classiques du bistrot en France. On choisit d'abord ce qui **doit être écoulé** (date limite proche), puis les **offres** des fournisseurs, puis la saison. Le jeu dit pourquoi chaque plat a été choisi.
+- **Formules** : entrée + plat 17 €, plat + dessert 17 €, entrée + plat + dessert 22 € (× coefficient du lieu), réglables de 50 en 50 centimes. Environ 1 client sur 3 le prend (moins s'il est cher).
+- **30 portions sur place** au plus, et **jusqu'à 8 à emporter** (payées tout de suite, vendues entre 11 h 30 et 13 h 30 puis 18 h 30 et 20 h 30). Moins si la réserve ne suffit pas : le menu ne prend jamais ce dont la carte a besoin. Pas assez de produits → pas de menu ce jour-là (message).
+- On peut le couper (Carte → Menu du jour).
+
+### Boissons
+- **18 boissons de base** (café, vins, bière, sodas, jus, eau, kir, spritz, cidre, cappuccino…) dont 4 de saison (vin chaud et lait de poule l'hiver, citronnade et thé glacé l'été), + **5 boissons du lieu** (dont une bouteille de vin et une bière en bouteille). Entre 3 et 20 à la carte.
+- Les clients prennent parfois un apéritif, souvent un verre de vin ou une boisson fraîche, un café ou un thé à la fin ; certaines tables prennent une bouteille. Moins si c'est cher.
+- **Pas de barman** (toujours pas recrutable) : les boissons sont **servies par la salle avec les plats**, ce qui ajoute un petit temps de service (9 secondes par boisson). Elles consomment le stock (café, vin, bière…) comme les plats.
 
 ## 5. Les lieux
 
@@ -209,7 +265,8 @@ Tout vient de l'ancien jeu (`bistrot/bistrot.html`, lu sans le modifier) et est 
 
 - La partie est **enregistrée toute seule** : toutes les 5 minutes de jeu, quand on ouvre un volet, en fin de journée, et quand on quitte l'appli.
 - L'avant-dernière sauvegarde est gardée en secours. Si la dernière est abîmée, le jeu reprend la précédente.
-- Chaque sauvegarde porte un **numéro de version** (actuellement 4). Quand une version change le format, elle sait convertir les anciennes sauvegardes.
+- Chaque sauvegarde porte un **numéro de version** (actuellement 5). Quand une version change le format, elle sait convertir les anciennes sauvegardes.
+- **Format 4 → 5 (Bistrot 0.5)** : une partie de la v0.4 reçoit les boissons de base à sa carte, un calendrier (jour 1 = date de création), et ses premières courses (payées). La commande automatique suit la règle Facile.
 - **Format 3 → 4 (Bistrot 0.4)** : une partie de la v0.3 reçoit la carte de départ de son lieu, une cagnotte vide, et les tables déjà assises reçoivent leur commande.
 - **Format 2 → 3 (Bistrot 0.3)** : une partie de la v0.2 reprend là où elle était. L'option d'intérim automatique prend la valeur par défaut (activée en Facile). Un employé nommé « Intérimaire » repris par erreur de l'ancien jeu (remplaçant d'un jour) est retiré.
 - **Format 1 → 2 (Bistrot 0.2)** : une partie de la v0.1 est relue ainsi : le patron reste seul (Léa part), 8 candidats arrivent, et la journée en cours repart au matin, restaurant fermé jusqu'au recrutement. Le nom, le lieu, le jour, l'argent et le journal sont gardés. Une sauvegarde venant d'une version plus récente n'est jamais écrasée sans prévenir : un message demande de mettre le jeu à jour.
@@ -224,7 +281,7 @@ Tout vient de l'ancien jeu (`bistrot/bistrot.html`, lu sans le modifier) et est 
 - Bistrot reprend : le **nom** du restaurant, le **lieu**, le **jour**, l'**argent**, la **note** et **l'équipe**. La partie repart au matin de ce jour.
 - **Équipe reprise** : chaque employé lisible garde son nom, son poste, sa note, sa vitesse, son sens du service, sa qualité, son expérience et sa personnalité. Les serveurs, commis de salle et responsables vont en salle ; les chefs, seconds, commis, aides et apprentis vont en cuisine. Les barmans, plongeurs et agents de nettoyage sont gardés en attente de leur rôle. Le genre est déduit du prénom. Les intérimaires d'un jour de l'ancien jeu ne sont pas repris.
 - Le salaire est **recalculé sur la grille officielle** (poste + expérience), car l'ancien jeu comptait autrement.
-- Si l'ancienne équipe n'a personne en cuisine, le patron y passe. Si elle est vide, le restaurant reste fermé jusqu'au recrutement. **La carte est reprise** (v0.4) : chaque plat de l'ancienne carte qui existe dans Bistrot garde sa place et son prix (si le prix est raisonnable) ; ensuite la carte est ramenée aux limites 6/9/6 et complétée si besoin. Les plats de l'ancien jeu absents de Bistrot (saison, menu du jour, boissons) sont gardés dans la copie pour plus tard. Les stocks, les plannings et le plan seront repris aux étapes suivantes.
+- Si l'ancienne équipe n'a personne en cuisine, le patron y passe. Si elle est vide, le restaurant reste fermé jusqu'au recrutement. **La carte est reprise** (v0.4) : chaque plat de l'ancienne carte qui existe dans Bistrot garde sa place et son prix (si le prix est raisonnable) ; ensuite la carte est ramenée aux limites 6/9/6 et complétée si besoin. Les plats de l'ancien jeu absents de Bistrot (saison, menu du jour, boissons) sont gardés dans la copie pour plus tard. **Les stocks sont repris** (v0.5) : quantités, dates limites (recalculées par rapport au jour repris ; ce qui est déjà périmé est jeté), prix payés, et les commandes en route sont livrées tout de suite (déjà payées dans l'ancien jeu). Si au moins un produit avait la commande automatique, elle est activée. Une partie sans stock lisible reçoit les premières courses. La réserve peut déborder après la reprise : rien n'est jeté, on ne peut juste pas commander dans ce rangement tant qu'il déborde. Les plannings et le plan seront repris aux étapes suivantes.
 - Les anciennes sauvegardes testées vont de la version 9 à la version 11 de l'ancien format (Chez YaYa v8 à v10.2), dont une partie au « Jour 0 » sans équipe, et une partie à Tokyo.
 
 ## 9. Affichage sur téléphone
@@ -241,40 +298,49 @@ Tailles de référence testées (en pixels « CSS », téléphone en paysage) :
 - Ces chiffres sont mesurés automatiquement par `outils/tester.py` à chaque version.
 - Installé sur l'écran d'accueil, le jeu s'ouvre **en plein écran et en paysage**.
 
-## 10. Équilibre mesuré (simulateur, 30 jours, Facile)
+## 10. Équilibre mesuré (simulateur, 30 jours, Facile, v0.5)
 
-Équipe testée : patron en salle + 1 serveur + 1 commis de cuisine, prix conseillés.
+Équipe testée : patron en salle + 1 serveur + 1 commis de cuisine, prix conseillés, **commande automatique** (Facile), partie commencée le 25 novembre (le 1er décembre passe pendant le test : les plats de saison changent).
 
-| Lieu | Clients servis par jour | Repartis faute de place | Recettes par jour | Ticket moyen par table | Coût matière | Plats renvoyés | Pourboires |
-|---|---|---|---|---|---|---|---|
-| Mayotte | 40 | 2 % | 1 029 € | 70,50 € | 24 % | 0,5 | 14,65 € |
-| La Réunion | 63 | 4 % | 1 563 € | 66,21 € | 23 % | 1,2 | 20,10 € |
-| Bretagne | 68 | 4 % | 1 512 € | 59,36 € | 26 % | 0,1 | 22,15 € |
-| Île-de-France | 77 | 6 % | 2 010 € | 68,84 € | 27 % | 1,6 | 24,53 € |
-| Paris | 93 | 10 % | 2 712 € | 75,84 € | 26 % | 2,1 | 38,10 € |
-| Tokyo | 99 | 13 % | 2 767 € | 73,19 € | 24 % | 1,9 | 0 € |
-| New York | 100 | 14 % | 3 391 € | 88,38 € | 27 % | 3,0 | 540,90 € |
+| Lieu | Servis par jour | Repartis faute de place | Recettes par jour | Achats de produits | Salaires (estimés) | Résultat par jour | Gaspillage | Ruptures par jour | Menus du jour | Boissons |
+|---|---|---|---|---|---|---|---|---|---|---|
+| Mayotte | 36 | 0 % | 1 221 € | 351 € (29 %) | 161 € | **708 €** | 18 portions (57 €) | 0,5 | 12 + 7 à emporter | 45 |
+| La Réunion | 61 | 2 % | 1 992 € | 441 € (22 %) | 158 € | **1 393 €** | 8 portions (12 €) | 0,5 | 19 + 7 | 76 |
+| Bretagne | 69 | 5 % | 1 915 € | 490 € (26 %) | 161 € | **1 264 €** | 12 portions (26 €) | 0,1 | 21 + 6 | 86 |
+| Île-de-France | 76 | 6 % | 2 393 € | 646 € (27 %) | 175 € | **1 572 €** | 15 portions (45 €) | 0,2 | 24 + 6 | 92 |
+| Paris | 88 | 10 % | 3 115 € | 712 € (23 %) | 213 € | **2 189 €** | 5 portions (6 €) | 0 | 26 + 6 | 107 |
+| Tokyo | 99 | 13 % | 3 549 € | 728 € (21 %) | 175 € | **2 646 €** | 7 portions (23 €) | 1,7 | 26 + 6 | 120 |
+| New York | 101 | 15 % | 4 221 € | 944 € (22 %) | 223 € | **3 054 €** | 1 portion (1 €) | 0,6 | 29 + 6 | 123 |
+
+- **Un joueur moyen reste bénéficiaire partout en Facile** (contrôle automatique). Résultat = recettes − achats − salaires des employés (35 h, sans charges ; loyer et charges viendront avec l'étape « Argent »).
+- Les recettes ont augmenté depuis la v0.4 (boissons et menu du jour) ; les achats font 21 à 29 % des recettes.
+
+**Ruptures expliquées** (Paris, 6 jours) : toutes les ruptures ont une cause affichée (contrôle automatique).
+
+| Façon de jouer | Ruptures | Cause donnée |
+|---|---|---|
+| Commande automatique (Facile, 7 lieux, 30 jours) | 0 à 1,7 par jour | 104 fois « il s'en est vendu plus que prévu », 2 fois « la commande arrive à … » |
+| Commande automatique sans marge de sécurité | 1 | « il s'en est vendu plus que prévu : augmente la marge » |
+| Commande chaque soir au grossiste avec « Proposer les quantités » | 1 | « la dernière commande était trop petite » |
+| Ne jamais commander | 105 (414 clients partis sans manger) | « rien n'a été commandé depuis hier » |
+
+Autres contrôles : 300 pains achetés sans clients → jetés en 3 matins et payés quand même ; les fruits coûtent 0,64 € en mai contre 0,98 € en novembre (et 0,60 € à La Réunion en novembre, saisons inversées) ; au 1er juin, les asperges quittent la carte et les tomates-burrata arrivent.
 
 Effet des prix à Paris (même équipe, 10 jours, moyenne par jour) :
 
-| Prix de toute la carte | Clients servis | Recettes | Marge brute estimée |
+| Prix de toute la carte | Clients servis | Recettes | Marge brute |
 |---|---|---|---|
-| × 0,7 | 106 | 2 343 € | 1 503 € |
-| × 1 (conseillé) | 94 | 2 726 € | 2 022 € |
-| × 1,3 | 61 | 2 080 € | 1 658 € |
-| × 1,6 | 41 | 1 591 € | 1 326 € |
-
-Le prix conseillé rapporte le plus : trop bas, la salle est pleine mais on gagne peu par assiette ; trop haut, elle se vide.
-
-Cuissons à New York (10 jours, un seul commis) : qualité 2 → 36 plats renvoyés, qualité 9 → 3.
+| × 0,7 | 110 | 3 204 € | 2 404 € |
+| × 1 (conseillé) | 95 | 3 342 € | 2 674 € |
+| × 1,3 | 52 | 2 019 € | 1 694 € |
+| × 1,6 | 35 | 1 542 € | 1 329 € |
 
 Selon l'équipe, à Paris (moyenne par jour) :
 
 | Équipe | Servis | Repartis | Attente avant la commande |
 |---|---|---|---|
-| Patron seul en salle + 1 commis | 82 | 13 % | 5 min |
-| Patron + 1 serveur + 1 commis | 87 | 12 % | 3 min |
-| Patron + 2 serveurs + chef + commis | 86 | 8 % | 3 min |
+| Patron seul en salle + 1 commis | 83 | 16 % | 6 min |
+| Patron + 1 serveur + 1 commis | 84 | 11 % | 3 min |
+| Patron + 2 serveurs + chef + commis | 87 | 9 % | 3 min |
 
-Contrôles automatiques : l'argent monte exactement des recettes, chaque client servi paie, zéro pourboire là où ce n'est pas l'usage, les 44 cartes sont complètes (allergènes, cuissons, prix > coût).
-Aucune valeur impossible, et toutes les journées se terminent. Détail complet : `tests/resultat-simulation-30-jours.txt`.
+Contrôles automatiques : chaque jour, l'argent bouge exactement de « recettes − achats », chaque client servi paie, aucun stock négatif, zéro pourboire là où ce n'est pas l'usage, les 44 cartes sont complètes. Les 7 anciennes parties de Chez YaYa se reprennent (stocks compris quand ils existent). Aucune valeur impossible, toutes les journées se terminent. Détail complet : `tests/resultat-simulation-30-jours.txt`.

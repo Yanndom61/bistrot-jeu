@@ -20,8 +20,12 @@ UI.majFin = function () {
       B.t('fin_d_repartis', { n: b.repartis }), B.t('fin_d_attente', { n: b.attente }),
       B.t('fin_d_cout', { cout: B.euros(b.coutMatiere || 0) }), B.t('fin_d_marge', { marge: B.euros((b.recettes || 0) - (b.coutMatiere || 0)) }),
       B.t('fin_d_renvois', { n: b.platsRenvoyes || 0 }), B.t('fin_d_pourboires', { total: B.prix(b.pourboires || 0) }),
-      b.meilleurPlat ? B.t('fin_d_meilleur', { nom: b.meilleurPlat.nom, n: b.meilleurPlat.n }) : ''
-    ].filter(Boolean).map(function (x) { return '<span>' + UI.esc(x) + '</span>'; }).join('') + '</div>' +
+      b.meilleurPlat ? B.t('fin_d_meilleur', { nom: b.meilleurPlat.nom, n: b.meilleurPlat.n }) : '',
+      B.t('fin_d_achats', { total: B.euros(b.achats || 0) }), B.t('fin_d_resultat', { total: B.euros(b.resultat || 0) }),
+      B.t('fin_d_gaspillage', { n: b.gaspillagePortions || 0, valeur: B.euros(b.gaspillage || 0) }),
+      B.t('fin_d_mdj', { n: b.mdjVendus || 0, e: b.emporter || 0 }), B.t('fin_d_boissons', { n: b.boissons || 0 }),
+      B.t('fin_d_ruptures', { n: (b.ruptures || []).length, partis: b.partisRupture || 0 })
+    ].filter(Boolean).map(function (x) { return '<span>' + UI.esc(x) + '</span>'; }).join('') + '</div>' + UI.htmlFinRuptures(b) +
     '<button type="button" class="gros principal" id="fin-suivant">' + UI.esc(B.t('fin_suivant', { jour: b.jour + 1 })) + '</button></div>';
   el.hidden = false;
   UI.sauver();
@@ -32,6 +36,14 @@ UI.majFin = function () {
     UI.majBarre();
     if (!UI.S.ouvert) UI.ouvrirVolet('equipe');
   });
+};
+
+UI.htmlFinRuptures = function (b) {
+  const R = b.ruptures || [];
+  if (!R.length) return '';
+  return '<div class="fin-ruptures"><b>' + UI.esc(B.t('fin_ruptures_titre')) + '</b>' + R.slice(0, 4).map(function (r) {
+    return '<span>' + UI.esc(r.nom + ' : ' + B.t(r.cause, r.vars)) + '</span>';
+  }).join('') + (R.length > 4 ? '<span>…</span>' : '') + '</div>';
 };
 
 UI.boucle = function (ts) {
@@ -62,6 +74,7 @@ UI.init = function () {
   UI.initAccueil();
   UI.initEquipe();
   UI.initCarte();
+  UI.initStocks();
   UI.initPlacement();
   UI.initPortrait();
   const r = UI.chargerPartie();

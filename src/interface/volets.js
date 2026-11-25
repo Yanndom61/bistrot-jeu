@@ -5,9 +5,10 @@ UI.voletOuvert = null;
 UI.ouvrirVolet = function (quoi) {
   UI.voletOuvert = quoi;
   const v = UI.$('volet');
-  v.classList.toggle('large', quoi === 'equipe' || quoi === 'carte');
+  v.classList.toggle('large', quoi === 'equipe' || quoi === 'carte' || quoi === 'stocks');
   if (quoi === 'equipe') { UI.candidatCourant = null; UI.renvoiCourant = null; UI.renvoiRefus = null; UI.rafraichirEquipe(true); }
   else if (quoi === 'carte') { UI.platCourant = null; UI.carteRefus = null; UI.rafraichirCarte(true); }
+  else if (quoi === 'stocks') { UI.stMsg = null; UI.rafraichirStocks(true); }
   else if (quoi === 'ticket') {
     const g = UI.S.groupes.find(function (x) { return x.id === UI.ticketGroupe; });
     UI.$('volet-titre').textContent = B.t('ticket_titre');
@@ -17,6 +18,7 @@ UI.ouvrirVolet = function (quoi) {
     UI.$('volet-titre').textContent = B.t(quoi === 'journal' ? 'journal_titre' : 'menu_titre');
     UI.$('volet-corps').innerHTML = quoi === 'journal' ? UI.htmlJournal() : UI.htmlMenu();
   }
+  clearTimeout(UI._cacheVolet);
   UI.$('voile').hidden = false;
   v.hidden = false;
   requestAnimationFrame(function () { v.classList.add('ouvert'); });
@@ -28,7 +30,8 @@ UI.fermerVolet = function () {
   const v = UI.$('volet');
   v.classList.remove('ouvert');
   UI.$('voile').hidden = true;
-  setTimeout(function () { if (!v.classList.contains('ouvert')) v.hidden = true; }, 220);
+  clearTimeout(UI._cacheVolet);
+  UI._cacheVolet = setTimeout(function () { if (!v.classList.contains('ouvert')) v.hidden = true; }, 220);
   UI.voletOuvert = null;
   UI.candidatCourant = null;
   UI.renvoiCourant = null;
@@ -36,6 +39,7 @@ UI.fermerVolet = function () {
   UI.platCourant = null;
   UI.carteRefus = null;
   UI.ticketGroupe = null;
+  UI.stMsg = null;
   UI.pause('volet', false);
   UI.majDetail();
 };

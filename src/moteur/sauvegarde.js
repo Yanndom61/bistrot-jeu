@@ -1,7 +1,7 @@
 /* sauvegarde.js — enregistrer et relire une partie. Chaque sauvegarde porte un numéro de version.
    Quand le format change, on ajoute une étape dans B.MIGRATIONS (de la version n à n+1) :
    ainsi chaque nouvelle version du jeu sait relire toutes les anciennes. */
-B.VERSION_SAUVEGARDE = 4;
+B.VERSION_SAUVEGARDE = 5;
 
 B.MIGRATIONS = {
   /* v1 → v2 (Bistrot 0.2) : l'équipe arrive. Le patron démarre seul (Léa n'est plus là), avec des candidats.
@@ -51,6 +51,20 @@ B.MIGRATIONS = {
       }
     });
     S.version = 4;
+    return S;
+  },
+  /* v4 → v5 (Bistrot 0.5) : stocks, boissons, plats de saison, menu du jour. Le calendrier démarre à la date de création ;
+     la carte reçoit les boissons ; premières courses livrées et payées ; les commandes déjà prises ne touchent pas la réserve. */
+  4: function (S) {
+    S.calendrier = { debut: (S.creeLe || '2026-11-25').slice(0, 10) };
+    const v = B.statsVides();
+    for (const k in v) if (S.stats.jour[k] == null) S.stats.jour[k] = v[k];
+    B.carte.catalogue(S).forEach(function (d) {
+      if (!S.carte.plats[d.id]) S.carte.plats[d.id] = { on: d.cat === 'boisson' && !d.saison, prix: B.carte.prixConseille(S, d) };
+    });
+    B.carte.completer(S);
+    B.stock.creer(S);
+    S.version = 5;
     return S;
   }
 };

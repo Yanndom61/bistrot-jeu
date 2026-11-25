@@ -1,0 +1,28 @@
+# MIN de Rungis — volaille — mercuriale officielle RNM / FranceAgriMer (code M 0156)
+# Séance du 02/11/2026 · relevé le 25/11/2026 sur https://hallesx.com/mercuriale/rungis-volaille (prix moyen de gros, € HT par kg sauf mention)
+CANARD de Barbarie (cuisse) France standard = 6,90 €
+DINDE (filet) France standard = 9,20 €
+POULET (entier) effilé France biologique = 8,30 €
+CAILLE prêt à cuire - de 180 g France (la pièce) = 2,10 €
+CAILLE prêt à cuire +180g France (la pièce) = 2,30 €
+CANARD (magret) France standard = 14,50 €
+CANARD de Barbarie (filet) France standard = 12,70 €
+CANE de Barbarie (entière) effilé - de 2 kg France standard = 7,40 €
+DINDE (cuisse) 1 kg et + France standard = 4,90 €
+FOIE GRAS canard éveiné France extra sous-vide = 40,00 €
+FOIE GRAS canard éveiné France première qualité sous-vide = 36,00 €
+FOIE GRAS canard France standard sous-vide = 33,00 €
+LAPIN (entier) France standard = 7,80 €
+LAPIN (entier) France trié = 8,30 €
+PINTADE (cuisse) France standard = 6,60 €
+PINTADE (entière) prêt à cuire France label = 7,90 €
+PINTADE (entière) prêt à cuire France standard = 6,80 €
+POULET (cuisse déjointée) France label = 7,10 €
+POULET (cuisse et portion dos) France standard = 2,70 €
+POULET (cuisse et portion dos) U.E. standard = 2,60 €
+POULET (entier) prêt à cuire France label = 5,70 €
+POULET (entier) prêt à cuire France standard = 3,70 €
+POULET (filet) France label sous-vide = 15,00 €
+POULET (filet) France standard sous-vide = 7,90 €
+POULET (filet) U.E. standard = 6,00 €
+POULET (suprême) France standard = 8,00 €

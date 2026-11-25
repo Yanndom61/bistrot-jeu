@@ -47,11 +47,14 @@ B.ancien.convertir = function (o, infos) {
   S.jour = Math.max(1, r.jour);
   S.argent = r.argent;
   S.note = Math.max(0, Math.min(5, r.note));
+  B.stock.creer(S, true);
+  const stocks = B.ancien.reprendreStocks(S, o);
+  if (!stocks.produits) { B.stock.premieresCourses(S); B.menuJour.calculer(S); }
   S.origine = {
     jeu: 'Chez YaYa', versionSauvegarde: r.versionSauvegarde,
     cle: infos && infos.cle || null, reprisLe: infos && infos.date || null,
-    reprisPourLinstant: ['nom', 'lieu', 'jour', 'argent', 'note', 'equipe', 'carte'],
-    carte: carte
+    reprisPourLinstant: ['nom', 'lieu', 'jour', 'argent', 'note', 'equipe', 'carte', 'stocks'],
+    carte: carte, stocks: stocks
   };
   return S;
 };
@@ -91,8 +94,14 @@ B.ancien.reprendreCarte = function (S, o) {
   B.carte.catalogue(S).forEach(function (d) {
     const a = m[d.id];
     if (!a || typeof a !== 'object' || typeof a.on !== 'boolean') return;
-    if (!touche) { B.carte.CATS.forEach(function (c) { B.carte.surCarte(S, c).forEach(function (id) { S.carte.plats[id].on = false; }); }); touche = true; }
-    S.carte.plats[d.id].on = a.on;
+    if (!touche) {
+      /* on repart de zéro pour chaque catégorie présente dans l'ancienne carte */
+      const presentes = {};
+      B.carte.catalogue(S).forEach(function (x) { if (m[x.id] && typeof m[x.id].on === 'boolean') presentes[x.cat] = 1; });
+      B.carte.TOUTES.forEach(function (c) { if (presentes[c]) B.carte.surCarte(S, c).forEach(function (id) { S.carte.plats[id].on = false; }); });
+      touche = true;
+    }
+    S.carte.plats[d.id].on = a.on && B.carte.enSaison(S, d);
     const conseille = B.carte.prixConseille(S, d), prix = +a.price;
     if (isFinite(prix) && prix >= P.minimum && prix <= conseille * P.maxFoisConseille) S.carte.plats[d.id].prix = Math.round(prix * 2) / 2;
     r.lus++;
@@ -102,6 +111,47 @@ B.ancien.reprendreCarte = function (S, o) {
   const avant = JSON.stringify(B.carte.surCarte(S));
   B.carte.completer(S);
   if (JSON.stringify(B.carte.surCarte(S)) !== avant) r.ajustes = 1;
+  return r;
+};
+
+/* Reprend la réserve de l'ancienne partie : quantités, dates limites (lots), prix payés, commandes en route,
+   commande automatique. Les produits que Bistrot ne connaît pas sont ignorés. Renvoie un résumé. */
+B.ancien.reprendreStocks = function (S, o) {
+  const r = { produits: 0, portions: 0, perimes: 0, commandes: 0 };
+  if (!o || !o.stock || typeof o.stock !== 'object') return r;
+  const jourAncien = Math.floor((+o.t || 0) / 1440);
+  S.stocks.lots = {};
+  for (const i in o.stock) {
+    const st = o.stock[i];
+    if (!B.DATA.stocks.ingredients[i] || !st || !(+st.q >= 1)) continue;
+    const prix = isFinite(+st.cost) && +st.cost > 0 ? B.r2(+st.cost) : B.stock.prixAchat(S, i, 'grossiste');
+    const lots = Array.isArray(o.lots && o.lots[i]) ? o.lots[i].filter(function (l) { return l && +l.q > 0 && isFinite(+l.exp); }) : [];
+    let reste = Math.floor(+st.q);
+    lots.sort(function (a, b) { return a.exp - b.exp; }).forEach(function (l) {
+      const q = Math.min(reste, Math.floor(+l.q));
+      if (q <= 0) return;
+      const dlc = S.jour + (Math.floor(+l.exp) - jourAncien);
+      if (dlc < S.jour) { r.perimes += q; reste -= q; return; }
+      B.stock.lots(S, i).push({ q: q, dlc: dlc, prix: prix, four: 'grossiste' });
+      reste -= q;
+    });
+    if (reste > 0) B.stock.lots(S, i).push({ q: reste, dlc: S.jour + B.stock.info(i).dlc - 1, prix: prix, four: 'grossiste' });
+    B.stock.lots(S, i).sort(function (a, b) { return a.dlc - b.dlc; });
+    r.produits++; r.portions += Math.floor(+st.q) - 0;
+  }
+  r.portions -= r.perimes;
+  const F = { marche: 'marche', gros: 'grossiste', disc: 'discount', bio: 'bio' };
+  (Array.isArray(o.orders) ? o.orders : []).forEach(function (c) {
+    if (!c || !c.items) return;
+    const lignes = {}, prix = {};
+    for (const i in c.items) if (B.DATA.stocks.ingredients[i] && +c.items[i] > 0) { lignes[i] = Math.floor(+c.items[i]); prix[i] = B.r2(+(c.unit && c.unit[i]) || B.stock.prixAchat(S, i, 'grossiste')); }
+    if (!Object.keys(lignes).length) return;
+    S.stocks.commandes.push({ id: S.prochainId++, four: F[c.sup] || 'grossiste', lignes: lignes, prix: prix, cout: B.r2(+c.cost || 0), passee: B.maintenant(S), arrivee: B.maintenant(S), auto: false });
+    r.commandes++;
+  });
+  if (o.auto && typeof o.auto === 'object') S.stocks.auto = Object.keys(o.auto).some(function (i) { return o.auto[i] && o.auto[i].on; });
+  B.stock.livrer(S, true);
+  B.menuJour.calculer(S);
   return r;
 };
 

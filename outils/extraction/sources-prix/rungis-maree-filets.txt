@@ -1,0 +1,25 @@
+# MIN de Rungis — marée filets — mercuriale officielle RNM / FranceAgriMer (code M 0502)
+# Séance du 12/11/2026 · relevé le 25/11/2026 sur https://hallesx.com/mercuriale/rungis-maree-filets (prix moyen de gros, € HT par kg sauf mention)
+CABILLAUD (dos de cabillaud) = 22,50 €
+CABILLAUD (filet) 100-200g France = 16,10 €
+CABILLAUD (filet) 200-300g France = 17,50 €
+ÉGLEFIN (filet) 100-200g U.E. = 11,00 €
+ESPADON (filet) sous vide Import = 16,50 €
+FLET (filet) Import = 15,50 €
+FLÉTAN (filet) France = 25,00 €
+GRENADIER (filet) moyen France = 20,50 €
+JULIENNE (filet) France = 18,00 €
+LIEU jaune (filet) France = 16,50 €
+LIEU noir (filet) France = 11,50 €
+LINGUE (filet) Import = 14,00 €
+MERLAN brillant (filet) levé à la main de chalut 200-300g France = 14,70 €
+MERLU (filet) Import = 13,20 €
+PERCHE (filet) Import = 12,50 €
+RASCASSE DU NORD [Sébaste] (filet) moyen Import = 12,00 €
+SABRE (filet) Import = 17,50 €
+SANDRE (filet) moyen Import = 12,00 €
+SARDINE fraîche (papillon) France = 7,20 €
+SAUMON frais (filet) tranche aquaculture 3-4kg Norvège = 13,50 €
+SAUMON frais (filet) tranche aquaculture 3-4kg U.E. = 14,00 €
+THON rouge (filet) sous vide moyen Import = 22,50 €
+TRUITE col.nat.renforcée (filet) France = 10,20 €

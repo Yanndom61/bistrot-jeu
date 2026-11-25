@@ -1,6 +1,6 @@
 /* Service worker : garde le jeu en mémoire pour jouer sans connexion.
    Page : réseau d'abord (pour recevoir les mises à jour), mémoire si pas de réseau. */
-const CACHE = 'bistrotjeu-test-425ae5d4a0';
+const CACHE = 'bistrotjeu-test-51a97eae2e';
 const PREFIXE = 'bistrotjeu-test-';
 const FICHIERS = ['./', './index.html', './manifest.webmanifest', './icone-192.png', './icone-512.png', './icone-masquable-512.png'];
 

@@ -1,0 +1,35 @@
+# MIN de Rungis — découpes de viande — mercuriale officielle RNM / FranceAgriMer (code M 0162)
+# Séance du 06/11/2026 · relevé le 25/11/2026 sur https://hallesx.com/mercuriale/rungis-decoupes-viande (prix moyen de gros, € HT par kg sauf mention)
+VEAU (filet) semi-paré U.E. sous-vide = 18,85 €
+AGNEAU (collier) U.E. (y.c. Royaume-Uni) = 8,65 €
+BOEUF vache (jarret) semi-paré U.E. sous-vide = 7,90 €
+VEAU (jarret avec os) semi-paré U.E. sous-vide = 10,60 €
+BOEUF vache (collier) semi-paré U.E. sous-vide = 7,75 €
+AGNEAU (culotte) U.E. (y.c. Royaume-Uni) = 10,45 €
+BOEUF vache (côte détalonnée) semi-paré U.E. sous-vide = 10,65 €
+BOEUF vache (semelle) semi-paré U.E. sous-vide = 9,45 €
+BOEUF vache (filet) semi-paré U.E. sous-vide = 25,40 €
+BOEUF vache (entrecôte) semi-paré U.E. sous-vide = 14,90 €
+BOEUF vache (bavette de flanchet) prêt à découper U.E. sous-vide = 11,15 €
+AGNEAU (carré) U.E. (y.c. Royaume-Uni) = 9,10 €
+AGNEAU (épaule) U.E. (y.c. Royaume-Uni) = 11,55 €
+AGNEAU (poitrine) U.E. (y.c. Royaume-Uni) = 5,70 €
+AGNEAU (selle) U.E. (y.c. Royaume-Uni) = 7,30 €
+BOEUF vache (basse côte) semi-paré U.E. sous-vide = 8,90 €
+BOEUF vache (bavette d'aloyau) prêt à découper U.E. sous-vide = 11,10 €
+BOEUF vache (boule de macreuse) prêt à découper U.E. sous-vide = 10,60 €
+BOEUF vache (coeur de rumsteck) prêt à découper U.E. sous-vide = 10,50 €
+BOEUF vache (faux filet) semi-paré U.E. sous-vide = 14,55 €
+BOEUF vache (paleron) semi-paré U.E. sous-vide = 10,65 €
+BOEUF vache (rond de gite) prêt à découper U.E. sous-vide = 12,05 €
+BOEUF vache (tende de tranche) semi-paré U.E. sous-vide = 12,50 €
+BOEUF vache (tranche grasse) semi-paré U.E. sous-vide = 9,25 €
+VEAU (bas de carré sans os) semi-paré U.E. sous-vide = 10,30 €
+VEAU (carré avec os) semi-paré U.E. sous-vide = 13,70 €
+VEAU (épaule sans os) semi-paré U.E. sous-vide = 9,95 €
+VEAU (nerveux sans os) semi-paré U.E. sous-vide = 11,65 €
+VEAU (noix patissière) semi-paré U.E. sous-vide = 12,00 €
+VEAU (noix) semi-paré U.E. sous-vide = 14,60 €
+VEAU (poitrine sans os) semi-paré U.E. sous-vide = 5,80 €
+VEAU (quasi) semi-paré U.E. sous-vide = 14,00 €
+VEAU (sous noix) semi-paré U.E. sous-vide = 11,50 €

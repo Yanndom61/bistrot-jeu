@@ -1,0 +1,645 @@
+{
+ "_source": "Durées de conservation, fournisseurs (prix, délais, frais de livraison, origine) et menu du jour repris de l'ancien jeu (bistrot.html : SHELF, V98ING, V10ING, SUP, V10L.sup, MDJ_P0, MDJ_CAP). Rangement et capacités : choix simples de Bistrot (REGLES §4c).",
+ "rangements": {
+  "froid": {
+   "nom": "Chambre froide",
+   "emoji": "🥶",
+   "capacite": 1000
+  },
+  "congel": {
+   "nom": "Congélateur",
+   "emoji": "🧊",
+   "capacite": 200
+  },
+  "sec": {
+   "nom": "Étagères",
+   "emoji": "🗄️",
+   "capacite": 2000
+  }
+ },
+ "ingredients": {
+  "pain": {
+   "dlc": 2,
+   "rangement": "sec"
+  },
+  "jambon": {
+   "dlc": 8,
+   "rangement": "froid"
+  },
+  "fromage": {
+   "dlc": 16,
+   "rangement": "froid"
+  },
+  "legumes": {
+   "dlc": 5,
+   "rangement": "froid"
+  },
+  "oignon": {
+   "dlc": 30,
+   "rangement": "sec"
+  },
+  "boeuf": {
+   "dlc": 5,
+   "rangement": "froid"
+  },
+  "paleron": {
+   "dlc": 6,
+   "rangement": "froid"
+  },
+  "patate": {
+   "dlc": 30,
+   "rangement": "sec"
+  },
+  "poisson": {
+   "dlc": 2,
+   "rangement": "froid"
+  },
+  "creme": {
+   "dlc": 9,
+   "rangement": "froid"
+  },
+  "pomme": {
+   "dlc": 16,
+   "rangement": "froid"
+  },
+  "epicerie": {
+   "dlc": 240,
+   "rangement": "sec"
+  },
+  "cafe": {
+   "dlc": 150,
+   "rangement": "sec"
+  },
+  "vin": {
+   "dlc": 365,
+   "rangement": "sec"
+  },
+  "volaille": {
+   "dlc": 5,
+   "rangement": "froid"
+  },
+  "chocolat": {
+   "dlc": 180,
+   "rangement": "sec"
+  },
+  "the": {
+   "dlc": 300,
+   "rangement": "sec"
+  },
+  "biere": {
+   "dlc": 150,
+   "rangement": "sec"
+  },
+  "soda": {
+   "dlc": 240,
+   "rangement": "sec"
+  },
+  "eau": {
+   "dlc": 365,
+   "rangement": "sec"
+  },
+  "spirit": {
+   "dlc": 730,
+   "rangement": "sec"
+  },
+  "veau": {
+   "dlc": 5,
+   "rangement": "froid"
+  },
+  "fruits": {
+   "dlc": 5,
+   "rangement": "froid"
+  },
+  "feculents": {
+   "dlc": 300,
+   "rangement": "sec"
+  },
+  "huile": {
+   "dlc": 365,
+   "rangement": "sec"
+  },
+  "beurre": {
+   "dlc": 30,
+   "rangement": "froid"
+  },
+  "salverte": {
+   "dlc": 4,
+   "rangement": "froid"
+  },
+  "legsais": {
+   "dlc": 6,
+   "rangement": "froid"
+  },
+  "glace": {
+   "dlc": 180,
+   "rangement": "congel"
+  },
+  "fruitf": {
+   "dlc": 10,
+   "rangement": "froid"
+  },
+  "lait": {
+   "dlc": 7,
+   "rangement": "froid"
+  },
+  "porc": {
+   "dlc": 4,
+   "rangement": "froid"
+  },
+  "agneau": {
+   "dlc": 4,
+   "rangement": "froid"
+  },
+  "canard": {
+   "dlc": 4,
+   "rangement": "froid"
+  },
+  "saucisse": {
+   "dlc": 10,
+   "rangement": "froid"
+  },
+  "fdm": {
+   "dlc": 90,
+   "rangement": "congel"
+  },
+  "poissonl": {
+   "dlc": 2,
+   "rangement": "froid"
+  },
+  "morue": {
+   "dlc": 60,
+   "rangement": "sec"
+  },
+  "nouilles": {
+   "dlc": 180,
+   "rangement": "sec"
+  },
+  "sarrasin": {
+   "dlc": 180,
+   "rangement": "sec"
+  },
+  "mais": {
+   "dlc": 60,
+   "rangement": "sec"
+  },
+  "legsec": {
+   "dlc": 365,
+   "rangement": "sec"
+  },
+  "manioc": {
+   "dlc": 14,
+   "rangement": "froid"
+  },
+  "coco": {
+   "dlc": 180,
+   "rangement": "sec"
+  },
+  "epices": {
+   "dlc": 365,
+   "rangement": "sec"
+  },
+  "herbes": {
+   "dlc": 3,
+   "rangement": "froid"
+  },
+  "olive": {
+   "dlc": 365,
+   "rangement": "sec"
+  },
+  "soja": {
+   "dlc": 60,
+   "rangement": "sec"
+  },
+  "algues": {
+   "dlc": 180,
+   "rangement": "sec"
+  },
+  "yaourt": {
+   "dlc": 7,
+   "rangement": "froid"
+  },
+  "fruitex": {
+   "dlc": 5,
+   "rangement": "froid"
+  },
+  "miel": {
+   "dlc": 365,
+   "rangement": "sec"
+  },
+  "alcloc": {
+   "dlc": 999,
+   "rangement": "sec"
+  },
+  "boisloc": {
+   "dlc": 30,
+   "rangement": "sec"
+  }
+ },
+ "fournisseurs": {
+  "marche": {
+   "type": "Marché",
+   "nom": "Marché du quartier",
+   "emoji": "🧺",
+   "coef": 1.2,
+   "qualite": 4.6,
+   "delai": 120,
+   "frais": 8,
+   "exclus": [],
+   "origine": 1
+  },
+  "grossiste": {
+   "type": "Grossiste",
+   "nom": "Grossiste Métropole",
+   "emoji": "🚚",
+   "coef": 1.0,
+   "qualite": 3.4,
+   "delai": 480,
+   "frais": 25,
+   "exclus": [],
+   "origine": 2
+  },
+  "discount": {
+   "type": "Discount",
+   "nom": "Frais'Éco Discount",
+   "emoji": "🏷️",
+   "coef": 0.78,
+   "qualite": 2.2,
+   "delai": 1440,
+   "frais": 12,
+   "exclus": [],
+   "origine": 3
+  },
+  "bio": {
+   "type": "Bio",
+   "nom": "Ferme du Perche (bio)",
+   "emoji": "🌾",
+   "coef": 1.45,
+   "qualite": 5.0,
+   "delai": 720,
+   "frais": 15,
+   "exclus": [
+    "poisson",
+    "cafe",
+    "vin",
+    "biere",
+    "spirit",
+    "poissonl",
+    "fdm",
+    "morue",
+    "alcloc",
+    "spirit"
+   ],
+   "origine": 0
+  }
+ },
+ "nomsFournisseurs": {
+  "paris": {
+   "marche": "Marché d’Aligre",
+   "grossiste": "Grossiste de Rungis",
+   "discount": "Prix’Malins Discount",
+   "bio": "Ferme bio de la Brie"
+  },
+  "idf": {
+   "marche": "Marché de Meaux",
+   "grossiste": "Grossiste de Rungis",
+   "discount": "Prix’Malins Discount",
+   "bio": "Les Jardins bio du Vexin"
+  },
+  "ara": {
+   "marche": "Marché de la Croix-Rousse",
+   "grossiste": "Grossiste de Corbas",
+   "discount": "Prix’Malins Discount",
+   "bio": "Ferme bio du Vercors"
+  },
+  "bfc": {
+   "marche": "Marché de Dijon",
+   "grossiste": "Grossiste de Chalon",
+   "discount": "Prix’Malins Discount",
+   "bio": "Ferme bio du Morvan"
+  },
+  "bretagne": {
+   "marche": "Marché des Lices",
+   "grossiste": "Grossiste de Rennes",
+   "discount": "Prix’Malins Discount",
+   "bio": "Ferme bio d’Armor"
+  },
+  "centre": {
+   "marche": "Marché des Halles de Tours",
+   "grossiste": "Grossiste d’Orléans",
+   "discount": "Prix’Malins Discount",
+   "bio": "Ferme bio de Sologne"
+  },
+  "corse": {
+   "marche": "Marché d’Ajaccio",
+   "grossiste": "Grossiste de Bastia",
+   "discount": "Prix’Malins Discount",
+   "bio": "Ferme bio du Niolu"
+  },
+  "grand-est": {
+   "marche": "Marché du Neudorf",
+   "grossiste": "Grossiste de Nancy",
+   "discount": "Prix’Malins Discount",
+   "bio": "Ferme bio des Vosges"
+  },
+  "hauts": {
+   "marche": "Marché de Wazemmes",
+   "grossiste": "Grossiste de Lomme",
+   "discount": "Prix’Malins Discount",
+   "bio": "Ferme bio de l’Avesnois"
+  },
+  "normandie": {
+   "marche": "Marché de Caen",
+   "grossiste": "Grossiste du Havre",
+   "discount": "Prix’Malins Discount",
+   "bio": "Ferme bio du Pays d’Auge"
+  },
+  "aquitaine": {
+   "marche": "Marché des Capucins",
+   "grossiste": "Grossiste de Bordeaux-Brazza",
+   "discount": "Prix’Malins Discount",
+   "bio": "Ferme bio des Landes"
+  },
+  "occitanie": {
+   "marche": "Marché Victor-Hugo",
+   "grossiste": "Grossiste de Montpellier",
+   "discount": "Prix’Malins Discount",
+   "bio": "Ferme bio du Lauragais"
+  },
+  "loire": {
+   "marche": "Marché de Talensac",
+   "grossiste": "Grossiste de Nantes",
+   "discount": "Prix’Malins Discount",
+   "bio": "Ferme bio du Marais poitevin"
+  },
+  "provence": {
+   "marche": "Marché du cours Saleya",
+   "grossiste": "Grossiste des Arnavaux",
+   "discount": "Prix’Malins Discount",
+   "bio": "Ferme bio du Luberon"
+  },
+  "guadeloupe": {
+   "marche": "Marché de Pointe-à-Pitre",
+   "grossiste": "Grossiste de Jarry",
+   "discount": "Prix’Malins Discount",
+   "bio": "Jardin créole bio"
+  },
+  "martinique": {
+   "marche": "Grand marché de Fort-de-France",
+   "grossiste": "Grossiste du Lamentin",
+   "discount": "Prix’Malins Discount",
+   "bio": "Jardin créole bio"
+  },
+  "guyane": {
+   "marche": "Marché de Cayenne",
+   "grossiste": "Grossiste de Rémire",
+   "discount": "Prix’Malins Discount",
+   "bio": "Abattis bio de Cacao"
+  },
+  "reunion": {
+   "marche": "Marché du Chaudron",
+   "grossiste": "Grossiste du Port",
+   "discount": "Prix’Malins Discount",
+   "bio": "Jardin bio des Hauts"
+  },
+  "mayotte": {
+   "marche": "Marché de Mamoudzou",
+   "grossiste": "Grossiste de Kawéni",
+   "discount": "Prix’Malins Discount",
+   "bio": "Jardin mahorais bio"
+  },
+  "polynesie": {
+   "marche": "Marché de Papeete",
+   "grossiste": "Grossiste de Faa’a",
+   "discount": "Prix’Malins Discount",
+   "bio": "Fa’a’apu bio (jardin)"
+  },
+  "caledonie": {
+   "marche": "Marché de Port-Moselle",
+   "grossiste": "Grossiste de Ducos",
+   "discount": "Prix’Malins Discount",
+   "bio": "Tribu bio de Lifou"
+  },
+  "londres": {
+   "marche": "Borough Market",
+   "grossiste": "Grossiste de New Covent Garden",
+   "discount": "Discount de Lewisham",
+   "bio": "Ferme bio du Kent"
+  },
+  "berlin": {
+   "marche": "Marché de Kreuzberg",
+   "grossiste": "Grossiste de Beusselstraße",
+   "discount": "Discount de Neukölln",
+   "bio": "Ferme bio du Brandebourg"
+  },
+  "madrid": {
+   "marche": "Marché de San Miguel",
+   "grossiste": "Grossiste de Mercamadrid",
+   "discount": "Discount de Vallecas",
+   "bio": "Ferme bio de la Sierra"
+  },
+  "rome": {
+   "marche": "Marché du Campo de’ Fiori",
+   "grossiste": "Grossiste du CAR de Rome",
+   "discount": "Discount de Tor Bella Monaca",
+   "bio": "Ferme bio du Latium"
+  },
+  "lisbonne": {
+   "marche": "Marché da Ribeira",
+   "grossiste": "Grossiste du MARL",
+   "discount": "Discount de Chelas",
+   "bio": "Ferme bio de l’Alentejo"
+  },
+  "bruxelles": {
+   "marche": "Marché du Midi",
+   "grossiste": "Grossiste de Mabru",
+   "discount": "Discount d’Anderlecht",
+   "bio": "Ferme bio du Brabant"
+  },
+  "amsterdam": {
+   "marche": "Marché Albert Cuyp",
+   "grossiste": "Grossiste du Food Center",
+   "discount": "Discount de Noord",
+   "bio": "Ferme bio de Waterland"
+  },
+  "vienne": {
+   "marche": "Naschmarkt",
+   "grossiste": "Grossiste de Simmering",
+   "discount": "Discount de Favoriten",
+   "bio": "Ferme bio de Basse-Autriche"
+  },
+  "athenes": {
+   "marche": "Marché central de Varvakios",
+   "grossiste": "Grossiste du Pirée",
+   "discount": "Discount de Peristeri",
+   "bio": "Ferme bio du Péloponnèse"
+  },
+  "moscou": {
+   "marche": "Marché Danilovski",
+   "grossiste": "Grossiste de Fili",
+   "discount": "Discount de Lioublino",
+   "bio": "Ferme bio de Kalouga"
+  },
+  "new-york": {
+   "marche": "Union Square Greenmarket",
+   "grossiste": "Grossiste de Hunts Point",
+   "discount": "Discount du Bronx",
+   "bio": "Ferme bio de la vallée de l’Hudson"
+  },
+  "washington": {
+   "marche": "Eastern Market",
+   "grossiste": "Grossiste de Jessup",
+   "discount": "Discount de Prince George",
+   "bio": "Ferme bio de Virginie"
+  },
+  "ottawa": {
+   "marche": "Marché By",
+   "grossiste": "Grossiste de Gatineau",
+   "discount": "Discount de Vanier",
+   "bio": "Ferme bio de l’Outaouais"
+  },
+  "mexico": {
+   "marche": "Marché de La Merced",
+   "grossiste": "Grossiste de la Central de Abasto",
+   "discount": "Discount d’Iztapalapa",
+   "bio": "Ferme bio de Xochimilco"
+  },
+  "buenos-aires": {
+   "marche": "Marché de San Telmo",
+   "grossiste": "Grossiste du Mercado Central",
+   "discount": "Discount de La Matanza",
+   "bio": "Ferme bio de la Pampa"
+  },
+  "brasilia": {
+   "marche": "Feira de la Torre",
+   "grossiste": "Grossiste du CEASA",
+   "discount": "Discount de Ceilândia",
+   "bio": "Ferme bio du Goiás"
+  },
+  "caire": {
+   "marche": "Marché d’El-Obour",
+   "grossiste": "Grossiste de Rod el-Farag",
+   "discount": "Discount d’Imbaba",
+   "bio": "Ferme bio du Fayoum"
+  },
+  "dakar": {
+   "marche": "Marché Kermel",
+   "grossiste": "Grossiste de Thiaroye",
+   "discount": "Discount de Pikine",
+   "bio": "Jardin bio des Niayes"
+  },
+  "tokyo": {
+   "marche": "Marché de Tsukiji",
+   "grossiste": "Grossiste de Toyosu",
+   "discount": "Discount de Shinjuku",
+   "bio": "Ferme bio de Chiba"
+  },
+  "pekin": {
+   "marche": "Marché de Sanyuanli",
+   "grossiste": "Grossiste de Xinfadi",
+   "discount": "Discount de Tongzhou",
+   "bio": "Ferme bio de Miyun"
+  },
+  "seoul": {
+   "marche": "Marché de Gwangjang",
+   "grossiste": "Grossiste de Garak",
+   "discount": "Discount de Guro",
+   "bio": "Ferme bio de Gangwon"
+  },
+  "bangkok": {
+   "marche": "Marché d’Or Tor Kor",
+   "grossiste": "Grossiste de Talaad Thai",
+   "discount": "Discount de Bang Kapi",
+   "bio": "Ferme bio de Chiang Mai"
+  },
+  "canberra": {
+   "marche": "Marché du Capital Region",
+   "grossiste": "Grossiste de Fyshwick",
+   "discount": "Discount de Belconnen",
+   "bio": "Ferme bio de Nouvelle-Galles"
+  }
+ },
+ "fournisseurHabituel": "grossiste",
+ "qualiteDlc": {
+  "_explication": "Produits frais (DLC ≤ 7 j) : +1 jour chez un fournisseur de qualité ≥ 4, −1 jour si qualité ≤ 2,6 (ancien jeu).",
+  "haute": 4,
+  "basse": 2.6
+ },
+ "auto": {
+  "parDefaut": {
+   "facile": true,
+   "normal": false,
+   "difficile": false
+  },
+  "margeDefaut": 15,
+  "margePas": 5,
+  "margeMax": 50,
+  "joursCouverture": [
+   [
+    3,
+    1
+   ],
+   [
+    16,
+    2
+   ],
+   [
+    9999,
+    4
+   ]
+  ],
+  "clientsParAffluence": 70,
+  "_explication": "Le soir, la commande automatique rachète ce qu'il faut pour 1 jour (DLC ≤ 3 j), 2 jours (DLC ≤ 16 j) ou 4 jours, + la marge de sécurité, moins le stock encore bon demain et ce qui est déjà en route. Si la place manque, toutes les lignes du même rangement sont réduites dans la même proportion."
+ },
+ "premieresCourses": {
+  "jours": 2
+ },
+ "offres": {
+  "min": 2,
+  "max": 3,
+  "remises": [
+   0.15,
+   0.2,
+   0.25,
+   0.3,
+   0.4
+  ]
+ },
+ "menuDuJour": {
+  "portionsSurPlace": 30,
+  "portionsEmporter": 8,
+  "minPortions": 8,
+  "prix": {
+   "ep": 17,
+   "pd": 17,
+   "epd": 22
+  },
+  "poidsFormules": {
+   "ep": 0.34,
+   "pd": 0.36,
+   "epd": 0.3
+  },
+  "probaClient": 0.32,
+  "emporterHeures": [
+   [
+    690,
+    810
+   ],
+   [
+    1110,
+    1230
+   ]
+  ]
+ },
+ "boissons": {
+  "probaApero": 0.15,
+  "probaVin": 0.35,
+  "probaFraiche": 0.55,
+  "probaChaude": 0.35,
+  "probaBouteille": 0.1,
+  "tempsParBoisson": 0.15,
+  "limites": {
+   "min": 3,
+   "max": 20
+  }
+ }
+}

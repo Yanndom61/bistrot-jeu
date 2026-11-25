@@ -2,6 +2,7 @@
    Catalogue repris de l'ancien jeu (donnees/catalogue.json) ; règles dans donnees/carte.json. */
 B.carte = {};
 B.carte.CATS = ['entree', 'plat', 'dessert'];
+B.carte.TOUTES = ['entree', 'plat', 'dessert', 'boisson'];
 B.carte.R = function () { return B.DATA.carte; };
 
 /* ---------- Catalogue du lieu : ses spécialités + les classiques du bistrot ---------- */
@@ -17,6 +18,9 @@ B.carte.catalogue = function (S) {
     out.push(Object.assign({}, d, { local: true }));
   });
   C.classiques.forEach(function (d) { if (!vus[d.id]) { vus[d.id] = true; out.push(Object.assign({}, d, { local: false })); } });
+  (C.saisonniers && C.saisonniers[S.lieu] || []).forEach(function (d) { out.push(Object.assign({}, d, { local: true })); });
+  (C.boissonsLocales && C.boissonsLocales[S.lieu] || []).forEach(function (d) { out.push(Object.assign({}, d, { local: true })); });
+  (C.boissons || []).forEach(function (d) { out.push(Object.assign({}, d, { local: false })); });
   out.forEach(function (d, i) { d.ordre = i; });
   B.carte._cache[S.lieu] = out;
   return out;
@@ -31,33 +35,38 @@ B.carte.prixConseille = function (S, d) {
   const a = B.DATA.carte.prix.arrondiConseille;
   return Math.max(B.DATA.carte.prix.minimum, Math.round(d.prixRef * B.carte.coefPrix(S) / a) * a);
 };
-/* Coût matière ESTIMÉ (provisoire jusqu'aux stocks) : recette × prix de l'ancien jeu × coefficient du lieu. */
+/* Coût matière du jour : recette × prix de gros (Rungis) chez le fournisseur habituel, saison comprise. */
 B.carte.cout = function (S, d) {
-  const I = B.DATA.catalogue.ingredients;
   let c = 0;
-  for (const k in d.recette) c += (I[k] ? I[k].prix : 0.5) * d.recette[k];
-  return Math.round(c * B.carte.coefPrix(S) * 100) / 100;
+  for (const k in d.recette) c += B.stock.prixAchat(S, k, B.stock.habituel(S, k)) * d.recette[k];
+  return Math.round(c * 100) / 100;
 };
+B.carte.enSaison = function (S, d) { return !d.saison || d.saison.indexOf(B.mois(S)) >= 0; };
+B.carte.disponible = function (S, id) { const d = B.carte.plat(S, id); return !!d && (!S.stocks || B.stock.peutFaire(S, d.recette)); };
 B.carte.marge = function (S, id) {
   const d = B.carte.plat(S, id), prix = S.carte.plats[id].prix, cout = B.carte.cout(S, d);
   return { prix: prix, cout: cout, marge: Math.round((prix - cout) * 100) / 100, pct: prix > 0 ? Math.round((prix - cout) / prix * 100) : 0, pctCout: prix > 0 ? Math.round(cout / prix * 100) : 0 };
 };
 B.carte.origineViande = function (S, d) {
   const I = B.DATA.catalogue.ingredients;
-  if (!Object.keys(d.recette).some(function (k) { return I[k] && I[k].viande; })) return null;
-  const o = B.DATA.catalogue.originesViande[S.lieu];
-  return o ? o[1] : 'France';
+  const viandes = Object.keys(d.recette).filter(function (k) { return I[k] && I[k].viande; });
+  if (!viandes.length) return null;
+  /* origine du lot en réserve (le premier servi), sinon celle du fournisseur habituel */
+  const lot = S.stocks && (S.stocks.lots[viandes[0]] || [])[0];
+  return B.stock.origine(S, lot ? lot.four : B.stock.habituel(S, viandes[0]));
 };
 
 /* ---------- La carte du restaurant ---------- */
 B.carte.creer = function (S) {
   const cat = B.carte.catalogue(S), L = B.DATA.carte.limites.max, plats = {};
   const depart = B.DATA.catalogue.carteDepartClassiques[S.lieu] || {};
-  const n = { entree: 0, plat: 0, dessert: 0 };
+  const n = { entree: 0, plat: 0, dessert: 0, boisson: 0 };
   cat.forEach(function (d) { plats[d.id] = { on: false, prix: B.carte.prixConseille(S, d) }; });
   const allumer = function (d) { if (!plats[d.id].on && n[d.cat] < L[d.cat]) { plats[d.id].on = true; n[d.cat]++; } };
+  cat.forEach(function (d) { if (d.saison && B.carte.enSaison(S, d)) allumer(d); });
   B.carte.CATS.forEach(function (c) { (depart[c] || []).forEach(function (id) { const d = B.carte.plat(S, id); if (d) allumer(d); }); });
-  cat.forEach(function (d) { if (d.local) allumer(d); });
+  cat.forEach(function (d) { if (d.local && d.cat !== 'boisson' && !d.saison) allumer(d); });
+  cat.forEach(function (d) { if (d.cat === 'boisson' && !d.saison) allumer(d); });
   S.carte = { plats: plats };
   B.carte.completer(S);
 };
@@ -65,14 +74,15 @@ B.carte.creer = function (S) {
 B.carte.completer = function (S) {
   const cat = B.carte.catalogue(S), Lmin = B.DATA.carte.limites.min, Lmax = B.DATA.carte.limites.max;
   cat.forEach(function (d) { if (!S.carte.plats[d.id]) S.carte.plats[d.id] = { on: false, prix: B.carte.prixConseille(S, d) }; });
-  B.carte.CATS.forEach(function (c) {
+  cat.forEach(function (d) { if (S.carte.plats[d.id].on && !B.carte.enSaison(S, d)) S.carte.plats[d.id].on = false; });
+  B.carte.TOUTES.forEach(function (c) {
     let on = B.carte.surCarte(S, c);
-    for (const d of cat) { if (on.length >= Lmin[c]) break; if (d.cat === c && !S.carte.plats[d.id].on) { S.carte.plats[d.id].on = true; on = B.carte.surCarte(S, c); } }
+    for (const d of cat) { if (on.length >= Lmin[c]) break; if (d.cat === c && !S.carte.plats[d.id].on && B.carte.enSaison(S, d)) { S.carte.plats[d.id].on = true; on = B.carte.surCarte(S, c); } }
     while (on.length > Lmax[c]) { S.carte.plats[on[on.length - 1]].on = false; on = B.carte.surCarte(S, c); }
   });
 };
 B.carte.surCarte = function (S, cat) {
-  return B.carte.catalogue(S).filter(function (d) { return (!cat || d.cat === cat) && S.carte.plats[d.id] && S.carte.plats[d.id].on; }).map(function (d) { return d.id; });
+  return B.carte.catalogue(S).filter(function (d) { return (cat ? d.cat === cat : d.cat !== 'boisson') && S.carte.plats[d.id] && S.carte.plats[d.id].on; }).map(function (d) { return d.id; });
 };
 /* Ajoute ou retire un plat. Renvoie null, ou la clé du texte qui explique pourquoi c'est impossible. */
 B.carte.basculer = function (S, id) {
@@ -80,6 +90,7 @@ B.carte.basculer = function (S, id) {
   if (!d || !p) return 'carte_inconnu';
   const n = B.carte.surCarte(S, d.cat).length;
   if (p.on && n <= L.min[d.cat]) return 'carte_min_' + d.cat;
+  if (!p.on && !B.carte.enSaison(S, d)) return 'carte_hors_saison';
   if (!p.on && n >= L.max[d.cat]) return 'carte_max_' + d.cat;
   p.on = !p.on;
   return null;
@@ -108,15 +119,25 @@ B.carte.tirer = function (S, poids) {
   for (const p of poids) { r -= p.w; if (r < 0) return p.v; }
   return poids[poids.length - 1].v;
 };
-B.carte.choisirPlat = function (S, g, cat) {
+/* Le client choisit parmi la carte. Si son choix est en rupture, on le note (et la cause), puis il choisit autre chose. */
+B.carte.choisirPlat = function (S, g, cat, type) {
   const R = B.DATA.carte.commande;
-  const poids = B.carte.surCarte(S, cat).map(function (id) {
+  const poids = B.carte.surCarte(S, cat).filter(function (id) { return !type || B.carte.plat(S, id).type === type; }).map(function (id) {
     const d = B.carte.plat(S, id), rapport = B.carte.prixConseille(S, d) / S.carte.plats[id].prix;
     let w = d.popularite * Math.pow(rapport, R.elasticiteChoix);
     if (d.local && g.type === 'touristes') w *= R.bonusSpecialiteTouristes;
+    if (d.saison) w *= R.bonusSaison || 1.25;
     return { v: id, w: w };
   });
-  return B.carte.tirer(S, poids);
+  const v = B.carte.tirer(S, poids);
+  if (!v || !S.stocks || B.carte.disponible(S, v)) return v;
+  B.stock.noterRupture(S, B.carte.plat(S, v));
+  return B.carte.tirer(S, poids.filter(function (p) { return B.carte.disponible(S, p.v); }));
+};
+B.carte.indiceType = function (S, cat, type) {
+  const ids = B.carte.surCarte(S, cat).filter(function (id) { return !type || B.carte.plat(S, id).type === type; });
+  if (!ids.length) return null;
+  return ids.reduce(function (s, id) { return s + S.carte.plats[id].prix / B.carte.prixConseille(S, B.carte.plat(S, id)); }, 0) / ids.length;
 };
 B.carte.probaCategorie = function (S, cat) {
   const R = B.DATA.carte.commande, ids = B.carte.surCarte(S, cat);
@@ -137,21 +158,77 @@ B.carte.cuissonDemandee = function (S, type) {
 };
 B.carte.ligne = function (S, id) {
   const d = B.carte.plat(S, id);
-  const l = { id: id, nom: d.nom, cat: d.cat, prix: S.carte.plats[id].prix, cout: B.carte.cout(S, d) };
+  const cout = S.stocks ? B.stock.consommer(S, d.recette) : B.carte.cout(S, d);
+  const l = { id: id, nom: d.nom, cat: d.cat, prix: S.carte.plats[id].prix, cout: cout };
   if (d.cuisson) { l.viande = d.cuisson; l.cuisson = B.carte.cuissonDemandee(S, d.cuisson); }
   return l;
 };
-B.carte.commander = function (S, g) {
-  const lignes = [];
+/* Boissons, servies par l'équipe de salle (pas de barman pour l'instant) : apéritif, vin ou boisson fraîche, boisson chaude. */
+B.carte.probaBoisson = function (S, base, type) {
+  const idx = B.carte.indiceType(S, 'boisson', type);
+  if (idx == null) return 0;
+  const R = B.DATA.carte.commande;
+  return base * Math.max(R.bornesEntreeDessert[0], Math.min(R.bornesEntreeDessert[1], Math.pow(idx, -R.elasticiteEntreeDessert)));
+};
+B.carte.boissons = function (S, g) {
+  const Bo = B.DATA.stocks.boissons, out = [];
+  const prendre = function (type) { const id = B.carte.choisirPlat(S, g, 'boisson', type); if (id) out.push(B.carte.ligne(S, id)); };
+  const bouteille = g.taille >= 2 && B.hasard(S) < B.carte.probaBoisson(S, Bo.probaBouteille, 'bouteille');
+  if (bouteille) prendre('bouteille');
   for (let i = 0; i < g.taille; i++) {
+    if (B.hasard(S) < B.carte.probaBoisson(S, Bo.probaApero, 'apero')) prendre('apero');
+    if (!bouteille && B.hasard(S) < B.carte.probaBoisson(S, Bo.probaVin, 'vin')) prendre('vin');
+    else if (B.hasard(S) < B.carte.probaBoisson(S, Bo.probaFraiche, 'froid')) prendre('froid');
+    if (B.hasard(S) < B.carte.probaBoisson(S, Bo.probaChaude, 'chaud')) prendre('chaud');
+  }
+  return out;
+};
+B.carte.commander = function (S, g) {
+  let lignes = [];
+  for (let i = 0; i < g.taille; i++) {
+    const m = S.stocks ? B.menuJour.commander(S, g) : null;
+    if (m) { lignes = lignes.concat(m); continue; }
     if (B.hasard(S) < B.carte.probaCategorie(S, 'entree')) { const e = B.carte.choisirPlat(S, g, 'entree'); if (e) lignes.push(B.carte.ligne(S, e)); }
     const p = B.carte.choisirPlat(S, g, 'plat'); if (p) lignes.push(B.carte.ligne(S, p));
     if (B.hasard(S) < B.carte.probaCategorie(S, 'dessert')) { const d = B.carte.choisirPlat(S, g, 'dessert'); if (d) lignes.push(B.carte.ligne(S, d)); }
   }
-  const ordre = { entree: 0, plat: 1, dessert: 2 };
-  lignes.sort(function (a, b) { return ordre[a.cat] - ordre[b.cat]; });
+  const aManger = lignes.some(function (l) { return l.cat === 'plat' || l.cat === 'menu'; });
+  if (aManger) lignes = lignes.concat(B.carte.boissons(S, g));
+  const ordre = { menu: 0, entree: 1, plat: 2, dessert: 3, boisson: 4 };
+  lignes.forEach(function (l, k) { l.k = k; });
+  lignes.sort(function (a, b) { return (a.mdj && b.mdj) ? a.k - b.k : (a.mdj ? 0 : ordre[a.cat] + 1) - (b.mdj ? 0 : ordre[b.cat] + 1) || a.k - b.k; });
+  lignes.forEach(function (l) { delete l.k; });
   g.commande = lignes;
-  lignes.forEach(function (l) { S.stats.jour.coutMatiere += l.cout; S.stats.jour.platsVendus[l.id] = (S.stats.jour.platsVendus[l.id] || 0) + 1; });
+  const st = S.stats.jour;
+  lignes.forEach(function (l) {
+    st.coutMatiere += l.cout;
+    if (l.cat === 'boisson') st.boissons = (st.boissons || 0) + 1;
+    else if (!l.mdj) st.platsVendus[l.id] = (st.platsVendus[l.id] || 0) + 1;
+  });
+  return aManger;
+};
+/* Changement de mois : les plats et boissons de saison passés quittent la carte ; ceux qui arrivent sont signalés. */
+B.carte.verifierSaisons = function (S) {
+  const m = B.mois(S);
+  if (S.stocks.moisCarte === m) return;
+  S.stocks.moisCarte = m;
+  const fin = [], debut = [], sansPlace = [], L = B.DATA.carte.limites.max;
+  B.carte.catalogue(S).forEach(function (d) {
+    if (!d.saison) return;
+    const p = S.carte.plats[d.id];
+    if (p && p.on && !B.carte.enSaison(S, d)) { p.on = false; fin.push(d.nom); }
+  });
+  /* les nouveautés de saison prennent la place libre (celle des plats qui viennent de partir) */
+  B.carte.catalogue(S).forEach(function (d) {
+    if (!d.saison || !B.carte.enSaison(S, d) || d.saison.indexOf((m + 11) % 12) >= 0) return;
+    const p = S.carte.plats[d.id];
+    if (p.on) return;
+    if (B.carte.surCarte(S, d.cat).length < L[d.cat]) { p.on = true; debut.push(d.nom); } else sansPlace.push(d.nom);
+  });
+  B.carte.completer(S);
+  if (fin.length) B.message(S, 'msg_fin_saison', { liste: fin.join(', ') });
+  if (debut.length) B.message(S, 'msg_debut_saison', { liste: debut.join(', ') });
+  if (sansPlace.length) B.message(S, 'msg_debut_saison_place', { liste: sansPlace.join(', ') });
 };
 
 /* ---------- Cuissons : réussies ou ratées selon la qualité du cuisinier ---------- */
@@ -177,7 +254,10 @@ B.carte.verifierService = function (S, g) {
   if (!rate.length) return false;
   const N = B.DATA.carte.cuissons.noms;
   rate.forEach(function (l) {
-    l.renvoye = true; S.stats.jour.platsRenvoyes++; S.stats.jour.coutMatiere += l.cout;
+    l.renvoye = true; S.stats.jour.platsRenvoyes++;
+    const d = B.carte.plat(S, l.id) || B.menuJour.plat(S, l.id);
+    const c = d && S.stocks && B.stock.peutFaire(S, d.recette) ? B.stock.consommer(S, d.recette) : l.cout;
+    S.stats.jour.coutMatiere += c;
     B.message(S, 'msg_plat_renvoye', { table: g.tables[0], plat: l.nom, demande: N[l.cuisson].toLowerCase(), servie: N[l.servie].toLowerCase() });
   });
   g.refait = true; g.etat = 'cuisine'; g.cuisinier = null; g.pret = null;
@@ -192,7 +272,11 @@ B.carte.etoiles = function (S, g) {
   if ((g.commande || []).some(function (l) { return l.renvoye; })) s += R.platRenvoye;
   const lignes = g.commande || [];
   if (lignes.length) {
-    const idx = lignes.reduce(function (a, l) { const d = B.carte.plat(S, l.id); return a + (d ? l.prix / B.carte.prixConseille(S, d) : 1); }, 0) / lignes.length;
+    const pay = lignes.filter(function (l) { return l.prix > 0; });
+    const idx = pay.length ? pay.reduce(function (a, l) {
+      if (l.cat === 'menu') return a + l.prix / (B.menuJour.prixConseilles(S)[l.id.slice(4)] || l.prix);
+      const d = B.carte.plat(S, l.id); return a + (d ? l.prix / B.carte.prixConseille(S, d) : 1);
+    }, 0) / pay.length : 1;
     s += R.prixParPoint * (idx - 1);
   }
   return Math.max(1, Math.min(5, Math.round(s * 10) / 10));

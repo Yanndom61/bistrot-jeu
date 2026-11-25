@@ -1,7 +1,8 @@
 /* partie.js — créer une partie, faire passer le temps, finir la journée. */
 B.statsVides = function () {
   return { groupes: 0, arrives: 0, servis: 0, repartis: 0, fileMax: 0, attenteCommande: 0, nbCommandes: 0,
-    recettes: 0, pourboires: 0, couverts: 0, tickets: 0, coutMatiere: 0, platsRenvoyes: 0, platsVendus: {} };
+    recettes: 0, pourboires: 0, couverts: 0, tickets: 0, coutMatiere: 0, platsRenvoyes: 0, platsVendus: {},
+    achats: 0, gaspillage: 0, gaspillagePortions: 0, jetes: [], ruptures: 0, partisRupture: 0, mdjVendus: 0, emporter: 0, boissons: 0 };
 };
 
 B.nouvellePartie = function (o) {
@@ -13,6 +14,7 @@ B.nouvellePartie = function (o) {
     version: B.VERSION_SAUVEGARDE,
     jeu: B.VERSION_JEU,
     creeLe: o.date || null,
+    calendrier: { debut: (o.debut || o.date || '2026-11-25').slice(0, 10) },
     nom: (o.nom || B.t('nouvelle_nom_defaut')).trim().slice(0, 40),
     lieu: B.lieu(o.lieu || 'paris').id,
     difficulte: 'facile',
@@ -33,6 +35,7 @@ B.nouvellePartie = function (o) {
     interimAuto: !!B.DATA.equipe.interim.autoParDefaut.facile,
     equipeReprise: 0,
     carte: null,
+    stocks: null,
     cagnotte: 0,
     tickets: [],
     stats: { jour: B.statsVides(), totalServis: 0, joursJoues: 0 },
@@ -49,6 +52,7 @@ B.creerPartie = function (o) {
   B.equipe.creerPatron(S);
   B.equipe.genererDepart(S);
   B.carte.creer(S);
+  B.stock.creer(S);
   return S;
 };
 
@@ -77,6 +81,8 @@ B.pas = function (S, h) {
   });
   const parMinute = B.clients.affluence(S, S.minute) / 60;
   if (parMinute > 0 && B.hasard(S) < parMinute * h) B.clients.arrivee(S);
+  B.stock.livrer(S);
+  B.menuJour.emporter(S, h);
   B.clients.placer(S);
   B.clients.avancer(S, h);
   B.cuisine.avancer(S);
@@ -99,6 +105,7 @@ B.finDeJournee = function (S) {
   const salePasFaite = S.tables.some(function (t) { return t.sale; });
   if (S.minute >= J.fermeture && !S.groupes.length && (!salePasFaite || S.minute >= J.finForcee)) {
     S.finJour = true;
+    B.stock.soir(S);
     const st = S.stats.jour;
     S.bilan = {
       jour: S.jour, servis: st.servis, repartis: st.repartis,
@@ -106,7 +113,11 @@ B.finDeJournee = function (S) {
       recettes: st.recettes, couverts: st.couverts, tickets: st.tickets, pourboires: st.pourboires,
       ticketMoyen: st.tickets ? Math.round(st.recettes / st.tickets * 100) / 100 : 0,
       coutMatiere: Math.round(st.coutMatiere * 100) / 100, platsRenvoyes: st.platsRenvoyes,
-      meilleurPlat: B.carte.meilleurPlat(S)
+      meilleurPlat: B.carte.meilleurPlat(S),
+      achats: B.r2(st.achats), gaspillage: st.gaspillage, gaspillagePortions: st.gaspillagePortions, jetes: st.jetes,
+      ruptures: Object.keys(S.stocks.ruptures).map(function (id) { const r = S.stocks.ruptures[id]; return { nom: r.nom, cause: r.cause, vars: r.vars, refus: r.refus, debut: r.debut, fin: r.fin, manque: r.manque }; }),
+      partisRupture: st.partisRupture, mdjVendus: st.mdjVendus, emporter: st.emporter, boissons: st.boissons,
+      resultat: B.r2(st.recettes - st.achats), autoCommande: S.stocks.derniereAuto && S.stocks.derniereAuto.jour === S.jour ? S.stocks.derniereAuto.total : 0
     };
     S.stats.totalServis += st.servis;
     S.stats.joursJoues++;
@@ -120,6 +131,7 @@ B.jourSuivant = function (S) {
   S.minute = B.DATA.clients.journee.ouverture;
   S.stats.jour = B.statsVides();
   S.finJour = false;
+  B.stock.matin(S);
   S.bilan = null;
   S.groupes = [];
   B.equipe.matin(S);
@@ -142,7 +154,8 @@ B.verifier = function (S) {
   })(S, 'partie');
   const st = S.stats.jour;
   if (!isFinite(S.argent)) pb.push('argent impossible');
-  ['groupes', 'arrives', 'servis', 'repartis', 'fileMax', 'attenteCommande', 'nbCommandes', 'recettes', 'pourboires', 'couverts', 'coutMatiere', 'platsRenvoyes'].forEach(function (k) {
+  if (S.stocks) for (const i in S.stocks.lots) S.stocks.lots[i].forEach(function (l) { if (!(l.q >= -1e-6)) pb.push('stock négatif : ' + i); });
+  ['groupes', 'arrives', 'servis', 'repartis', 'fileMax', 'attenteCommande', 'nbCommandes', 'recettes', 'pourboires', 'couverts', 'coutMatiere', 'platsRenvoyes', 'achats', 'gaspillage'].forEach(function (k) {
     if (st[k] < 0) pb.push('compteur négatif : ' + k);
   });
   if (st.servis + st.repartis > st.arrives) pb.push('plus de clients sortis que de clients entrés');

@@ -1,5 +1,15 @@
 # Changements
 
+## v0.5 — étape 3 : stocks, fournisseurs, menu du jour, boissons et plats de saison (lien TEST)
+- Nouveau bouton **Stocks** : la réserve (chambre froide, congélateur, étagères) avec les dates limites, les commandes en route et les ruptures du jour ; onglet **Commander** (4 fournisseurs, offres du jour, « Proposer les quantités », total et heure d'arrivée) ; onglet **Réglages** (commande automatique, marge de sécurité, fournisseur habituel, source des prix).
+- **L'argent baisse à l'achat** des produits. Prix de gros datés et sourcés (Rungis, RNM FranceAgriMer, novembre 2026), qui changent avec la saison.
+- **Dates limites et gaspillage** : les produits périmés sont jetés le matin. **Ruptures** : le plat disparaît de la carte avec la raison, et revient à la livraison.
+- **Commande automatique** chaque soir (activée par défaut en Facile seulement).
+- Carte : onglets **Plats / Boissons / Menu du jour**. 18 boissons + 5 du lieu, servies par la salle (pas de barman). **Menu du jour** composé chaque matin d'après les stocks et les offres, avec un peu de vente à emporter. **Plats de saison** qui changent avec les mois.
+- Ticket : lignes du menu du jour et boissons. Bilan du soir : achats, recettes − achats, gaspillage, menus du jour, boissons, ruptures et leurs causes.
+- Anciennes parties de Chez YaYa : **les stocks sont repris**. Sauvegardes de Bistrot 0.4 converties (format 5).
+- Correction : un volet rouvert très vite après sa fermeture pouvait rester caché.
+
 ## v0.4 — étape 2 : la carte, les prix et le paiement (lien TEST)
 - Nouveau bouton **Carte** : 20 classiques du bistrot + les spécialités de chaque lieu (616 sur 44 lieux), reprises de l'ancien jeu → REGLES §4b.
 - Prix réglables (− / + 50 c), prix conseillé, coût matière estimé et marge ; fiche de chaque plat avec allergènes (14), origine de la viande, fait maison, cuissons.

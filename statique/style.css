@@ -144,3 +144,45 @@ button { font: inherit; cursor: pointer; }
 .t-pied { text-align: center; margin: 8px 0 0; font-size: 14px; color: #6d5546; }
 .btn-ticket { margin-top: 4px; min-width: 0; width: 100%; }
 .fin-detail { display: flex; flex-wrap: wrap; justify-content: center; gap: 2px 14px; margin: 8px 0; font-size: 13px; }
+
+/* Étape 3 : stocks, boissons, menu du jour */
+.btn-barre { min-width: 54px; padding: 0 7px; }
+.carte-fin { max-height: 100%; overflow-y: auto; }
+.fin-ruptures { background: #fbe6e3; border-radius: 8px; padding: 4px 10px; margin: 0 0 8px; font-size: 13px; text-align: left; display: flex; flex-direction: column; gap: 1px; color: #6a1f19; }
+.onglets { display: flex; gap: 6px; margin: 0 0 6px; }
+.onglet { flex: 1; min-height: 44px; border: 0; border-radius: 9px; background: #eadfcd; color: #3a2a22; font-weight: 700; font-size: 15px; }
+.onglet.actif { background: #3a2a22; color: #fff6e8; }
+.refus { margin: 4px 0; background: #fbe6e3; border-radius: 6px; padding: 4px 8px; font-size: 14px; color: #8e2a22; font-weight: 600; }
+.refus.ok { background: #e1f2e6; color: #1d5e35; }
+.badge.rouge { background: #b8322a; color: #fff; }
+.badge.orange { background: #e08a1e; color: #fff; }
+.badge.gris { background: #bdb3a6; color: #fff; }
+.ligne-st { display: flex; align-items: center; justify-content: space-between; gap: 8px; border-bottom: 1px solid #eadfcd; padding: 4px 0; min-height: 44px; font-size: 14px; }
+.ligne-st > span:first-child { flex: 1; min-width: 0; }
+.ligne-st .sous { font-size: 12.5px; color: #6d5546; }
+.ligne-st.grise { opacity: .45; }
+.ligne-st .qte { text-align: right; flex: none; display: flex; flex-direction: column; }
+.ligne-st .qte b { font-size: 17px; }
+.jauge { display: inline-block; vertical-align: middle; width: 90px; height: 9px; border-radius: 5px; background: #eadfcd; margin-left: 8px; overflow: hidden; }
+.jauge i { display: block; height: 100%; background: #2f8f55; }
+.jauge i.orange { background: #e08a1e; }
+.jauge i.rouge { background: #b8322a; }
+.alerte { background: #fbe6e3; border-left: 4px solid #b8322a; border-radius: 6px; padding: 4px 8px; margin: 3px 0; font-size: 14px; }
+.alerte.finie { background: #f3eadb; border-left-color: #8a6a50; }
+.fours { display: flex; flex-wrap: wrap; gap: 6px; margin: 4px 0; }
+.four { flex: 1 1 45%; text-align: left; border: 2px solid #eadfcd; background: #fff; border-radius: 10px; padding: 5px 8px; min-height: 44px; color: inherit; }
+.four.actif { border-color: #3a2a22; background: #f6efe2; }
+.four b { display: block; font-size: 14px; }
+.four .sous { display: block; font-size: 12px; color: #6d5546; }
+.offres { background: #fff4d6; border-radius: 6px; padding: 4px 8px; font-size: 13px; margin: 4px 0; }
+.actions-st { display: flex; gap: 6px; margin: 4px 0; }
+.actions-st .petit-btn { flex: 1; }
+.pied-st { background: #f6efe2; border-radius: 8px; padding: 6px 6px 6px 8px; display: flex; align-items: center; gap: 10px; font-size: 14px; }
+.pied-st span { flex: 1; }
+.pied-st .gros { width: auto; margin: 0; padding: 0 16px; }
+.t-inclus { font-size: 13px; color: #6d5546; padding-left: 8px; }
+.gros:disabled { opacity: .45; }
+#fin-suivant { position: sticky; bottom: 0; margin-bottom: 0; }
+.carte-fin { padding-bottom: 8px; }
+.chiffres b { font-size: 22px; }
+.fin-detail { font-size: 12.5px; margin: 6px 0; }

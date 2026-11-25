@@ -1,0 +1,31 @@
+# MIN de Rungis — ovins — mercuriale officielle RNM / FranceAgriMer (code M 0159)
+# Séance du 12/11/2026 · relevé le 25/11/2026 sur https://hallesx.com/mercuriale/rungis-ovins (prix moyen de gros, € HT par kg sauf mention)
+AGNEAU (carcasse) ciré 16-22 kg France cat. E = 12,40 €
+AGNEAU (carcasse) ciré 16-22 kg France cat. O = 11,70 €
+AGNEAU (carcasse) ciré 16-22 kg France cat. R = 11,90 €
+AGNEAU (carcasse) ciré 16-22 kg France cat. U = 12,10 €
+AGNEAU (carcasse) ciré 16-22 kg U.E. (y.c. Royaume-Uni) cat. E = 10,70 €
+AGNEAU (carcasse) ciré 16-22 kg U.E. (y.c. Royaume-Uni) cat. O = 10,10 €
+AGNEAU (carcasse) ciré 16-22 kg U.E. (y.c. Royaume-Uni) cat. R = 10,30 €
+AGNEAU (carcasse) ciré 16-22 kg U.E. (y.c. Royaume-Uni) cat. U = 10,50 €
+AGNEAU (carcasse) couvert 16-22 kg France cat. E = 11,20 €
+AGNEAU (carcasse) couvert 16-22 kg France cat. O = 10,70 €
+AGNEAU (carcasse) couvert 16-22 kg France cat. R = 10,90 €
+AGNEAU (carcasse) couvert 16-22 kg France cat. U = 11,00 €
+AGNEAU (carcasse) couvert 16-22 kg U.E. (y.c. Royaume-Uni) cat. E = 9,80 €
+AGNEAU (carcasse) couvert 16-22 kg U.E. (y.c. Royaume-Uni) cat. O = 9,40 €
+AGNEAU (carcasse) couvert 16-22 kg U.E. (y.c. Royaume-Uni) cat. R = 9,50 €
+AGNEAU (carcasse) couvert 16-22 kg U.E. (y.c. Royaume-Uni) cat. U = 9,60 €
+AGNEAU (carcasse) gras 16-22 kg France cat. E = 10,30 €
+AGNEAU (carcasse) gras 16-22 kg France cat. O = 9,80 €
+AGNEAU (carcasse) gras 16-22 kg France cat. R = 9,90 €
+AGNEAU (carcasse) gras 16-22 kg France cat. U = 10,10 €
+AGNEAU (carcasse) gras 16-22 kg U.E. (y.c. Royaume-Uni) cat. O = 9,20 €
+AGNEAU (carcasse) gras 16-22 kg U.E. (y.c. Royaume-Uni) cat. R = 9,30 €
+AGNEAU (carcasse) gras 16-22 kg U.E. (y.c. Royaume-Uni) cat. U = 9,40 €
+AGNEAU (carcasse) très gras 16-22 kg France cat. E = 9,70 €
+AGNEAU (carcasse) très gras 16-22 kg France cat. O = 9,10 €
+AGNEAU (carcasse) très gras 16-22 kg France cat. R = 9,30 €
+AGNEAU (carcasse) très gras 16-22 kg France cat. U = 9,50 €
+AGNEAU (carcasse) très gras 16-22 kg U.E. (y.c. Royaume-Uni) cat. R = 8,80 €
+AGNEAU (carcasse) très gras 16-22 kg U.E. (y.c. Royaume-Uni) cat. U = 9,00 €
