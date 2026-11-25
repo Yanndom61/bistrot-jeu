@@ -11,7 +11,7 @@ On ne travaille que sur la colonne **Indispensable**, dans l'ordre. Toute nouvel
 | ✅ 4. Équipe : **les 16 postes tous recrutables** (décision de Yann), plannings avec 2 jours de repos qui se suivent, formations (dont sommellerie), cagnotte des pourboires partagée chaque mois, intérim pour les absences, effets des qualités, propreté *(v0.6, validé par Yann)* | Écran « Crédits et sources » | |
 | ✅ 5. Argent : loyer et charges selon les lieux, salaires payés (grille HCR) et intérim, indemnités de renvoi, niveaux Facile / Normal / Difficile, faillite claire (sauvegarde gardée), bilans du jour et de la semaine *(v0.7, validé par Yann : TVA et Difficile gardés tels quels)* | | |
 | ✅ 6. Lieux (effets complets), météo et calendrier : climat et saison touristique de chaque lieu, météo qui change l'affluence et les commandes, jours de la semaine, saisons, fériés et vacances selon le lieu, menus de fête, événements du jour et événements privés de l'ancien jeu *(v0.8)* ; les 13 événements du jour ont un vrai effet *(v0.8.1, demande de Yann, en test)* | ✅ Événements des autres étapes : inspection, critique, panne, grève, influenceuse… *(fait en v0.8.1)* | |
-| 7. Tutoriel progressif, mode d'emploi « ? », objectifs | | |
+| ✅ 7. Tutoriel pas à pas pour une nouvelle partie (passer, revoir), écran d'aide de chaque volet, objectifs progressifs *(v0.9, en test)* | | |
 | 8. Avis clients, réputation | | |
 
 ## Décisions de Yann
@@ -97,3 +97,10 @@ On ne travaille que sur la colonne **Indispensable**, dans l'ordre. Toute nouvel
   - **Flambée** : + 30 % sur le prix d'achat pendant 5 jours.
   - **Malade** : seulement si quelqu'un d'autre (ou l'intérim automatique) tient son service ; il est payé et revient le lendemain.
   - **Ajouts à l'écran** : la fenêtre de résultat de l'inspection ; les lignes « Panne », « grève » et « prix +30 % » dans Calendrier → Aujourd'hui ; « malade » et « démission » dans l'état du jour de l'équipe.
+- **Choix de la v0.9 à valider** (tous expliqués dans REGLES §7b) :
+  - **Objectifs** : l'ancien jeu n'avait **pas** de liste d'objectifs (seulement le but « rendre le bistrot rentable et éviter la faillite », et l'étoile Michelin, rangée dans « Un jour »). Les 12 objectifs sont donc un choix de Bistrot : recruter un cuisinier, ouvrir, servir 20 clients, une journée en bénéfice, recruter un serveur, tenir 7 jours, servir 300 clients, une salle propre (80+), un événement privé, une semaine en bénéfice, tenir 30 jours, servir 1 000 clients. Pas de récompense, juste un message de bravo.
+  - **Guide** : 10 étapes qu'on fait défiler avec « Suivant » (on n'oblige pas à toucher le bouton montré, pour ne jamais rester bloqué). Il est repris de l'ancien jeu dans l'esprit (fenêtres « Suivant / Passer », relançable depuis le Menu), mais réécrit pour Bistrot avec le bouton montré en jaune.
+  - **Où sont l'aide et les objectifs** : un gros bouton en haut du **Menu** (la barre du haut n'a plus de place pour un bouton « ? » sur les petits écrans) et la ligne d'objectif dans le panneau de droite.
+  - **Aide** : en plus des 7 sujets demandés (carte, stocks, équipe, argent, calendrier, événements, propreté), un 8e sujet « La salle et le temps », pour expliquer la salle et Pause / 1× / 2× / 4×.
+  - **Parties en cours** : jamais de guide ; leurs objectifs déjà acquis sont cochés sans message.
+  - **Ajouts à l'écran** : la fenêtre du guide, le volet « Aide et objectifs », le gros bouton dans le Menu, la ligne « 🎯 objectif » dans le panneau de droite (à la place de la phrase « Touche une table… » quand la salle est ouverte, et sous « Restaurant fermé » avant l'ouverture).

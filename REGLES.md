@@ -1,7 +1,7 @@
 # Règles du jeu Bistrot
 
 Ce document est **la référence unique** des règles. Il est tenu à jour à chaque version.
-Version décrite : **0.8.1 (les 13 événements du jour ont maintenant un vrai effet ; base : 0.8, étape 6 « Lieux, météo et calendrier » : les 44 lieux avec leur climat, leur saison touristique et leur calendrier ; météo qui change l'affluence et les commandes ; jours de la semaine, saisons, fériés, vacances ; menus de fête, événements du jour et événements privés de l'ancien jeu)**.
+Version décrite : **0.9 (étape 7 « Tutoriel, aide et objectifs » : guide pas à pas d'une nouvelle partie, écran d'aide de chaque volet, 12 objectifs progressifs ; base : 0.8.1, les 13 événements du jour avec un vrai effet ; 0.8, lieux, météo et calendrier)**.
 
 ---
 
@@ -429,11 +429,33 @@ Fichier : `donnees/argent.json`. Tout ce qui coûte chaque mois est **payé chaq
 - On voit au plus **3 messages** à la fois. S'il y en a plus, une ligne indique « +4 messages ». Chaque message disparaît seul après 6 secondes.
 - Tous les messages restent lisibles dans le **Journal** (bouton en haut), du plus récent au plus ancien. Les 300 derniers sont gardés.
 
+## 7b. Guide, aide et objectifs *(v0.9, étape 7)*
+
+### Le guide pas à pas
+- Il se lance **seulement pour une nouvelle partie** (bouton « Nouvelle partie »). Une partie en cours, une partie d'une version d'avant ou une partie reprise de l'ancien jeu n'y est **jamais forcée**.
+- 10 étapes, une par bouton : bienvenue, le temps (Pause, 1×, 2×, 4×), l'équipe, la salle, la carte, les stocks, l'argent (la caisse), le calendrier et les événements, Journal et Menu, puis le premier objectif. Le bouton dont on parle est **entouré en jaune**, le reste de l'écran est assombri, et la fenêtre du guide se place à côté pour ne pas le cacher.
+- Gros textes (18 px, 16 px sur le petit écran de 300 px de haut) et 3 gros boutons : **Suivant ▶**, **◀ Retour**, **Passer le guide**. Le jeu est en pause pendant le guide.
+- À la fin (ou en passant le guide), le volet Équipe s'ouvre sur l'embauche, comme avant.
+- Si on quitte l'appli en plein guide, il reprend à la même étape. On peut le **revoir** quand on veut : Menu → Aide et objectifs → Aide → « Revoir le guide pas à pas ».
+
+### L'écran d'aide
+- **Menu → « ❓ Aide et objectifs »** (gros bouton en haut du Menu). Deux onglets : **Objectifs** et **Aide**.
+- L'onglet Aide a un gros bouton par sujet : la salle et le temps, la carte, les stocks, l'équipe, l'argent, le calendrier, les événements, la propreté. On touche un sujet pour lire son explication, en phrases courtes, en texte de 18 px au moins (contrôle automatique).
+
+### Les objectifs
+- 12 objectifs, du plus facile au plus long, toujours dans cet ordre à l'écran :
+  1. Recruter un cuisinier ; 2. Ouvrir le restaurant ; 3. Servir 20 clients ; 4. Finir une journée en bénéfice ; 5. Recruter un serveur ; 6. Tenir une semaine (7 jours) ; 7. Servir 300 clients ; 8. Finir une journée avec une salle propre (80 ou plus) ; 9. Accueillir un événement privé ; 10. Finir une semaine en bénéfice ; 11. Tenir un mois (30 jours) ; 12. Servir 1 000 clients.
+- On voit toujours **l'objectif en cours** (le premier pas encore réussi) dans le panneau de droite, avec sa progression (« 0 / 20 ») ; le toucher ouvre la liste. Un objectif réussi plus tôt que les autres est coché quand même.
+- Quand un objectif est réussi : un message « 🎯 Objectif réussi » puis « Prochain objectif ». **Pas de récompense** (juste le bravo).
+- Les clients servis comptent quand ils ont mangé et payé ; « tenir » compte les journées jouées jusqu'au bout.
+- Une partie d'avant la v0.9 (ou reprise de l'ancien jeu) reçoit ses objectifs au chargement : ce qui est déjà acquis (équipe, ouverture, clients servis, jours joués) est coché **sans message**.
+
 ## 8. Sauvegarde
 
 - La partie est **enregistrée toute seule** : toutes les 5 minutes de jeu, quand on ouvre un volet, en fin de journée, et quand on quitte l'appli.
 - L'avant-dernière sauvegarde est gardée en secours. Si la dernière est abîmée, le jeu reprend la précédente.
 - Chaque sauvegarde porte un **numéro de version** (actuellement 8). Quand une version change le format, elle sait convertir les anciennes sauvegardes.
+- **Bistrot 0.8.1 et 0.9 gardent le format 8** : les nouveautés (effets des événements en 0.8.1 ; guide et objectifs en 0.9) sont des champs en plus, facultatifs. Une partie 0.8 ou 0.8.1 se relit telle quelle, même en plein service, sans passer par le guide.
 - **Format 7 → 8 (Bistrot 0.8)** : la partie reprend exactement où elle était (même en plein service). Elle reçoit le calendrier (météo, fériés, vacances selon son lieu, à partir de sa date) ; aucune table n'est réservée ; les menus de fête des 7 prochains jours sont proposés le jour même. Rien d'autre ne change (argent, équipe, carte, stocks gardés).
 - **Format 6 → 7 (Bistrot 0.7)** : la partie reprend exactement où elle était (même en plein service), **en Facile** (propriétaire, pas de prêt). Les salaires et les charges sont payés à partir du soir même. L'ancienneté des employés compte à partir de la mise à jour (période d'essai de 30 jours). Les comptes de la semaine démarrent le jour de la reprise.
 - **Format 5 → 6 (Bistrot 0.6)** : la partie reprend exactement où elle était (même en plein service). Les barmans, plongeurs et agents de nettoyage « en attente de rôle » prennent leur poste ; chaque employé reçoit 2 jours de repos qui se suivent (personne n'est absent le jour de la reprise : les repos commencent le lendemain) ; la cagnotte garde son montant ; propreté 80 ; un candidat est ajouté pour chaque nouveau poste (barman, plongeur, nettoyage, apprenti) s'il reste une place.

@@ -1,5 +1,11 @@
 # Changements
 
+## v0.9 — étape 7 : guide, aide et objectifs (lien TEST)
+- **Guide pas à pas** pour une nouvelle partie : 10 étapes en gros textes, le bouton dont on parle entouré en jaune. On peut le passer, revenir en arrière, et le revoir quand on veut (Menu → Aide et objectifs).
+- **Écran d'aide** (Menu → Aide et objectifs) : un gros bouton par sujet (salle et temps, carte, stocks, équipe, argent, calendrier, événements, propreté), avec une explication courte en grands caractères.
+- **12 objectifs** du plus facile au plus long (recruter, ouvrir, servir 20 clients… jusqu'à 1 000 clients). L'objectif en cours est affiché à droite ; un message te félicite à chaque réussite.
+- Les parties en cours continuent sans guide ; ce qu'elles ont déjà réussi est coché tout seul. Sauvegarde toujours au format 8.
+
 ## v0.8.1 — les 13 événements du jour ont un vrai effet (demande de Yann, lien TEST)
 - **Inspection sanitaire** : nettoyage express ou pas, puis félicitations (plus de clients) ou amende selon la propreté.
 - **Critique gastronomique** : il vient manger ; apéritif offert ou non ; un bon article amène des clients, un mauvais en fait perdre.
