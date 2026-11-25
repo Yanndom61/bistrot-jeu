@@ -3,7 +3,7 @@ const UI = B.UI = {
   S: null,                 // la partie en cours
   pauses: {},              // raisons de pause automatique : volet, portrait, accueil, cache…
   selection: null,         // table touchée
-  reglages: { pauseAuto: true },
+  reglages: { pauseAuto: true, son: false, volume: 5 },   /* v1.0 : son coupé au départ */
   derniereSauvegarde: null
 };
 
@@ -38,7 +38,7 @@ UI.initBarre = function () {
   UI.$('btn-equipe').addEventListener('click', function () { UI.ouvrirVolet('equipe'); });
   UI.$('btn-journal').textContent = B.t('btn_journal');
   UI.$('btn-menu').textContent = B.t('btn_menu');
-  UI.$('btn-journal').addEventListener('click', function () { UI.ouvrirVolet('journal'); });
+  UI.$('btn-journal').addEventListener('click', function () { UI.jrOnglet = 'journal'; UI.ouvrirVolet('journal'); });
   UI.$('btn-menu').addEventListener('click', function () { UI.ouvrirVolet('menu'); });
 };
 
@@ -60,6 +60,10 @@ UI.majBarre = function () {
   });
 };
 
+/* v1.0 : la réputation dans le panneau ; la toucher ouvre les avis. */
+UI.ligneReputation = function (S) {
+  return '<div class="rep-mini" data-avis="1">' + UI.esc(B.t('detail_reputation', { note: UI.noteTexte(B.rep.note(S)) })) + '</div>';
+};
 /* Panneau de droite, en bas : le détail de la table touchée, ou un résumé de la salle. */
 UI.majDetail = function () {
   const S = UI.S, el = UI.$('detail');
@@ -71,6 +75,7 @@ UI.majDetail = function () {
   if (!S.ouvert) {
     html += '<div class="ferme">' + UI.esc(B.t(S.faillite ? 'msg_faillite' : 'fin_salle_vide')) + '</div>';
     if (!S.faillite && S.objectifs) html += '<button type="button" class="obj-ligne" data-objectif="1">' + UI.esc(UI.texteObjectif(S)) + '</button>';
+    if (!S.faillite) html += UI.ligneReputation(S);
   } else if (gFile) {
     const taille = gFile.taille === 1 ? B.t('pers_1') : B.t('pers_n', { n: gFile.taille });
     html += '<div class="choisi">' + UI.esc(B.t('placement_groupe_choisi', { taille: taille, groupe: B.t('groupe_' + gFile.type, { nom: gFile.nom }) })) + '</div>';
@@ -104,6 +109,7 @@ UI.majDetail = function () {
     const aide = S.placement === 'manuel' && S.groupes.some(function (g) { return g.etat === 'file'; }) ? 'placement_aide' : 'detail_aucune';
     if (aide === 'detail_aucune' && S.objectifs) html += '<button type="button" class="obj-ligne" data-objectif="1">' + UI.esc(UI.texteObjectif(S)) + '</button>';
     else html += '<div class="aide">' + UI.esc(B.t(aide)) + '</div>';
+    html += UI.ligneReputation(S);
     html += '<div>' + UI.esc(B.t('detail_en_salle', { n: enSalle })) + '</div>';
     html += '<div>' + UI.esc(B.t('detail_file', { n: file })) + '</div>';
     html += '<div>' + UI.esc(B.t('detail_servis', { n: S.stats.jour.servis })) + '</div>';

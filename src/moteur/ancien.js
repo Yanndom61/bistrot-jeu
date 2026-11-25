@@ -46,7 +46,7 @@ B.ancien.convertir = function (o, infos) {
   S.equipeReprise = n;
   S.jour = Math.max(1, r.jour);
   S.argent = r.argent;
-  S.note = Math.max(0, Math.min(5, r.note));
+  S.note = Math.max(0.5, Math.min(5, r.note == null ? 3 : r.note));   /* v1.0 : la réputation de l'ancien jeu devient la vraie réputation */
   B.stock.creer(S, true);
   const stocks = B.ancien.reprendreStocks(S, o);
   if (!stocks.produits) { B.stock.premieresCourses(S); B.menuJour.calculer(S); }

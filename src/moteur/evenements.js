@@ -128,6 +128,7 @@ B.ev.possible = function (S, ev) {
   if (ev.id === 'raise') return B.ev.titulairesPresents(S).length > 0;
   if (ev.id === 'malade') return B.ev.titulairesPresents(S).some(function (p) { return B.ev.peutTomberMalade(S, p); });
   if (ev.id === 'critic') return !C.critique;
+  if (ev.id === 'influ') return B.rep.note(S) >= B.rep.D().influMin;   /* v1.0 : condition de l'ancien jeu */
   return true;
 };
 B.ev.matinDuJour = function (S) {
@@ -209,6 +210,7 @@ B.ev.declencher = function (S) {
 /* Les choix possibles : [{ cle du texte, prix, poste }] */
 B.ev.choix = function (S, a) {
   const d = B.ev.defEvenement(a.id) || {};
+  if (a.id === 'michelin') return [{ cle: 'ev_michelin_oui' }, { cle: 'ev_michelin_plus_tard' }];
   if (a.id === 'bus') return [{ cle: 'ev_bus_oui' }, { cle: 'ev_bus_non' }];
   if (a.id === 'match') return [{ cle: 'ev_match_ecran', prix: d.prixEcran }, { cle: 'ev_match_rien' }];
   if (a.id === 'canicule') return [{ cle: 'ev_canicule_clim', prix: d.prixClim }, { cle: 'ev_canicule_fenetres' }];
@@ -229,6 +231,7 @@ B.ev.choisir = function (S, k) {
   const d = B.ev.defEvenement(a.id) || {}, E = B.ev.D().evenementsDuJour, liste = B.ev.choix(S, a), ch = liste[k] || liste[0];
   C.attente = null;
   if (a.id === 'resultat') return true;
+  if (a.id === 'michelin') { if (k === 0) B.rep.michelinRecevoir(S); return true; }
   let payer = ch.prix || 0;
   if (payer && !B.argent.peutPayer(S, payer, false)) { B.message(S, 'msg_ev_pas_assez', { prix: B.euros(payer) }); payer = 0; k = 1; }
   if (payer) B.argent.payer(S, ch.poste || 'divers', payer);
@@ -252,6 +255,7 @@ B.ev.choisir = function (S, k) {
     else C.panne = { type: a.type, jusqua: S.jour + d.jours - 1, prix: a.prix };
   } else if (a.id === 'influ') {
     B.ev.effet(S, 'buzz', k === 0 ? d.coefRepas : d.coefRien, d.jours);
+    if (k === 0) B.rep.maj(S, B.rep.D().notes.influRepas, B.rep.D().poids.influRepas);   /* v1.0 : réputation +, comme l'ancien jeu */
   } else if (a.id === 'raise') {
     const p = S.equipe.find(function (x) { return x.id === a.pid; });
     if (p && k === 0) { p.salaire = B.r2(p.salaire + B.ev.hausseHoraire(d.parJour)); B.message(S, 'msg_ev_raise_oui', { nom: p.nom, horaire: B.equipe.euroHeure(p.salaire) }); }
@@ -268,10 +272,11 @@ B.ev.choisir = function (S, k) {
 B.ev.inspecter = function (S, d) {
   const h = S.proprete == null ? 80 : S.proprete, Sx = d.seuils;
   let cle, amende = 0;
-  if (h >= Sx.bravo) { cle = 'bravo'; B.ev.effet(S, 'inspection', d.coefBravo, d.joursEffet); }
+  const P = B.rep.D().poids, N = B.rep.D().notes;   /* v1.0 : la vraie réputation, comme l'ancien jeu */
+  if (h >= Sx.bravo) { cle = 'bravo'; B.rep.maj(S, N.inspectBravo, P.inspectBravo); }
   else if (h >= Sx.ok) cle = 'ok';
-  else if (h >= Sx.avertissement) { cle = 'avertissement'; amende = d.amendes.avertissement; }
-  else { cle = 'sanction'; amende = d.amendes.sanction; B.ev.effet(S, 'inspection', d.coefSanction, d.joursEffet); }
+  else if (h >= Sx.avertissement) { cle = 'avertissement'; amende = d.amendes.avertissement; B.rep.maj(S, N.inspectMauvais, P.inspectAvertissement); }
+  else { cle = 'sanction'; amende = d.amendes.sanction; B.rep.maj(S, N.inspectMauvais, P.inspectSanction); }
   if (amende) B.argent.payer(S, 'divers', amende);
   const vars = { proprete: Math.round(h), amende: B.euros(amende), jours: d.joursEffet };
   B.message(S, 'msg_ev_inspect_' + cle, vars);
@@ -281,10 +286,20 @@ B.ev.inspecter = function (S, d) {
 B.ev.avisCritique = function (S, g, etoiles) {
   const d = B.ev.defEvenement('critic'), C = B.ev.etat(S);
   C.critique = null;
-  const e = Math.round(etoiles * 10) / 10, vars = { etoiles: String(e).replace('.', ','), jours: d.joursEffet };
-  if (e >= d.bon) { B.ev.effet(S, 'critique', d.coefBon, d.joursEffet); B.message(S, 'msg_ev_critic_bon', vars); }
-  else if (e < d.mauvais) { B.ev.effet(S, 'critique', d.coefMauvais, d.joursEffet); B.message(S, g ? 'msg_ev_critic_mauvais' : 'msg_ev_critic_parti', vars); }
-  else B.message(S, 'msg_ev_critic_moyen', vars);
+  /* v1.0 : comme l'ancien jeu, son repas compte 12 fois plus qu'un client, il publie toujours son article, et à 4,5 ★ ou plus le bouche-à-oreille amène des clients */
+  const P = B.rep.D().poids, Rc = B.rep.D().critique;
+  const e = Math.round(etoiles * 10) / 10, vars = { etoiles: String(e).replace('.', ','), jours: Rc.buzzJours };
+  if (g) {
+    B.rep.maj(S, e, P.critiqueClient);
+    B.rep.publier(S, e, B.rep.texte(S, e, g, B.rep.points(S, g)), B.t('avis_auteur_critique'));
+    B.rep.maj(S, e, P.critiqueAvis);
+  } else {
+    B.rep.maj(S, B.rep.D().notes.critiqueParti, P.critiqueParti);
+    B.rep.publier(S, 1, B.t('avis_critique_parti'), B.t('avis_auteur_critique'));
+  }
+  if (g && e >= Rc.buzzAPartirDe) { B.ev.effet(S, 'buzz_critique', Rc.buzz, Rc.buzzJours); B.message(S, 'msg_ev_critic_top', vars); }
+  else if (g && e >= d.bon) B.message(S, 'msg_ev_critic_bon', vars);
+  else B.message(S, g ? 'msg_ev_critic_mauvais' : 'msg_ev_critic_parti', vars);
 };
 B.ev.etoilesCritique = function (g) { const d = B.ev.defEvenement('critic'); return -d.critiqueMoins + (g.apero ? d.aperoPlus : 0); };
 /* Pannes, grèves, flambée des prix : ce que les autres parties du jeu demandent. */

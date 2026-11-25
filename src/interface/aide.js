@@ -144,5 +144,5 @@ UI.initAide = function () {
     }
     else if (t) { UI.fermerVolet(); UI.lancerTuto(); }
   });
-  UI.$('detail').addEventListener('click', function (e) { if (e.target.closest('[data-objectif]')) UI.ouvrirAide('objectifs'); });
+  UI.$('detail').addEventListener('click', function (e) { if (e.target.closest('[data-objectif]')) UI.ouvrirAide('objectifs'); else if (e.target.closest('[data-avis]')) UI.ouvrirAvis(); });
 };

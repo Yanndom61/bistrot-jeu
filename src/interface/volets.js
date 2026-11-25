@@ -19,7 +19,7 @@ UI.ouvrirVolet = function (quoi) {
   }
   else {
     UI.$('volet-titre').textContent = B.t(quoi === 'journal' ? 'journal_titre' : 'menu_titre');
-    UI.$('volet-corps').innerHTML = quoi === 'journal' ? UI.htmlJournal() : UI.htmlMenu();
+    UI.$('volet-corps').innerHTML = quoi === 'journal' ? UI.htmlVoletJournal() : UI.htmlMenu();
   }
   clearTimeout(UI._cacheVolet);
   UI.$('voile').hidden = false;
@@ -59,6 +59,7 @@ UI.htmlMenu = function () {
   h += '<div class="ligne-reglage"><span>' + UI.esc(B.t('menu_pause_auto')) + '</span>' +
     '<button type="button" class="bascule' + (UI.reglages.pauseAuto ? ' on' : '') + '" data-action="pause-auto">' +
     UI.esc(B.t(UI.reglages.pauseAuto ? 'menu_oui' : 'menu_non')) + '</button></div>';
+  h += UI.htmlReglagesSon();
   const manuel = S && S.placement === 'manuel';
   h += '<div class="ligne-reglage"><span>' + UI.esc(B.t('menu_placement')) + '</span>' +
     '<button type="button" class="bascule' + (manuel ? ' on' : '') + '" data-action="placement">' + UI.esc(B.t(manuel ? 'menu_oui' : 'menu_non')) + '</button></div>';
@@ -75,8 +76,19 @@ UI.initVolets = function () {
   UI.$('volet-fermer').addEventListener('click', UI.fermerVolet);
   UI.$('voile').addEventListener('click', UI.fermerVolet);
   UI.$('volet-corps').addEventListener('click', function (e) {
+    const jo = e.target.closest('[data-jr-onglet]');
+    if (jo) { UI.jrOnglet = jo.dataset.jrOnglet; UI.$('volet-corps').innerHTML = UI.htmlVoletJournal(); UI.$('volet-corps').scrollTop = 0; return; }
     const b = e.target.closest('[data-action]');
     if (!b) return;
+    if (b.dataset.action === 'son' || b.dataset.action === 'volume') {
+      if (b.dataset.action === 'son') UI.reglages.son = !UI.reglages.son;
+      else UI.reglages.volume = Math.max(1, Math.min(10, UI.reglages.volume + (+b.dataset.pas)));
+      UI.sauverReglages();
+      UI.sons.debloquer();
+      UI.sons.jouer('ding');
+      UI.$('volet-corps').innerHTML = UI.htmlMenu();
+      return;
+    }
     if (b.dataset.action === 'pause-auto') {
       UI.reglages.pauseAuto = !UI.reglages.pauseAuto;
       UI.sauverReglages();

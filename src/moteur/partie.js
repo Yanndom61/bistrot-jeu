@@ -3,7 +3,7 @@ B.statsVides = function () {
   return { groupes: 0, arrives: 0, servis: 0, repartis: 0, fileMax: 0, attenteCommande: 0, nbCommandes: 0,
     recettes: 0, pourboires: 0, couverts: 0, tickets: 0, coutMatiere: 0, platsRenvoyes: 0, platsVendus: {},
     achats: 0, gaspillage: 0, gaspillagePortions: 0, jetes: [], ruptures: 0, partisRupture: 0, mdjVendus: 0, emporter: 0, boissons: 0,
-    formations: 0, partisSale: 0, salaires: 0, interim: 0, cotisations: 0, loyer: 0, charges: 0, tva: 0, pret: 0, indemnites: 0, divers: 0, prives: 0 };
+    formations: 0, partisSale: 0, avis: 0, repDelta: 0, salaires: 0, interim: 0, cotisations: 0, loyer: 0, charges: 0, tva: 0, pret: 0, indemnites: 0, divers: 0, prives: 0 };
 };
 
 B.nouvellePartie = function (o) {
@@ -56,7 +56,10 @@ B.nouvellePartie = function (o) {
     semaines: [],
     reporte: {},
     cal: B.ev.etatVide(),
-    objectifs: { faits: {} }
+    objectifs: { faits: {} },
+    avis: [],
+    totalAvis: 0,
+    michelin: null
   };
 };
 
@@ -146,6 +149,8 @@ B.finDeJournee = function (S) {
       formations: B.r2(st.formations || 0), partisSale: st.partisSale || 0,
       proprete: net, partage: partage, cagnotte: S.cagnotte,
       absents: S.equipe.filter(function (p) { return p.absent; }).map(function (p) { return { nom: p.nom, pourquoi: p.absent }; }),
+      reputation: B.rep.note(S), repDelta: st.repDelta || 0, nbAvis: st.avis || 0,
+      avisJour: (S.avis || []).filter(function (a) { return a.jour === S.jour; }),
       autoCommande: S.stocks.derniereAuto && S.stocks.derniereAuto.jour === S.jour ? S.stocks.derniereAuto.total : 0
     };
     const cl = B.argent.cloturer(S, compte, st.servis, st.repartis);
@@ -174,6 +179,7 @@ B.jourSuivant = function (S) {
   B.equipe.matin(S);
   S.tables.forEach(function (t) { t.groupe = null; t.sale = false; t.serveur = null; t.reserve = null; });
   B.ev.matin(S);
+  B.rep.michelinMatin(S);   /* v1.0 : étoile Michelin (ancien jeu) */
   S.equipe.forEach(function (w) { const b = B.equipe.base(S, w); w.x = b.x; w.y = b.y; w.chemin = []; w.tache = null; });
   B.equipe.nouveauxCandidats(S);
   S.ouvert = B.equipe.peutOuvrir(S);
@@ -240,7 +246,9 @@ B.verifier = function (S) {
   if (!S.cal) pb.push('calendrier absent');
   else {
     S.cal.prives.forEach(function (e) { if (e.etat === 'reserve' && !(e.prix > 0 && e.n > 0)) pb.push('événement privé sans prix'); });
-    if (S.cal.attente && S.cal.attente.id !== 'resultat' && !B.ev.defEvenement(S.cal.attente.id)) pb.push('événement du jour inconnu');
+    if (S.cal.attente && S.cal.attente.id !== 'resultat' && S.cal.attente.id !== 'michelin' && !B.ev.defEvenement(S.cal.attente.id)) pb.push('événement du jour inconnu');
   }
+  if (!(B.rep.note(S) >= B.rep.D().min - 1e-9 && B.rep.note(S) <= B.rep.D().max + 1e-9)) pb.push('réputation impossible');
+  if (!Array.isArray(S.avis)) pb.push('avis absents');
   return pb;
 };

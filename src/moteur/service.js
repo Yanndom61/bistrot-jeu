@@ -62,6 +62,7 @@ B.service.terminer = function (S, w) {
       /* plus rien à manger (ruptures) : le groupe s'en va sans payer */
       g.commande = [];
       S.stats.jour.repartis += g.taille; S.stats.jour.partisRupture = (S.stats.jour.partisRupture || 0) + g.taille;
+      B.rep.parti(S, 'rupture');
       B.message(S, 'msg_rien_a_manger', { table: g.tables[0] });
       B.clients.partir(S, g);
       return;

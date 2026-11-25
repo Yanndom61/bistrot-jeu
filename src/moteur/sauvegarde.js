@@ -1,7 +1,7 @@
 /* sauvegarde.js — enregistrer et relire une partie. Chaque sauvegarde porte un numéro de version.
    Quand le format change, on ajoute une étape dans B.MIGRATIONS (de la version n à n+1) :
    ainsi chaque nouvelle version du jeu sait relire toutes les anciennes. */
-B.VERSION_SAUVEGARDE = 8;
+B.VERSION_SAUVEGARDE = 9;
 
 B.MIGRATIONS = {
   /* v1 → v2 (Bistrot 0.2) : l'équipe arrive. Le patron démarre seul (Léa n'est plus là), avec des candidats.
@@ -119,6 +119,25 @@ B.MIGRATIONS = {
     if (S.carte) B.carte.catalogue(S).forEach(function (d) { if (!S.carte.plats[d.id]) S.carte.plats[d.id] = { on: false, prix: B.carte.prixConseille(S, d) }; });
     if (S.carte && S.stocks) B.ev.matinFetes(S);
     S.version = 8;
+    return S;
+  },
+  /* v8 → v9 (Bistrot 1.0-test) : réputation et avis. La note gardée depuis le début (3 ou celle de l'ancien jeu) devient
+     la vraie réputation ; pas encore d'avis. Les bonus de clients que la v0.8.1 donnait à la place de la réputation
+     (inspection, critique) sont remplacés par leur effet sur la réputation ; le bonus de l'influenceuse reste (ancien jeu). */
+  8: function (S) {
+    const R = B.DATA.reputation, P = R.poids, N = R.notes;
+    const v = B.statsVides();
+    for (const k in v) if (S.stats.jour[k] == null) S.stats.jour[k] = v[k];
+    S.note = Math.max(R.min, Math.min(R.max, S.note == null ? R.depart : S.note));
+    S.avis = []; S.totalAvis = 0; S.michelin = null;
+    if (S.cal && S.cal.effets) {
+      S.cal.effets.forEach(function (f) {
+        if (f.k === 'inspection') B.rep.maj(S, f.m > 1 ? N.inspectBravo : N.inspectMauvais, f.m > 1 ? P.inspectBravo : P.inspectSanction);
+        if (f.k === 'critique') B.rep.maj(S, f.m > 1 ? 4.5 : 1.5, P.critiqueClient);
+      });
+      S.cal.effets = S.cal.effets.filter(function (f) { return f.k !== 'inspection' && f.k !== 'critique'; });
+    }
+    S.version = 9;
     return S;
   }
 };

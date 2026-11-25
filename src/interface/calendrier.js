@@ -48,7 +48,8 @@ UI.htmlCalendrier = function () {
 UI.htmlCalJour = function () {
   const S = UI.S, i = B.cal.infos(S, 0), l = B.lieu(S.lieu), n = i.serie;
   let h = '<div class="cal-tete"><b>' + UI.esc(UI.texteMeteo(i.meteo)) + '</b><span>' + UI.esc(B.texteDate(S, 0) + ' · ' + B.t('saison_' + i.saison)) + '</span></div>';
-  h += '<div class="ligne-ag total"><span>' + UI.esc(B.t('cal_affluence_jour')) + '</span><b class="' + (i.facteur >= 1 ? 'vert-txt' : 'rouge-txt') + '">' + UI.esc(UI.pct(i.facteur)) + '</b></div>';
+  const fTot = i.facteur * B.rep.facteurAffluence(S);   /* v1.0 : la réputation compte aussi */
+  h += '<div class="ligne-ag total"><span>' + UI.esc(B.t('cal_affluence_jour')) + '</span><b class="' + (fTot >= 1 ? 'vert-txt' : 'rouge-txt') + '">' + UI.esc(UI.pct(fTot)) + '</b></div>';
   h += '<h3>' + UI.esc(B.t('cal_pourquoi')) + '</h3>';
   const js = B.cal.date(n).js, cj = B.DATA.calendrier.joursSemaine.coef[js];
   h += UI.ligneCal(B.t('cal_effet_jour', { jour: B.DATA.textes.jours_semaine[js] }), cj);
@@ -58,6 +59,7 @@ UI.htmlCalJour = function () {
   if (i.vacances) h += UI.ligneCal(B.t('cal_effet_vacances', { nom: i.vacances.nom }), 1 + B.DATA.calendrier.effets.vacancesParZone);
   if (i.ferie) h += '<p>' + UI.esc(B.t('cal_effet_ferie', { nom: i.ferie.nom, midi: UI.pct(B.cal.coefJour(S, n, 700)), soir: UI.pct(B.cal.coefJour(S, n, 1200)) })) + '</p>';
   else if (i.fete && B.DATA.calendrier.effets.fetesQuiComptent.indexOf(i.fete.id) >= 0) h += '<p>' + UI.esc(B.t('cal_effet_fete', { nom: i.fete.nom, midi: UI.pct(B.cal.coefJour(S, n, 700)), soir: UI.pct(B.cal.coefJour(S, n, 1200)) })) + '</p>';
+  h += UI.ligneCal(B.t('cal_effet_reputation', { note: UI.noteTexte(B.rep.note(S)) }), B.rep.facteurAffluence(S));   /* v1.0 */
   (S.cal.effets || []).forEach(function (x) { if (x.jusqua >= S.jour) h += UI.ligneCal(B.t('cal_effet_' + x.k, { heure: B.heure(x.de || 0), jusqua: B.ev.texteJour(S, x.jusqua) }), x.m); });
   const pa = B.ev.panne(S), gr = B.ev.greve(S);
   if (pa) h += '<p class="alerte-ag">' + UI.esc(B.t('cal_panne', { objet: B.t('ev_panne_' + pa.type), effet: B.t('ev_panne_effet_' + pa.type), jusqua: B.ev.texteJour(S, pa.jusqua) })) + '</p>';

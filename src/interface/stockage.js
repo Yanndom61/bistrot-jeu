@@ -35,7 +35,7 @@ UI.chargerPartie = function () {
 };
 
 UI.chargerReglages = function () {
-  try { const r = JSON.parse(UI.lireCase(UI.cles().reglages) || '{}'); if (typeof r.pauseAuto === 'boolean') UI.reglages.pauseAuto = r.pauseAuto; } catch (e) { /* réglages par défaut */ }
+  try { const r = JSON.parse(UI.lireCase(UI.cles().reglages) || '{}'); if (typeof r.pauseAuto === 'boolean') UI.reglages.pauseAuto = r.pauseAuto; if (typeof r.son === 'boolean') UI.reglages.son = r.son; if (r.volume >= 1 && r.volume <= 10) UI.reglages.volume = Math.round(r.volume); } catch (e) { /* réglages par défaut */ }
 };
 UI.sauverReglages = function () {
   try { UI.ecrireCase(UI.cles().reglages, JSON.stringify(UI.reglages)); } catch (e) { /* tant pis */ }

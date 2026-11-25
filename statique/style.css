@@ -364,3 +364,26 @@ table.cal-7 .marque { font-size: 13px; }
   .carte-tuto h2 { font-size: 19px; } .carte-tuto .tuto-texte { font-size: 16px; margin: 0 0 2px; }
   .carte-tuto .gros { min-height: 44px; font-size: 16px; margin: 2px 0; }
 }
+
+/* ===== v1.0 : réputation, avis, son ===== */
+.rep-tete { display: flex; align-items: center; gap: 10px; flex-wrap: wrap; margin: 2px 0 4px; }
+.rep-tete b { font-size: 20px; }
+.rep-etoiles, .avis-etoiles { color: #c9a227; letter-spacing: 1px; }
+.rep-etoiles { font-size: 26px; }
+.rep-ligne { font-size: 16px; font-weight: 700; margin: 4px 0; }
+.rep-explique { font-size: 16px; line-height: 1.35; margin: 6px 0; }
+.rep-michelin { font-size: 17px; font-weight: 700; color: #8a1c1c; margin: 4px 0; }
+.avis-liste { list-style: none; margin: 0; padding: 0; }
+.avis { border-left: 5px solid #c9a227; background: #fffaf0; border-radius: 8px; padding: 6px 10px; margin: 0 0 8px; }
+.avis.e1, .avis.e2 { border-left-color: #b03a2e; }
+.avis.e3 { border-left-color: #8a6a50; }
+.avis-tete { display: flex; align-items: baseline; gap: 10px; flex-wrap: wrap; }
+.avis-etoiles { font-size: 20px; }
+.avis-qui { font-size: 14px; color: #6d5546; }
+.avis p { font-size: 17px; line-height: 1.35; margin: 3px 0 0; }
+.rep-mini { font-weight: 700; color: #7a5a00; cursor: pointer; }
+.fin-avis { display: flex; flex-direction: column; gap: 3px; margin: 6px 0; padding: 6px 10px; border-radius: 8px; background: #fff7d6; border: 2px solid #c9a227; text-align: left; }
+.fin-avis span { font-size: 15px; }
+.volume { display: flex; align-items: center; gap: 10px; }
+.volume b { min-width: 64px; text-align: center; font-size: 17px; }
+.volume button:disabled { opacity: 0.4; }

@@ -9,7 +9,7 @@ B.clients.type = function (id) {
 B.clients.affluence = function (S, minute) {
   const tr = B.DATA.clients.affluence.find(function (a) { return minute >= a.de && minute < a.a; });
   if (!tr) return 0;
-  return tr.groupesParHeure * B.lieu(S.lieu).affluence * B.argent.niveau(S).affluence * (S.carte ? B.carte.facteurAffluence(S) : 1) * (S.cal ? B.cal.facteur(S, minute) : 1);
+  return tr.groupesParHeure * B.lieu(S.lieu).affluence * B.argent.niveau(S).affluence * (S.carte ? B.carte.facteurAffluence(S) : 1) * (S.cal ? B.cal.facteur(S, minute) : 1) * B.rep.facteurAffluence(S);
 };
 
 /* v0.8 : la part de touristes dépend du lieu, de la saison et des vacances ; les familles viennent plus
@@ -52,6 +52,7 @@ B.clients.arrivee = function (S, o) {
     g.etat = 'repart';
     g.chemin = [{ x: B.DATA.salle.dehors.x, y: B.DATA.salle.dehors.y }];
     S.stats.jour.repartis += taille; S.stats.jour.partisSale = (S.stats.jour.partisSale || 0) + taille;
+    B.rep.parti(S, 'sale');
     B.noter(S, 'msg_repart_sale', { taille: taille });
     return;
   }
@@ -70,6 +71,7 @@ B.clients.placer = function (S) {
       g.etat = 'repart';
       g.chemin = [{ x: B.DATA.salle.dehors.x, y: B.DATA.salle.dehors.y }];
       S.stats.jour.repartis += g.taille;
+      B.rep.parti(S, 'file');
       B.message(S, 'msg_repart', { taille: g.taille });
     } else enFile++;
   }

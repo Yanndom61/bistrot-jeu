@@ -19,7 +19,7 @@ UI.majFin = function () {
       '<div><b class="' + (b.caisse < 0 ? 'rouge-txt' : '') + '">' + UI.esc(B.euros(b.caisse)) + '</b><span>' + UI.esc(B.t('fin_caisse')) + '</span></div></div>'
       : '<div><b>' + UI.esc(B.euros(b.recettes || 0)) + '</b><span>' + UI.esc(B.t('fin_recettes')) + '</span></div>' +
       '<div><b>' + UI.esc(B.prix(b.ticketMoyen || 0)) + '</b><span>' + UI.esc(B.t('fin_ticket_moyen')) + '</span></div></div>') +
-    UI.htmlFinAlerte(b) + UI.htmlFinArgent(b) +
+    UI.htmlFinAlerte(b) + UI.htmlFinArgent(b) + UI.htmlFinAvis(b) +
     '<div class="fin-detail">' + [
       B.t('fin_d_repartis', { n: b.repartis }), B.t('fin_d_attente', { n: b.attente }),
       B.t('fin_d_cout', { cout: B.euros(b.coutMatiere || 0) }), B.t('fin_d_marge', { marge: B.euros((b.recettes || 0) - (b.coutMatiere || 0)) }),
@@ -72,6 +72,7 @@ UI.boucle = function (ts) {
     UI.dessin.dynamique();
     if (!UI._tDetail || ts - UI._tDetail > 250) { UI._tDetail = ts; if (S.objectifs && B.objectifs.verifier(S).length) UI.sauver(); UI.majDetail(); UI.majBarre(); UI.majCalendrier(); }
   }
+  UI.sons.surveiller(S);
   UI.majMessages(Date.now());
   requestAnimationFrame(UI.boucle);
 };
@@ -92,6 +93,7 @@ UI.init = function () {
   UI.initAide();
   UI.initPlacement();
   UI.initPortrait();
+  UI.initSons();
   const r = UI.chargerPartie();
   if (r.partie) { UI.S = r.partie; B.message(UI.S, 'msg_reprise', { nom: UI.S.nom, jour: UI.S.jour }); }
   UI.erreurChargement = r.erreur || null;
