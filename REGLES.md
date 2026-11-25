@@ -438,6 +438,7 @@ Tout est repris de l'ancien jeu (même calcul, mêmes poids), sauf ce qui est ma
 - Elle **change le nombre de clients** : × (0,5 + 0,2 × note) / 1,1. À 3 ★ : comme avant ; à 4 ★ : + 18 % ; à 5 ★ : + 36 % ; à 2 ★ : − 18 %. La ligne « Réputation » de Calendrier → Aujourd'hui le montre, et l'affluence du jour en tient compte.
 - **Chaque table qui paie** tire la note vers ses étoiles (la note du repas : plats, cuissons, attente, prix, propreté, amabilité des serveurs… calculée comme avant), avec un petit poids (0,015). Exemple : réputation 3, une table à 5 ★ → 3,03.
 - **Un avis publié** compte un peu plus (poids 0,02 de plus).
+- **En Difficile**, les clients sont plus exigeants (la concurrence) : pour la réputation, chaque repas compte **0,5 étoile de moins** (l'avis affiché garde ses vraies étoiles). *(Choix, pas dans l'ancien jeu : sans lui, la réputation rendait Difficile presque aussi facile que Normal.)*
 - **Clients partis sans manger** : partis de la file d'attente → la note baisse un tout petit peu (vers 2,5, poids 0,0004 par groupe) ; partis parce que la salle est sale → vers 2,5, poids 0,004 ; plus rien à manger (rupture) → vers 1, poids 0,03, et ils écrivent un avis à 1 ★.
 - **Événements** : inspection, critique et influenceuse font bouger la réputation (voir 5b).
 - On la voit : dans le panneau de droite (« ⭐ Réputation 3,4 / 5 », la toucher ouvre les avis), dans le **Journal → onglet « ⭐ Avis »**, dans Calendrier → Aujourd'hui, et dans le **bilan du soir** (réputation, évolution du jour, nombre d'avis, meilleur et moins bon avis du jour).
