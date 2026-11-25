@@ -9,9 +9,9 @@ import { fileURLToPath } from 'node:url';
 const RACINE = path.resolve(path.dirname(fileURLToPath(import.meta.url)), '..');
 const lire = (f) => fs.readFileSync(path.join(RACINE, f), 'utf8');
 
-export const FICHIERS_MOTEUR = ['outils', 'salle', 'clients', 'equipe', 'planning', 'carte', 'stocks', 'cuisine', 'service', 'partie', 'sauvegarde', 'ancien'].map((n) => `src/moteur/${n}.js`);
-export const FICHIERS_INTERFACE = ['ecran', 'dessin-salle', 'messages', 'volets', 'equipe', 'carte', 'stocks', 'stockage', 'accueil', 'boucle'].map((n) => `src/interface/${n}.js`);
-export const DONNEES = ['lieux', 'salle', 'clients', 'equipe', 'carte', 'catalogue', 'stocks', 'prix-gros', 'regles', 'textes'];
+export const FICHIERS_MOTEUR = ['outils', 'salle', 'clients', 'equipe', 'planning', 'argent', 'carte', 'stocks', 'cuisine', 'service', 'partie', 'sauvegarde', 'ancien'].map((n) => `src/moteur/${n}.js`);
+export const FICHIERS_INTERFACE = ['ecran', 'dessin-salle', 'messages', 'volets', 'equipe', 'argent', 'carte', 'stocks', 'stockage', 'accueil', 'boucle'].map((n) => `src/interface/${n}.js`);
+export const DONNEES = ['lieux', 'salle', 'clients', 'equipe', 'carte', 'catalogue', 'stocks', 'prix-gros', 'regles', 'argent', 'textes'];
 
 export function donnees() {
   const d = {};

@@ -3,13 +3,15 @@ B.statsVides = function () {
   return { groupes: 0, arrives: 0, servis: 0, repartis: 0, fileMax: 0, attenteCommande: 0, nbCommandes: 0,
     recettes: 0, pourboires: 0, couverts: 0, tickets: 0, coutMatiere: 0, platsRenvoyes: 0, platsVendus: {},
     achats: 0, gaspillage: 0, gaspillagePortions: 0, jetes: [], ruptures: 0, partisRupture: 0, mdjVendus: 0, emporter: 0, boissons: 0,
-    formations: 0, partisSale: 0 };
+    formations: 0, partisSale: 0, salaires: 0, interim: 0, cotisations: 0, loyer: 0, charges: 0, tva: 0, pret: 0, indemnites: 0 };
 };
 
 B.nouvellePartie = function (o) {
   o = o || {};
   const R = B.DATA.regles, J = B.DATA.clients.journee, P = B.DATA.salle;
-  const diff = R.difficultes.facile;
+  const niveau = B.DATA.argent.niveaux[o.difficulte] ? o.difficulte : 'facile';
+  const diff = B.DATA.argent.niveaux[niveau];
+  void R;
   return {
     format: 'bistrot',
     version: B.VERSION_SAUVEGARDE,
@@ -18,10 +20,10 @@ B.nouvellePartie = function (o) {
     calendrier: { debut: (o.debut || o.date || '2026-11-25').slice(0, 10) },
     nom: (o.nom || B.t('nouvelle_nom_defaut')).trim().slice(0, 40),
     lieu: B.lieu(o.lieu || 'paris').id,
-    difficulte: 'facile',
+    difficulte: niveau,
     jour: 1,
     minute: J.ouverture,
-    argent: diff.capitalDepart,
+    argent: diff.capital,
     note: diff.noteDepart,
     vitesse: 1,
     graine: (o.graine != null ? o.graine : Math.floor(Math.random() * 2147483647)) | 0,
@@ -33,7 +35,7 @@ B.nouvellePartie = function (o) {
     ouvert: false,
     placement: 'auto',
     dejaOuvert: false,
-    interimAuto: !!B.DATA.equipe.interim.autoParDefaut.facile,
+    interimAuto: !!B.DATA.equipe.interim.autoParDefaut[niveau],
     equipeReprise: 0,
     carte: null,
     stocks: null,
@@ -45,13 +47,22 @@ B.nouvellePartie = function (o) {
     journal: [],
     finJour: false,
     bilan: null,
-    origine: null
+    origine: null,
+    pret: null,
+    decouvert: 0,
+    faillite: null,
+    historique: [],
+    semaine: null,
+    semaines: [],
+    reporte: {}
   };
 };
 
 /* Nouvelle partie complète : le patron seul, et des candidats qui attendent leur entretien. */
 B.creerPartie = function (o) {
   const S = B.nouvellePartie(o);
+  S.pret = B.argent.creerPret(S);
+  S.semaine = B.argent.semaineVide(S, 1, S.jour);
   B.equipe.creerPatron(S);
   B.equipe.genererDepart(S);
   B.carte.creer(S);
@@ -60,7 +71,7 @@ B.creerPartie = function (o) {
 };
 
 B.ouvrir = function (S) {
-  if (S.ouvert || !B.equipe.peutOuvrir(S)) return false;
+  if (S.ouvert || S.faillite || !B.equipe.peutOuvrir(S)) return false;
   S.ouvert = true;
   S.dejaOuvert = true;
   B.message(S, 'msg_ouverture');
@@ -112,6 +123,7 @@ B.finDeJournee = function (S) {
     const st = S.stats.jour;
     const net = B.planning.nettoyageDuSoir(S);
     const partage = B.planning.dernierJourDuMois(S) ? B.planning.partager(S) : null;
+    const compte = B.argent.soir(S);
     S.bilan = {
       jour: S.jour, servis: st.servis, repartis: st.repartis,
       attente: st.nbCommandes ? Math.round(st.attenteCommande / st.nbCommandes) : 0,
@@ -122,22 +134,30 @@ B.finDeJournee = function (S) {
       achats: B.r2(st.achats), gaspillage: st.gaspillage, gaspillagePortions: st.gaspillagePortions, jetes: st.jetes,
       ruptures: Object.keys(S.stocks.ruptures).map(function (id) { const r = S.stocks.ruptures[id]; return { nom: r.nom, cause: r.cause, vars: r.vars, refus: r.refus, debut: r.debut, fin: r.fin, manque: r.manque }; }),
       partisRupture: st.partisRupture, mdjVendus: st.mdjVendus, emporter: st.emporter, boissons: st.boissons,
-      resultat: B.r2(st.recettes - st.achats - (st.formations || 0)), formations: B.r2(st.formations || 0), partisSale: st.partisSale || 0,
+      resultat: compte.resultat, depenses: compte.depenses, totalDepenses: compte.totalDepenses, caisse: S.argent,
+      formations: B.r2(st.formations || 0), partisSale: st.partisSale || 0,
       proprete: net, partage: partage, cagnotte: S.cagnotte,
       absents: S.equipe.filter(function (p) { return p.absent; }).map(function (p) { return { nom: p.nom, pourquoi: p.absent }; }),
       autoCommande: S.stocks.derniereAuto && S.stocks.derniereAuto.jour === S.jour ? S.stocks.derniereAuto.total : 0
     };
+    const cl = B.argent.cloturer(S, compte, st.servis, st.repartis);
+    S.bilan.semaine = cl.semaine; S.bilan.alerte = cl.alerte; S.bilan.faillite = cl.faillite;
     S.stats.totalServis += st.servis;
     S.stats.joursJoues++;
     B.message(S, 'msg_fin_service');
+    if (cl.faillite) { S.ouvert = false; B.message(S, 'msg_faillite'); }
+    else if (cl.alerte) B.message(S, 'msg_decouvert', { soir: cl.alerte.soir, max: cl.alerte.max });
   }
 };
 
 B.jourSuivant = function (S) {
   const P = B.DATA.salle;
+  if (S.faillite) return false;
   S.jour++;
   S.minute = B.DATA.clients.journee.ouverture;
   S.stats.jour = B.statsVides();
+  for (const k in (S.reporte || {})) S.stats.jour[k] = B.r2((S.stats.jour[k] || 0) + S.reporte[k]);
+  S.reporte = {};
   S.finJour = false;
   B.stock.matin(S);
   S.bilan = null;
@@ -148,6 +168,7 @@ B.jourSuivant = function (S) {
   B.equipe.nouveauxCandidats(S);
   S.ouvert = B.equipe.peutOuvrir(S);
   void P;
+  return true;
 };
 
 /* Contrôle de cohérence, utilisé par le simulateur et les tests. Renvoie la liste des problèmes. */
@@ -200,6 +221,10 @@ B.verifier = function (S) {
   S.groupes.forEach(function (g) {
     if (g.cuisinier && !S.equipe.find(function (p) { return p.id === g.cuisinier && p.service === 'cuisine'; })) pb.push('groupe ' + g.id + ' attend un cuisinier absent');
   });
-  if (S.argent < 0 && S.difficulte === 'facile') pb.push('argent négatif');
+  if (!B.DATA.argent.niveaux[S.difficulte]) pb.push('difficulté inconnue');
+  if (S.pret && !(S.pret.restant >= 0 && S.pret.restant <= S.pret.montant + 0.01)) pb.push('prêt impossible');
+  if (S.argent < -B.DATA.argent.decouvertAutorise - 50000) pb.push('argent bien trop négatif sans faillite');
+  if ((S.decouvert || 0) >= B.DATA.argent.faillite.soirsDeSuite && !S.faillite) pb.push('faillite oubliée');
+  S.equipe.forEach(function (p) { if (!p.patron && !p.interim && !(p.embauche >= 1)) pb.push(p.nom + ' sans jour d’embauche'); });
   return pb;
 };

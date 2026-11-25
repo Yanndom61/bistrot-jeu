@@ -1,7 +1,7 @@
 /* sauvegarde.js — enregistrer et relire une partie. Chaque sauvegarde porte un numéro de version.
    Quand le format change, on ajoute une étape dans B.MIGRATIONS (de la version n à n+1) :
    ainsi chaque nouvelle version du jeu sait relire toutes les anciennes. */
-B.VERSION_SAUVEGARDE = 6;
+B.VERSION_SAUVEGARDE = 7;
 
 B.MIGRATIONS = {
   /* v1 → v2 (Bistrot 0.2) : l'équipe arrive. Le patron démarre seul (Léa n'est plus là), avec des candidats.
@@ -92,6 +92,21 @@ B.MIGRATIONS = {
     B.equipe.replacer(S);
     S.version = 6;
     return S;
+  },
+  /* v6 → v7 (Bistrot 0.7) : étape Argent. Les parties d'avant restent en Facile (propriétaire, pas de prêt).
+     Les salaires et les charges seront payés à partir du prochain soir ; l'ancienneté des employés compte
+     à partir de la mise à jour (période d'essai) ; les comptes de la semaine démarrent aujourd'hui. */
+  6: function (S) {
+    S.difficulte = B.DATA.argent.niveaux[S.difficulte] ? S.difficulte : 'facile';
+    S.pret = null; S.decouvert = 0; S.faillite = null;
+    S.historique = []; S.semaines = []; S.reporte = {};
+    S.semaine = B.argent.semaineVide(S, 1, S.jour);
+    S.equipe.forEach(function (p) { if (!p.patron && !p.interim && !(p.embauche >= 1)) p.embauche = S.jour; });
+    const v = B.statsVides();
+    for (const k in v) if (S.stats.jour[k] == null) S.stats.jour[k] = v[k];
+    if (S.bilan && S.bilan.resultat != null && !S.bilan.depenses) S.bilan.ancienFormat = true;
+    S.version = 7;
+    return S;
   }
 };
 
@@ -115,5 +130,5 @@ B.relire = function (texte) {
 /* Noms des cases de rangement du téléphone. Le lien TEST et le lien OFFICIEL ont chacun les leurs. */
 B.cles = function (canal) {
   const p = 'bistrotjeu.' + canal + '.';
-  return { partie: p + 'partie', secours: p + 'partie-precedente', reglages: p + 'reglages', copieAncien: p + 'copie-ancien-jeu' };
+  return { partie: p + 'partie', secours: p + 'partie-precedente', reglages: p + 'reglages', copieAncien: p + 'copie-ancien-jeu', copieFaillite: p + 'copie-faillite' };
 };

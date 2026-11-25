@@ -83,8 +83,7 @@ B.planning.inscrire = function (S, p, id) {
   const o = B.planning.formationsPour(S, p).find(function (x) { return x.id === id; });
   if (!o) return { erreur: 'form_non_partant' };
   if (o.non) return { erreur: o.non };
-  S.argent = B.r2(S.argent - o.prix);
-  S.stats.jour.formations = B.r2((S.stats.jour.formations || 0) + o.prix);
+  B.argent.payer(S, 'formations', o.prix);
   p.formation = { id: id, prix: o.prix, jour: null };
   B.message(S, 'msg_formation_inscrit', { nom: p.nom, formation: B.t('form_nom_' + id), prix: B.euros(o.prix) });
   return { ok: true };
@@ -92,8 +91,7 @@ B.planning.inscrire = function (S, p, id) {
 /* Annuler avant qu'elle commence : remboursée. */
 B.planning.annuler = function (S, p) {
   if (!p.formation || p.absent === 'formation') return false;
-  S.argent = B.r2(S.argent + p.formation.prix);
-  S.stats.jour.formations = B.r2((S.stats.jour.formations || 0) - p.formation.prix);
+  B.argent.payer(S, 'formations', -p.formation.prix);
   B.message(S, 'msg_formation_annulee', { nom: p.nom, prix: B.euros(p.formation.prix) });
   p.formation = null;
   return true;

@@ -1,7 +1,7 @@
 # Règles du jeu Bistrot
 
 Ce document est **la référence unique** des règles. Il est tenu à jour à chaque version.
-Version décrite : **0.6 (étape 4 « Équipe » : les 16 postes, plannings, formations, cagnotte, effets des qualités)**.
+Version décrite : **0.7 (étape 5 « Argent » : niveaux Facile, Normal et Difficile, loyer, charges, salaires payés, indemnités, faillite, bilans du jour et de la semaine)**.
 
 ---
 
@@ -82,7 +82,7 @@ Version décrite : **0.6 (étape 4 « Équipe » : les 16 postes, plannings, for
 - Un intérimaire **remplace pour la journée une place vide ou une personne absente** (en repos ou en formation, *v0.6*). Il repart le lendemain matin et ne compte pas dans les 16.
 - Bouton « Appeler un serveur intérimaire » (salle) ou « Appeler un commis intérimaire » (cuisine) dans l'onglet Embauche. Il y a au plus autant d'intérimaires que de places vides ou d'absents aujourd'hui en salle (responsable + 5 serveurs) ou en cuisine (chef + second + commis + apprenti). Pas d'intérimaire au bar, à la plonge ni au nettoyage : sans eux, la salle et la cuisine se débrouillent (plus lentement).
 - **Pas avant ta première ouverture** : le premier jour, tu recrutes toi-même.
-- Salaire : minimum de la grille (3 ans d'expérience) **+ 30 %**, comme dans l'ancien jeu. Il est affiché mais pas encore payé, comme les autres salaires.
+- Salaire : minimum de la grille (3 ans d'expérience) **+ 30 %**, comme dans l'ancien jeu. Il est payé le soir de sa journée *(v0.7)* : salaire horaire × 7 h 53.
 - Intérimaire « moyen » : note 5, vitesse 5. Il peut être renvoyé comme les autres.
 - **Intérim automatique** (option dans l'onglet Embauche) : le matin, s'il n'y a personne en salle ou en cuisine pour ouvrir (par exemple ton seul cuisinier est en repos), un intérimaire est appelé tout seul (dernier recours, comme dans l'ancien jeu). **Activé par défaut en Facile, coupé par défaut en Normal et Difficile** (ces difficultés viendront plus tard).
 - Pour ouvrir, il faut **au moins une personne en salle et une en cuisine**. Le patron compte pour l'une des deux : il est en salle au départ, et tu peux le passer en cuisine (bouton dans Équipe), sauf s'il laisserait son poste vide.
@@ -118,7 +118,7 @@ Version décrite : **0.6 (étape 4 « Équipe » : les 16 postes, plannings, for
 - Le coefficient « salaires » du lieu s'applique par-dessus (Paris × 1,15). Il ne descend jamais sous 1, donc jamais sous la grille.
 - Le candidat demande entre le minimum et environ 35 % de plus, selon sa note et sa personnalité.
 - Salaire mensuel affiché : taux horaire × 170,73 h (39 h par semaine, dont 4 h majorées de 10 %).
-- **Les salaires ne sont pas encore payés** (décision de Yann) : ils seront payés avec l'étape « Argent ». D'ici là, l'argent ne bouge pas. Le coût mensuel de l'équipe est affiché dans le volet Équipe (sans les intérimaires).
+- **Les salaires sont payés chaque soir** *(v0.7, étape « Argent » comme décidé avec Yann)* : chaque employé reçoit 1/30,42 de son salaire du mois (39 h par semaine), jours de repos et de formation compris. Le patron ne se paie pas : il garde le bénéfice. Le coût mensuel de l'équipe est affiché dans le volet Équipe et dans le volet Argent. Voir §6.
 
 ### Renvoyer un employé
 - Chaque employé (intérimaires compris) a un bouton **« Renvoyer »** dans l'onglet Équipe et sur sa fiche *(v0.6 : barmans, plongeurs, agents de nettoyage et apprentis aussi ; une personne absente part tout de suite ; une formation pas encore commencée est remboursée)*. **Le patron ne peut pas être renvoyé** : il n'a pas ce bouton.
@@ -131,7 +131,7 @@ Version décrite : **0.6 (étape 4 « Équipe » : les 16 postes, plannings, for
   - si elle n'a rien en cours, elle part tout de suite.
 - Le volet affiche « Renvoyé(e) : finit sa tâche en cours, puis part. » Le journal note le renvoi, puis le départ.
 - Une personne renvoyée ne compte plus pour tenir un poste, ni dans l'effectif, ni dans le coût des salaires. Elle ne revient pas parmi les candidats.
-- **Pas d'indemnité pour l'instant** : ce sera vu avec l'étape « Argent ».
+- **Indemnité de renvoi** *(v0.7)* : rien pendant les **30 premiers jours** (période d'essai) ; ensuite **3 jours de salaire** (règle de Chez YaYa) ; à partir de **8 mois** d'ancienneté, on ajoute l'indemnité de la loi (1/4 de mois de salaire par année d'ancienneté). Elle est payée tout de suite, affichée avant de confirmer, et un intérimaire n'en a pas. En plein service, la journée de la personne renvoyée lui est aussi payée. On peut toujours renvoyer, même si la caisse est vide.
 
 ### Le travail en salle
 - Les personnes en salle (patron compris) choisissent seules quoi faire, dans cet ordre : 1) apporter un plat prêt, 2) apporter l'addition, 3) prendre une commande, 4) débarrasser. À priorité égale, elles servent celui qui attend depuis le plus longtemps.
@@ -198,7 +198,6 @@ Chaque fiche (onglet Équipe › « Fiche ») montre les qualités et ce qu'elle
 
 ### Pas encore là
 - Contrats (CDD, CDI, saisonniers), motivation, fatigue, départs volontaires : pas demandés pour cette étape.
-- Paiement réel des salaires, de l'intérim et indemnités de renvoi : étape 5 « Argent ».
 
 ## 4b. La carte et le paiement *(v0.4)*
 
@@ -235,7 +234,7 @@ Tout vient de l'ancien jeu (`bistrot/bistrot.html`, lu sans le modifier) et est 
 
 ### Paiement
 - La table paie **à la fin du repas** (bouton « Voir le ticket » dans le détail d'une table). À la fermeture, ceux qui ont mangé paient aussi.
-- **L'argent monte avec les recettes** et baisse quand tu achètes des produits (§4c). Salaires, loyer et charges restent pour l'étape « Argent ».
+- **L'argent monte avec les recettes** et baisse quand tu achètes des produits (§4c). Depuis la v0.7, salaires, loyer, charges (et en Normal et Difficile cotisations et TVA) sont payés chaque soir (§6).
 - **Pourboires** selon les usages du lieu (ancien jeu) : en France on laisse souvent la monnaie, aux États-Unis 15 à 20 %, **zéro à Tokyo, Pékin et Séoul**. Ils vont dans la **cagnotte de l'équipe**, pas dans ton argent (comme dans l'ancien jeu).
 - La satisfaction (attente, plat renvoyé, prix) ne joue pour l'instant que sur le pourboire, pas encore sur la note du restaurant.
 - Le **bilan de fin de journée** montre clients servis, recettes, ticket moyen par table, coût des produits utilisés, marge brute, plats renvoyés, pourboires, plat le plus vendu, et depuis la v0.5 : achats, recettes − achats, gaspillage, menus du jour, boissons et ruptures (avec leur cause).
@@ -315,10 +314,50 @@ Données : `donnees/stocks.json` (réserve, fournisseurs, règles), `donnees/pri
 - Les **44 lieux** de l'ancien jeu sont repris tels quels : 14 en France, 7 en Outre-mer et 23 capitales du monde. Fichier : `donnees/lieux.json`.
 - À cette étape, le lieu change seulement **l'affluence** et **les noms des clients**. Il change aussi les prix conseillés, les spécialités à la carte et les pourboires (v0.4). Les salaires suivent son coefficient. La météo et le calendrier viendront à l'étape 6.
 
-## 6. La difficulté
+## 6. L'argent et les niveaux *(v0.7, étape 5)*
 
-- Une seule difficulté pour l'instant : **Facile**. Tu es propriétaire, avec **600 000 €** au départ et une note de 3 sur 5.
-- Normal et Difficile (loyer, charges, prêt) arrivent à l'étape 5.
+Fichier : `donnees/argent.json`. Tout ce qui coûte chaque mois est **payé chaque soir, au jour le jour** (le montant du mois divisé par 30,42), pour que l'argent ne tombe jamais d'un coup.
+
+### Trois niveaux, choisis au lancement (Facile par défaut)
+
+| | Facile | Normal | Difficile |
+|---|---|---|---|
+| Caisse au départ | 600 000 € | 40 000 € | 15 000 € (petit apport) |
+| Local | propriétaire, pas de loyer | locataire | locataire |
+| Prêt de la banque | non | non | 80 000 € à 5 % sur 5 ans (≈ 1 510 €/mois), qui a servi à acheter le restaurant : il n'est pas dans la caisse |
+| Salaires (grille HCR × lieu) | payés | payés | payés |
+| Cotisations sur les salaires | non | 25 % | 25 % |
+| TVA | non | 10 % | 10 % |
+| Charges courantes | oui | oui | oui |
+| Concurrence | normale | normale | les concurrents prennent 20 % des clients |
+| Intérim et commande automatiques au départ | oui | non (option) | non (option) |
+
+- Une partie commencée avant la v0.7 reste en **Facile**.
+- Le niveau s'affiche dans le volet Argent et sur le bouton « Continuer » de l'accueil.
+
+### Loyer (Normal et Difficile)
+- Loyer par an ≈ **4,8 % de la valeur du local** du lieu (valeurs reprises de Chez YaYa), pour un bistrot de 32 places d'environ **90 m²**.
+- Exemples par mois : Paris 6 000 € (800 €/m²/an), Île-de-France 2 800 €, Bretagne et La Réunion 1 280 €, Mayotte 720 €, New York 10 000 €, Tokyo 8 000 €.
+
+### Charges courantes (tous les niveaux)
+- Par mois, multipliées par le coefficient « prix » du lieu : électricité 950 €, gaz 400 €, eau 250 €, assurances 300 €, entretien et réparations 250 €, frais de banque 60 € (Paris × 1,2 ≈ 2 650 € par mois, ≈ 87 € par jour).
+
+### Salaires, cotisations, TVA
+- **Salaires** : grille officielle HCR (§4) × coefficient du lieu, 39 h par semaine, payés chaque soir (repos compris). **Intérimaires** : payés le soir de leur journée (7 h 53). Le patron ne se paie pas.
+- **Cotisations** (Normal et Difficile) : 25 % des salaires des employés, en moyenne pour des salaires proches du minimum après la réduction générale. L'intérim est facturé tout compris (+ 30 %, §4).
+- **TVA** (Normal et Difficile) : les prix de la carte sont TTC ; chaque soir, **10 %** des recettes hors taxe reviennent à l'État (sur 110 € payés, 10 €).
+
+### Découvert et faillite (claire et pas brutale)
+- La caisse peut passer **sous zéro**. On peut encore commander des produits jusqu'à **5 000 € sous zéro** (découvert de la banque) ; les formations, elles, demandent d'avoir l'argent.
+- Chaque soir sous zéro, le bilan affiche une **alerte rouge** : « Soir 2 sur 7 : encore 5 soirs sous zéro et c'est la faillite », avec des conseils. Le volet Argent le rappelle aussi. Dès qu'un soir finit au-dessus de zéro, le compteur repart à zéro.
+- **Faillite** : si la caisse reste sous zéro **7 soirs de suite**. Un écran explique pourquoi : le montant, les recettes et la perte des 7 derniers jours, et les 3 plus grosses dépenses.
+- **La sauvegarde n'est jamais perdue** : la partie en faillite reste enregistrée (on peut la revoir depuis l'accueil) et une copie est gardée à part (`bistrotjeu.test.copie-faillite`). On peut recommencer une nouvelle partie quand on veut.
+
+### Bilans
+- **Bilan du soir** : 3 gros chiffres (clients servis, bénéfice ou perte du jour, caisse), puis l'argent ligne par ligne (recettes, produits, salaires, intérimaires, cotisations, loyer, charges, TVA, prêt, indemnités, formations), puis le détail du service comme avant.
+- **Bilan de la semaine** : tous les 7 jours de jeu (jours 1 à 7, 8 à 14…), sous le bilan du soir : clients, recettes, bénéfice ou perte de la semaine, les dépenses ligne par ligne, et la semaine d'avant pour comparer.
+- **Volet Argent** (on l'ouvre en touchant la caisse, en haut à gauche) : onglets **Aujourd'hui** (l'argent du jour jusqu'ici, ce que coûte une journée, les 7 derniers jours), **Semaines** (la semaine en cours et les 8 dernières) et **Loyer et charges** (tout par mois, le prêt, les règles).
+- Ce qui est payé la nuit, après le bilan (commandes, formations, renvois), compte pour le lendemain.
 
 ## 7. Messages et Journal
 
@@ -330,14 +369,15 @@ Données : `donnees/stocks.json` (réserve, fournisseurs, règles), `donnees/pri
 
 - La partie est **enregistrée toute seule** : toutes les 5 minutes de jeu, quand on ouvre un volet, en fin de journée, et quand on quitte l'appli.
 - L'avant-dernière sauvegarde est gardée en secours. Si la dernière est abîmée, le jeu reprend la précédente.
-- Chaque sauvegarde porte un **numéro de version** (actuellement 6). Quand une version change le format, elle sait convertir les anciennes sauvegardes.
+- Chaque sauvegarde porte un **numéro de version** (actuellement 7). Quand une version change le format, elle sait convertir les anciennes sauvegardes.
+- **Format 6 → 7 (Bistrot 0.7)** : la partie reprend exactement où elle était (même en plein service), **en Facile** (propriétaire, pas de prêt). Les salaires et les charges sont payés à partir du soir même. L'ancienneté des employés compte à partir de la mise à jour (période d'essai de 30 jours). Les comptes de la semaine démarrent le jour de la reprise.
 - **Format 5 → 6 (Bistrot 0.6)** : la partie reprend exactement où elle était (même en plein service). Les barmans, plongeurs et agents de nettoyage « en attente de rôle » prennent leur poste ; chaque employé reçoit 2 jours de repos qui se suivent (personne n'est absent le jour de la reprise : les repos commencent le lendemain) ; la cagnotte garde son montant ; propreté 80 ; un candidat est ajouté pour chaque nouveau poste (barman, plongeur, nettoyage, apprenti) s'il reste une place.
 - **Format 4 → 5 (Bistrot 0.5)** : une partie de la v0.4 reçoit les boissons de base à sa carte, un calendrier (jour 1 = date de création), et ses premières courses (payées). La commande automatique suit la règle Facile.
 - **Format 3 → 4 (Bistrot 0.4)** : une partie de la v0.3 reçoit la carte de départ de son lieu, une cagnotte vide, et les tables déjà assises reçoivent leur commande.
 - **Format 2 → 3 (Bistrot 0.3)** : une partie de la v0.2 reprend là où elle était. L'option d'intérim automatique prend la valeur par défaut (activée en Facile). Un employé nommé « Intérimaire » repris par erreur de l'ancien jeu (remplaçant d'un jour) est retiré.
 - **Format 1 → 2 (Bistrot 0.2)** : une partie de la v0.1 est relue ainsi : le patron reste seul (Léa part), 8 candidats arrivent, et la journée en cours repart au matin, restaurant fermé jusqu'au recrutement. Le nom, le lieu, le jour, l'argent et le journal sont gardés. Une sauvegarde venant d'une version plus récente n'est jamais écrasée sans prévenir : un message demande de mettre le jeu à jour.
 - **Cases séparées** sur le téléphone :
-  - lien TEST : `bistrotjeu.test.partie` (+ `bistrotjeu.test.partie-precedente`, `bistrotjeu.test.reglages`) ;
+  - lien TEST : `bistrotjeu.test.partie` (+ `bistrotjeu.test.partie-precedente`, `bistrotjeu.test.reglages`, et depuis la v0.7 `bistrotjeu.test.copie-faillite`) ;
   - lien OFFICIEL : `bistrotjeu.officiel.partie`, etc.
   Un test ne peut donc jamais abîmer la vraie partie.
 
@@ -364,23 +404,36 @@ Tailles de référence testées (en pixels « CSS », téléphone en paysage) :
 - Ces chiffres sont mesurés automatiquement par `outils/tester.py` à chaque version.
 - Installé sur l'écran d'accueil, le jeu s'ouvre **en plein écran et en paysage**.
 
-## 10. Équilibre mesuré (simulateur, 30 jours, Facile, v0.6)
+## 10. Équilibre mesuré (simulateur, 30 jours, v0.7)
 
-Équipe testée : patron en salle + 1 serveur + 1 commis de cuisine, prix conseillés, **commande automatique** (Facile), partie commencée le 25 novembre. *Depuis la v0.6*, le serveur et le commis prennent leurs 2 jours de repos chaque semaine : les jours de repos du commis, la cuisine serait vide, donc un commis intérimaire est appelé (intérim automatique de Facile) ; les jours de repos du serveur, le patron sert seul. Pas d'agent de nettoyage : la salle se salit dans les lieux très fréquentés.
+Joueur moyen : patron en salle + 1 serveur + 1 commis de cuisine, prix conseillés, **commande automatique** et **intérim automatique** activés (ils le sont d'office en Facile ; en Normal et Difficile, il faut activer ces options ou s'en occuper soi-même), partie commencée le 25 novembre. Les jours de repos du commis, un commis intérimaire est appelé ; ceux du serveur, le patron sert seul. Pas d'agent de nettoyage.
 
-| Lieu | Servis par jour | Repartis | Recettes par jour | Achats de produits | Salaires (estimés, intérim compris) | Résultat par jour | Propreté au jour 30 | Ruptures par jour | Menus du jour | Boissons |
-|---|---|---|---|---|---|---|---|---|---|---|
-| Mayotte | 36 | 1 % | 1 222 € | 349 € (29 %) | 200 € | **674 €** | 100 | 0,9 | 12 + 6 à emporter | 46 |
-| La Réunion | 60 | 3 % | 1 949 € | 422 € (22 %) | 206 € | **1 321 €** | 100 | 0,8 | 18 + 5 | 74 |
-| Bretagne | 68 | 5 % | 1 877 € | 478 € (25 %) | 197 € | **1 202 €** | 77 | 0 | 20 + 5 | 83 |
-| Île-de-France | 71 | 7 % | 2 253 € | 614 € (27 %) | 222 € | **1 417 €** | 63 | 0,2 | 21 + 7 | 86 |
-| Paris | 88 | 16 % | 3 126 € | 704 € (23 %) | 246 € | **2 176 €** | 6 | 0 | 22 + 6 | 108 |
-| Tokyo | 92 | 19 % | 3 355 € | 691 € (21 %) | 230 € | **2 434 €** | 0 | 1,3 | 20 + 6 | 112 |
-| New York | 90 | 21 % | 3 763 € | 836 € (22 %) | 290 € | **2 636 €** | 0 | 0,4 | 26 + 6 | 110 |
+**Bénéfice réel par jour** (celui du bilan du soir, après tout ce qui est payé) :
 
-- **Un joueur moyen reste bénéficiaire partout en Facile** (contrôle automatique). Résultat = recettes − achats − salaires des employés (39 h, sans charges) − intérimaires des jours de repos (≈ 9 jours sur 30) ; loyer et charges viendront avec l'étape « Argent ».
-- Par rapport à la v0.5.1, les recettes baissent un peu (jours de repos, et salle sale à Paris, Tokyo et New York où des clients font demi-tour) : c'est voulu, pour donner envie d'embaucher un agent de nettoyage.
-- **Équipe complète** (Paris, on embauche chaque candidat qui a une place) : 16/16 au bout de 20 jours ; 93 servis par jour, 3 min d'attente, salaires ≈ 1 522 € par jour, **résultat ≈ 1 012 € par jour**, propreté 100. Une grosse équipe coûte cher : elle n'est rentable que dans un lieu fréquenté.
+| Lieu | Facile | Normal | Difficile | Caisse au jour 30 (Facile / Normal / Difficile) |
+|---|---|---|---|---|
+| Mayotte | **596 €** | **422 €** | **231 €** | 617 383 € / 52 153 € / 21 426 € |
+| La Réunion | **1 242 €** | **982 €** | **732 €** | 636 512 € / 68 699 € / 36 219 € |
+| Bretagne | **1 135 €** | **884 €** | **591 €** | 633 421 € / 65 874 € / 32 096 € |
+| Île-de-France | **1 343 €** | **1 002 €** | **743 €** | 639 428 € / 69 193 € / 36 432 € |
+| Paris | **2 092 €** | **1 561 €** | **1 122 €** | 661 527 € / 85 598 € / 47 422 € |
+| Tokyo | **2 345 €** | **1 731 €** | **1 466 €** | 669 078 € / 90 653 € / 57 697 € |
+| New York | **2 538 €** | **1 809 €** | **1 624 €** | 674 442 € / 92 563 € / 62 041 € |
+
+- **Facile : un joueur moyen reste bénéficiaire partout** (contrôle automatique). Paris, par jour : recettes 3 126 €, produits 704 €, salaires 198 € + intérim 45 €, charges 87 €.
+- **Normal : plus serré** (≈ 25 à 30 % de moins), mais encore bénéficiaire partout. Paris, en plus : loyer 197 €, cotisations 50 €, TVA 284 € par jour.
+- **Difficile : encore plus serré** (≈ 35 à 60 % de moins que Facile) : 20 % de clients en moins, prêt (≈ 50 € par jour) et seulement 15 000 € en caisse au départ. **Les erreurs coûtent cher** (Difficile, 30 jours, par jour) :
+
+| Erreur | Paris | Mayotte |
+|---|---|---|
+| Aucune (joueur moyen) | 1 122 € | 231 € |
+| Prix de toute la carte 50 % trop hauts | 312 € | **−116 €** |
+| Oublier de commander les produits | **−459 €** | **−326 €** |
+| Embaucher tout le monde (16 employés) | **−217 €** | **−1 045 €**, faillite le jour 20 |
+
+- Ce que le simulateur ne sait pas faire : un « très bon joueur ». Avec le moteur actuel, un 2e serveur ne fait pas gagner plus (la cuisine limite) ; la marge vient surtout d'une équipe à la bonne taille, de bons prix et de commandes régulières.
+- **Équipe complète en Facile** (Paris, on embauche chaque candidat qui a une place) : 16/16 au bout de 20 jours ; 93 servis par jour, salaires ≈ 1 460 € par jour, **bénéfice réel ≈ 987 € par jour** (moins que le joueur moyen : une grosse équipe coûte cher).
+- **Autres contrôles automatiques** : les salaires, l'intérim, le loyer et le prêt du soir sont exacts ; indemnités (0 € en période d'essai, 3 jours de salaire après, loi après 8 mois) ; faillite seulement après 7 soirs sous zéro avec une alerte chaque soir, partie relue avec la faillite ; le compteur repart à zéro quand la caisse remonte ; achats refusés au-delà du découvert ; bilan de la semaine = somme des 7 bilans du jour ; sauvegarde 0.6 reprise en plein service, en Facile.
 - **Effets mesurés** (Paris, 8 jours) : serveur aimable (9) ≈ 102 € de pourboires par jour contre ≈ 32 € (2) ; sommelier : 862 → 948 boissons ; propreté après 20 jours sans agent 36/100, avec un agent 100/100 ; chef ou second : +1 en qualité ; plongeur : cuisine × 1,15 → × 1,07 ; barman : 9 s → 2 s par boisson.
 - Les recettes ont augmenté depuis la v0.4 (boissons et menu du jour) ; les achats font 20 à 29 % des recettes.
 - **Menu du jour modifié** (contrôle automatique) : un plat faisable est accepté, un plat sans ingrédients est refusé avec la liste de ce qui manque, « pas de dessert » donne la formule entrée + plat, le plat est obligatoire, le choix tient dans la sauvegarde, et le lendemain un nouveau menu est proposé automatiquement.
@@ -413,4 +466,4 @@ Selon l'équipe, à Paris (moyenne par jour) :
 | Patron + 1 serveur + 1 commis | 86 | 7 % | 3 min |
 | Patron + 2 serveurs + chef + commis | 95 | 8 % | 3 min |
 
-Contrôles automatiques : chaque jour, l'argent bouge exactement de « recettes − achats », chaque client servi paie, aucun stock négatif, zéro pourboire là où ce n'est pas l'usage, les 44 cartes sont complètes. Les 7 anciennes parties de Chez YaYa se reprennent (stocks compris quand ils existent). Aucune valeur impossible, toutes les journées se terminent. Détail complet : `tests/resultat-simulation-30-jours.txt`.
+Contrôles automatiques : chaque jour, l'argent bouge exactement de « recettes − toutes les dépenses du bilan », chaque client servi paie, aucun stock négatif, zéro pourboire là où ce n'est pas l'usage, les 44 cartes sont complètes. Les 7 anciennes parties de Chez YaYa se reprennent (stocks compris quand ils existent). Aucune valeur impossible, toutes les journées se terminent. Détail complet : `tests/resultat-simulation-30-jours.txt`.

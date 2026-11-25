@@ -5,10 +5,11 @@ UI.voletOuvert = null;
 UI.ouvrirVolet = function (quoi) {
   UI.voletOuvert = quoi;
   const v = UI.$('volet');
-  v.classList.toggle('large', quoi === 'equipe' || quoi === 'carte' || quoi === 'stocks');
+  v.classList.toggle('large', quoi === 'equipe' || quoi === 'carte' || quoi === 'stocks' || quoi === 'argent');
   if (quoi === 'equipe') { UI.candidatCourant = null; UI.renvoiCourant = null; UI.renvoiRefus = null; UI.ficheCourante = null; UI.eqMsg = null; UI.eqOnglet = UI.S && UI.S.dejaOuvert ? 'equipe' : 'embauche'; UI.rafraichirEquipe(true); }
   else if (quoi === 'carte') { UI.platCourant = null; UI.carteRefus = null; UI.rafraichirCarte(true); }
   else if (quoi === 'stocks') { UI.stMsg = null; UI.rafraichirStocks(true); }
+  else if (quoi === 'argent') { UI.agOnglet = 'jour'; UI.rafraichirArgent(true); }
   else if (quoi === 'ticket') {
     const g = UI.S.groupes.find(function (x) { return x.id === UI.ticketGroupe; });
     UI.$('volet-titre').textContent = B.t('ticket_titre');
@@ -21,7 +22,7 @@ UI.ouvrirVolet = function (quoi) {
   clearTimeout(UI._cacheVolet);
   UI.$('voile').hidden = false;
   v.hidden = false;
-  requestAnimationFrame(function () { v.classList.add('ouvert'); if (quoi === 'equipe') UI.$('volet-corps').scrollTop = 0; });
+  requestAnimationFrame(function () { v.classList.add('ouvert'); if (quoi === 'equipe' || quoi === 'argent') UI.$('volet-corps').scrollTop = 0; });
   if (UI.reglages.pauseAuto) UI.pause('volet', true);
   UI.sauver();
 };

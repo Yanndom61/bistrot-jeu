@@ -230,3 +230,36 @@ table.planning td.vide.auj { background: #f6c9c2; }
 .cagnotte { display: flex; align-items: baseline; justify-content: space-between; background: #f6efe2; border-radius: 10px; padding: 8px 12px; margin: 4px 0; }
 .cagnotte b { font-size: 28px; color: #8e2a22; }
 .onglet { font-size: 15px; padding: 0 4px; }
+
+/* v0.7 : argent (caisse, comptes, bilans, faillite, niveaux) — gros textes, grosses touches */
+button.infos { display: block; height: 44px; padding: 0 4px; border: 0; background: none; color: inherit; font: inherit; text-align: left; cursor: pointer; border-radius: 8px; }
+button.infos .l1, button.infos .l2 { display: block; }
+button.infos:active { background: rgba(255,255,255,.08); }
+#b-argent { display: inline-block; padding: 0 3px; border: 1.5px solid #f2c14e; border-radius: 6px; color: #ffe39a; line-height: 1.15; }
+#b-argent.negatif { border-color: #ff8b7e; color: #ffb3a8; }
+.caisse b { font-size: 30px; }
+.caisse small { font-size: 14px; color: #6d5546; font-weight: 400; }
+.ligne-ag { display: flex; justify-content: space-between; align-items: baseline; gap: 10px; padding: 5px 2px; border-bottom: 1px solid #eadfcd; font-size: 16px; }
+.ligne-ag b { font-size: 17px; white-space: nowrap; }
+.ligne-ag.plus b { color: #2f8f55; }
+.ligne-ag.total { border-bottom: 0; border-top: 2px solid #3a2a22; font-weight: 700; font-size: 17px; }
+.ligne-ag.total b { font-size: 20px; }
+.vert-txt { color: #2f8f55; }
+.chiffres b.vert-txt { color: #2f8f55; } .chiffres b.rouge-txt { color: #b8322a; }
+.alerte-ag { background: #fbe6e3; color: #8e2a22; border-left: 5px solid #b8322a; border-radius: 8px; padding: 6px 10px; margin: 6px 0; font-size: 15px; font-weight: 700; text-align: left; }
+.alerte-ag span { font-weight: 400; color: #5a2a24; }
+.fin-argent { text-align: left; margin: 6px auto; max-width: 420px; }
+.fin-argent .ligne-ag { font-size: 15px; padding: 3px 2px; }
+.fin-argent .ligne-ag b { font-size: 15px; }
+.fin-argent .ligne-ag.total b { font-size: 18px; }
+.fin-semaine { border-top: 3px solid #e3d3bb; margin-top: 8px; padding-top: 4px; }
+.fin-semaine h3 { margin: 4px 0 6px; font-size: 18px; }
+table.planning.comptes td { font-size: 15px; }
+.niveaux { display: flex; gap: 8px; margin: 3px 0; }
+.niveau { flex: 1; min-height: 48px; border: 2px solid #c9b59c; border-radius: 10px; background: #fff; color: #3a2a22; font-size: 16px; font-weight: 700; }
+.niveau.actif { background: #3a2a22; border-color: #3a2a22; color: #fff6e8; }
+.carte-accueil .niveau-texte { background: #f6efe2; border-radius: 8px; padding: 6px 10px; font-size: 14px; }
+.carte-fin.faillite { text-align: left; border-top: 8px solid #b8322a; }
+.carte-fin.faillite h2 { color: #b8322a; font-size: 26px; text-align: center; }
+.carte-fin.faillite .rassure { background: #e7f4ea; border-radius: 8px; padding: 6px 10px; font-size: 15px; }
+.confirmation .indemnite { font-size: 16px; font-weight: 700; }

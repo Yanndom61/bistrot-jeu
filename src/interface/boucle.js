@@ -11,26 +11,30 @@ UI.majFin = function () {
   const S = UI.S, el = UI.$('fin');
   if (!S || !S.finJour || !S.bilan) { el.hidden = true; return; }
   if (!el.hidden) return;
-  const b = S.bilan;
+  if (S.faillite) { UI.montrerFaillite(); return; }
+  const b = S.bilan, res = b.resultat || 0, neuf = !!b.depenses;
   el.innerHTML = '<div class="carte-fin"><h2>' + UI.esc(B.t('fin_titre', { jour: b.jour })) + '</h2><div class="chiffres">' +
     '<div><b>' + b.servis + '</b><span>' + UI.esc(B.t('fin_servis')) + '</span></div>' +
-    '<div><b>' + UI.esc(B.euros(b.recettes || 0)) + '</b><span>' + UI.esc(B.t('fin_recettes')) + '</span></div>' +
-    '<div><b>' + UI.esc(B.prix(b.ticketMoyen || 0)) + '</b><span>' + UI.esc(B.t('fin_ticket_moyen')) + '</span></div></div>' +
+    (neuf ? '<div><b class="' + (res < 0 ? 'rouge-txt' : 'vert-txt') + '">' + UI.esc(B.euros(res)) + '</b><span>' + UI.esc(B.t(res < 0 ? 'fin_perte' : 'fin_benefice')) + '</span></div>' +
+      '<div><b class="' + (b.caisse < 0 ? 'rouge-txt' : '') + '">' + UI.esc(B.euros(b.caisse)) + '</b><span>' + UI.esc(B.t('fin_caisse')) + '</span></div></div>'
+      : '<div><b>' + UI.esc(B.euros(b.recettes || 0)) + '</b><span>' + UI.esc(B.t('fin_recettes')) + '</span></div>' +
+      '<div><b>' + UI.esc(B.prix(b.ticketMoyen || 0)) + '</b><span>' + UI.esc(B.t('fin_ticket_moyen')) + '</span></div></div>') +
+    UI.htmlFinAlerte(b) + UI.htmlFinArgent(b) +
     '<div class="fin-detail">' + [
       B.t('fin_d_repartis', { n: b.repartis }), B.t('fin_d_attente', { n: b.attente }),
       B.t('fin_d_cout', { cout: B.euros(b.coutMatiere || 0) }), B.t('fin_d_marge', { marge: B.euros((b.recettes || 0) - (b.coutMatiere || 0)) }),
       B.t('fin_d_renvois', { n: b.platsRenvoyes || 0 }), B.t('fin_d_pourboires', { total: B.prix(b.pourboires || 0) }),
       b.meilleurPlat ? B.t('fin_d_meilleur', { nom: b.meilleurPlat.nom, n: b.meilleurPlat.n }) : '',
-      B.t('fin_d_achats', { total: B.euros(b.achats || 0) }), B.t('fin_d_resultat', { total: B.euros(b.resultat || 0) }),
+      neuf ? B.t('fin_d_ticket', { total: B.prix(b.ticketMoyen || 0) }) : B.t('fin_d_achats', { total: B.euros(b.achats || 0) }), neuf ? '' : B.t('fin_d_resultat', { total: B.euros(b.resultat || 0) }),
       B.t('fin_d_gaspillage', { n: b.gaspillagePortions || 0, valeur: B.euros(b.gaspillage || 0) }),
       B.t('fin_d_mdj', { n: b.mdjVendus || 0, e: b.emporter || 0 }), B.t('fin_d_boissons', { n: b.boissons || 0 }),
       B.t('fin_d_ruptures', { n: (b.ruptures || []).length, partis: b.partisRupture || 0 }),
-      b.formations ? B.t('fin_d_formations', { total: B.euros(b.formations) }) : '',
+      b.formations && !neuf ? B.t('fin_d_formations', { total: B.euros(b.formations) }) : '',
       b.proprete ? B.t('fin_d_proprete', { avant: b.proprete.avant, apres: b.proprete.apres }) : '',
       b.partisSale ? B.t('fin_d_partis_sale', { n: b.partisSale }) : '',
       (b.absents || []).length ? B.t('fin_d_absents', { n: b.absents.map(function (x) { return x.nom.split(' ')[0]; }).join(', ') }) : '',
       b.partage ? B.t('fin_d_partage', { total: B.prix(b.partage.total), n: b.partage.n, part: B.prix(b.partage.part) }) : ''
-    ].filter(Boolean).map(function (x) { return '<span>' + UI.esc(x) + '</span>'; }).join('') + '</div>' + UI.htmlFinRuptures(b) +
+    ].filter(Boolean).map(function (x) { return '<span>' + UI.esc(x) + '</span>'; }).join('') + '</div>' + UI.htmlFinRuptures(b) + UI.htmlFinSemaine(b) +
     '<button type="button" class="gros principal" id="fin-suivant">' + UI.esc(B.t('fin_suivant', { jour: b.jour + 1 })) + '</button></div>';
   el.hidden = false;
   UI.sauver();
@@ -80,6 +84,7 @@ UI.init = function () {
   UI.initEquipe();
   UI.initCarte();
   UI.initStocks();
+  UI.initArgent();
   UI.initPlacement();
   UI.initPortrait();
   const r = UI.chargerPartie();

@@ -8,8 +8,8 @@ On ne travaille que sur la colonne **Indispensable**, dans l'ordre. Toute nouvel
 | ✅ 1b. Retours de Yann : placement des clients par le joueur (option), départ seul avec recrutement *(v0.2)* ; effectif de 16, intérim, renvoi *(v0.3, en test)* | Images libres de droits (Kenney), style unique | Étoile au guide |
 | ✅ 2. Carte des plats, prix et paiement des clients *(v0.4)* | Contrôle d'hygiène surprise (type Alim'confiance) | |
 | ✅ 3. Stocks, fournisseurs et vrais prix de gros (Rungis), **avec menu du jour, boissons et plats de saison** (décision de Yann) *(v0.5 ; menu du jour modifiable en v0.5.1, validé par Yann)* | Fiches techniques des plats (grammages, coût matière) | Mise à jour des prix Rungis (nouveau relevé) |
-| ✅ 4. Équipe : **les 16 postes tous recrutables** (décision de Yann), plannings avec 2 jours de repos qui se suivent, formations (dont sommellerie), cagnotte des pourboires partagée chaque mois, intérim pour les absences, effets des qualités, propreté *(v0.6, en test)* | Écran « Crédits et sources » | |
-| 5. Argent : loyer, charges, paiement des salaires (et de l'intérim), indemnités de renvoi (à décider), 3 difficultés, bilan de fin de journée | | |
+| ✅ 4. Équipe : **les 16 postes tous recrutables** (décision de Yann), plannings avec 2 jours de repos qui se suivent, formations (dont sommellerie), cagnotte des pourboires partagée chaque mois, intérim pour les absences, effets des qualités, propreté *(v0.6, validé par Yann)* | Écran « Crédits et sources » | |
+| ✅ 5. Argent : loyer et charges selon les lieux, salaires payés (grille HCR) et intérim, indemnités de renvoi, niveaux Facile / Normal / Difficile, faillite claire (sauvegarde gardée), bilans du jour et de la semaine *(v0.7, en test)* | | |
 | 6. Lieux (effets complets), météo et calendrier | | |
 | 7. Tutoriel progressif, mode d'emploi « ? », objectifs | | |
 | 8. Avis clients, réputation | | |
@@ -20,7 +20,8 @@ On ne travaille que sur la colonne **Indispensable**, dans l'ordre. Toute nouvel
 - **Équipe** : même déroulement que Chez YaYa : on démarre seul avec le patron et on recrute dès le début *(première version simple en v0.2)*.
 - **Effectif** : le même que dans Chez YaYa, 16 employés (salle 8, cuisine 6, nettoyage 2), plus les intérimaires *(fait en v0.3)*.
 - **Intérim** : comme dans l'ancien jeu, en version simple ; automatique seulement en option, jamais par défaut en Normal et Difficile *(fait en v0.3)*.
-- **Salaires** : payés avec l'étape « Argent », pas avant. Rien ne change d'ici là.
+- **Salaires** : payés avec l'étape « Argent » *(fait en v0.7 : chaque soir, au jour le jour)*.
+- **Propreté de la salle** : gardée telle quelle (v0.6 validée).
 - **Les 16 postes sont tous recrutables** (salle, cuisine, bar, plonge, nettoyage, apprentis) *(fait en v0.6)*.
 - **Menu du jour, boissons (carte et bar) et plats de saison** : arrivent avec l'étape 3 « Stocks » *(fait en v0.5)*. Le barman est recrutable depuis la v0.6.
 - **Commande automatique** : une option, activée par défaut en Facile seulement *(fait en v0.5)*.
@@ -28,7 +29,6 @@ On ne travaille que sur la colonne **Indispensable**, dans l'ordre. Toute nouvel
 - **Renvoyer** : possible dès maintenant *(fait en v0.3)*. Pas le patron, jamais la salle ou la cuisine vide en service, et en plein service la personne finit sa tâche puis part.
 
 ## Questions en attente pour Yann
-- **Indemnités de renvoi** (pour l'étape « Argent ») : faut-il payer quelque chose quand on renvoie quelqu'un (par exemple selon son ancienneté), ou rester simple sans indemnité ?
 - **Choix de la v0.4 à valider** (REGLES §4b) : limites de carte 2-6 / 3-9 / 2-6, prix de 50 en 50 centimes ; cuisson ratée toujours renvoyée ; pourboires dans la cagnotte (à quoi servira-t-elle ?) ; trop cher = moins de clients, pas encore d'effet sur la note. TVA pas encore comptée.
 - **Choix de la v0.5 à valider** (tous expliqués dans REGLES §4c) :
   - Prix d'achat : cotes RNM du MIN de Rungis (novembre 2026) pour 23 produits ; prix de l'ancien jeu pour les 31 autres (épicerie, pain, fromage, charcuterie, boissons). Les mêmes prix partout dans le monde × coefficient du lieu.
@@ -61,3 +61,15 @@ On ne travaille que sur la colonne **Indispensable**, dans l'ordre. Toute nouvel
   - Bar et plonge dessinés dans la salle (comptoir du bar en haut près de la passe ; plongeurs en bas de la cuisine).
   - Candidats : 14 au départ (+ barman, plongeur, nettoyage, apprenti), 1 à 3 nouveaux par jour, 8 au plus en attente.
   - Pas de contrats (CDD/CDI/saisonniers), de motivation ni de fatigue : pas demandés pour cette étape.
+- **Choix de la v0.7 à valider** (tous expliqués dans REGLES §6) :
+  - Tout ce qui coûte chaque mois (salaires, loyer, charges, cotisations, prêt) est **payé chaque soir, au jour le jour** (1/30,42 du mois), pour éviter les grosses chutes d'argent.
+  - Niveaux : Facile 600 000 €, propriétaire ; Normal 40 000 €, locataire ; Difficile 15 000 € + prêt de 80 000 € à 5 % sur 5 ans (pas dans la caisse : il a payé le restaurant) et concurrents qui prennent 20 % des clients.
+  - Loyer ≈ 4,8 % par an de la valeur du local du lieu (Paris 6 000 €/mois, Bretagne 1 280 €, Mayotte 720 €).
+  - Charges courantes par mois × prix du lieu : électricité 950, gaz 400, eau 250, assurances 300, entretien 250, banque 60 € ; payées aussi en Facile.
+  - Cotisations 25 % des salaires et **TVA 10 %** en Normal et Difficile seulement (la TVA est un ajout : dis-moi si tu n'en veux pas).
+  - Le patron ne se paie pas : il garde le bénéfice.
+  - Indemnité : rien pendant 30 jours d'essai, puis 3 jours de salaire (Chez YaYa), plus l'indemnité de la loi après 8 mois ; la journée en cours est payée à la personne renvoyée.
+  - Faillite après **7 soirs de suite** sous zéro, avec une alerte chaque soir avant ; découvert de 5 000 € pour acheter des produits ; partie et copie de secours gardées.
+  - Bilan de la semaine tous les 7 jours de jeu (jours 1 à 7, 8 à 14…).
+  - Volet **Argent** qu'on ouvre en touchant la caisse en haut à gauche (pas de nouveau bouton dans la barre, déjà pleine). Dans la barre, « en pause » devient « pause » pour laisser la place.
+  - Les parties d'avant restent en Facile ; la période d'essai des employés repart à la mise à jour.

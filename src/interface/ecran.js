@@ -52,6 +52,7 @@ UI.majBarre = function () {
   else if (UI.enPause()) h += ' · ' + B.t('barre_en_pause');
   UI.$('b-heure').textContent = h;
   UI.$('b-argent').textContent = B.euros(S.argent);
+  UI.$('b-argent').classList.toggle('negatif', S.argent < 0);
   UI.$('vitesses').querySelectorAll('button').forEach(function (b) {
     const actif = +b.dataset.v === S.vitesse;
     b.classList.toggle('actif', actif);
@@ -68,7 +69,7 @@ UI.majDetail = function () {
   const gFile = UI.groupeChoisi && S.groupes.find(function (g) { return g.id === UI.groupeChoisi && g.etat === 'file'; });
   if (!gFile) UI.groupeChoisi = null;
   if (!S.ouvert) {
-    html += '<div class="ferme">' + UI.esc(B.t('fin_salle_vide')) + '</div>';
+    html += '<div class="ferme">' + UI.esc(B.t(S.faillite ? 'msg_faillite' : 'fin_salle_vide')) + '</div>';
   } else if (gFile) {
     const taille = gFile.taille === 1 ? B.t('pers_1') : B.t('pers_n', { n: gFile.taille });
     html += '<div class="choisi">' + UI.esc(B.t('placement_groupe_choisi', { taille: taille, groupe: B.t('groupe_' + gFile.type, { nom: gFile.nom }) })) + '</div>';

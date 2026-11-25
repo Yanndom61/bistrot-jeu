@@ -1,5 +1,16 @@
 # Changements
 
+## v0.7 — étape 5 : l'argent (lien TEST)
+- **3 niveaux** au lancement : **Facile** (par défaut, propriétaire, 600 000 €), **Normal** (locataire, 40 000 €) et **Difficile** (15 000 €, un prêt à rembourser, des concurrents).
+- **Loyer** selon le lieu (Normal et Difficile) et **charges** courantes (électricité, gaz, eau, assurances, entretien, banque).
+- **Salaires vraiment payés** chaque soir (grille HCR × lieu), intérimaires compris ; cotisations et TVA en Normal et Difficile.
+- **Indemnités de renvoi** : rien en période d'essai (30 jours), puis 3 jours de salaire, plus la loi après 8 mois. Le montant est affiché avant de confirmer.
+- **Faillite** claire et pas brutale : alerte chaque soir où la caisse est sous zéro, faillite seulement après 7 soirs de suite, écran qui explique pourquoi ; la partie et une copie de secours restent sur le téléphone.
+- **Bilan du soir** avec le bénéfice du jour, la caisse et l'argent ligne par ligne ; **bilan de la semaine** tous les 7 jours.
+- Nouveau **volet Argent** : touche la caisse en haut à gauche (Aujourd'hui, Semaines, Loyer et charges).
+- Fiche d'un employé : jour d'embauche, fin de la période d'essai, coût par jour.
+- Sauvegarde format 7 : les parties 0.6 continuent en Facile, même en plein service.
+
 ## v0.6 — étape 4 : l'équipe (lien TEST)
 - **Les 16 postes sont tous recrutables** : en plus, **barmans**, **plongeurs**, **agents de nettoyage** et **apprenti**, avec leurs candidats dès le départ.
 - Volet Équipe en **5 onglets** à gros textes et grosses touches : **Équipe** (qui travaille aujourd'hui, fiche de chacun, renvoi), **Embauche** (candidats, intérim, places), **Planning**, **Formations**, **Cagnotte**.

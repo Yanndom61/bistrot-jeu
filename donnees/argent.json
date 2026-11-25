@@ -1,0 +1,98 @@
+{
+  "_explication": "Étape 5 « Argent » : niveaux de difficulté, loyer, charges, salaires payés, indemnités, faillite, bilans. Montants en euros. Tout est payé chaque soir, au jour le jour (1 mois = 30,42 jours).",
+  "joursParMois": 30.42,
+  "heuresInterimParJour": 7.88,
+  "niveaux": {
+    "facile": {
+      "capital": 600000,
+      "proprietaire": true,
+      "cotisations": 0,
+      "tva": 0,
+      "pret": null,
+      "affluence": 1,
+      "noteDepart": 3,
+      "_texte": "Propriétaire du local (pas de loyer), gros capital. Tu paies les salaires et les charges courantes (électricité, gaz, eau, assurances, entretien, banque)."
+    },
+    "normal": {
+      "capital": 40000,
+      "proprietaire": false,
+      "cotisations": 0.25,
+      "tva": 0.1,
+      "pret": null,
+      "affluence": 1,
+      "noteDepart": 3,
+      "_texte": "Locataire, capital limité (40 000 €) : loyer, charges courantes, cotisations sur les salaires et TVA."
+    },
+    "difficile": {
+      "capital": 15000,
+      "proprietaire": false,
+      "cotisations": 0.25,
+      "tva": 0.1,
+      "affluence": 0.8,
+      "noteDepart": 3,
+      "pret": {
+        "montant": 80000,
+        "tauxAnnuel": 0.05,
+        "mois": 60,
+        "_texte": "Le prêt a servi à acheter le fonds de commerce et le matériel : il n'est pas dans la caisse."
+      },
+      "_texte": "Petit apport (15 000 €) et un prêt de la banque à rembourser chaque mois, et des concurrents qui prennent 20 % des clients."
+    }
+  },
+  "loyer": {
+    "_source": "Loyer commercial annuel ≈ 4,8 % de la valeur du local (valeurs des lieux reprises de Chez YaYa). Pour un bistrot de 32 places, environ 90 m² : Paris ≈ 6 000 €/mois (800 €/m²/an), Bretagne ≈ 1 280 €/mois.",
+    "surface": 90,
+    "partDeLaValeurParAn": 0.048
+  },
+  "charges": {
+    "_source": "Charges courantes mensuelles d'un petit restaurant de 32 places (ordres de grandeur France 2026), multipliées par le coefficient « prix » du lieu.",
+    "liste": [
+      {
+        "id": "electricite",
+        "mois": 950
+      },
+      {
+        "id": "gaz",
+        "mois": 400
+      },
+      {
+        "id": "eau",
+        "mois": 250
+      },
+      {
+        "id": "assurances",
+        "mois": 300
+      },
+      {
+        "id": "entretien",
+        "mois": 250
+      },
+      {
+        "id": "banque",
+        "mois": 60
+      }
+    ]
+  },
+  "cotisations": {
+    "_source": "Cotisations patronales sur les salaires bruts : environ 25 % en moyenne pour des salaires proches du minimum, après la réduction générale. Pas de cotisations en Facile ; l'intérim est facturé tout compris."
+  },
+  "tva": {
+    "_source": "TVA de la restauration sur place : 10 %. Les prix de la carte sont TTC : sur 110 € payés, 10 € reviennent à l'État. Pas de TVA en Facile."
+  },
+  "decouvertAutorise": 5000,
+  "indemnites": {
+    "_source": "Pendant la période d'essai, pas d'indemnité. Ensuite 3 jours de salaire (règle de Chez YaYa) ; à partir de 8 mois d'ancienneté, on ajoute l'indemnité légale : 1/4 de mois de salaire par année d'ancienneté (Code du travail, art. R1234-2).",
+    "essaiJours": 30,
+    "joursDeSalaire": 3,
+    "loiApresJours": 243,
+    "loiPartDeMoisParAn": 0.25
+  },
+  "faillite": {
+    "soirsDeSuite": 7
+  },
+  "semaine": {
+    "jours": 7,
+    "historique": 8
+  },
+  "historiqueJours": 14
+}

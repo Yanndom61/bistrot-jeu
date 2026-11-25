@@ -75,6 +75,7 @@ B.equipe.nouveauMembre = function (S, o) {
     x: 0, y: 0, chemin: [], tache: null
   };
   if (o.interim) { p.interim = true; p.jourInterim = S.jour; }
+  else if (!p.patron) p.embauche = S.jour;
   if (B.equipe.aDesRepos(p)) {
     p.repos = B.planning.choisirRepos(S, p); p.absent = null; p.formation = null; p.formations = []; p.sommelier = false; p.pourboires = 0;
   }
@@ -179,8 +180,13 @@ B.equipe.peutRenvoyer = function (S, p) {
 /* Hors service, il part tout de suite. En plein service, il finit sa tâche en cours puis part. */
 B.equipe.renvoyer = function (S, p) {
   if (B.equipe.peutRenvoyer(S, p)) return false;
+  const ind = B.argent.indemnite(S, p);
+  /* sa journée lui est payée tout de suite (le soir, on ne paie que ceux qui restent), puis l'indemnité */
+  if (S.dejaOuvert && S.ouvert && !S.finJour) B.argent.payer(S, p.interim ? 'interim' : 'salaires', B.r2(B.argent.salaireJour(p)));
+  if (ind.montant > 0) B.argent.payer(S, 'indemnites', ind.montant);
   p.partant = true;
   B.message(S, 'msg_renvoi', { nom: p.nom, e: p.genre === 'f' ? 'e' : '' });
+  if (ind.montant > 0) B.message(S, 'msg_indemnite', { nom: p.nom, montant: B.euros(ind.montant) });
   if (!B.equipe.enService(S) || !B.equipe.occupe(S, p)) B.equipe.retirer(S, p, false);
   return true;
 };

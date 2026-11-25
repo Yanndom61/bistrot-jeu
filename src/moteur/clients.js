@@ -9,7 +9,7 @@ B.clients.type = function (id) {
 B.clients.affluence = function (S, minute) {
   const tr = B.DATA.clients.affluence.find(function (a) { return minute >= a.de && minute < a.a; });
   if (!tr) return 0;
-  return tr.groupesParHeure * B.lieu(S.lieu).affluence * (S.carte ? B.carte.facteurAffluence(S) : 1);
+  return tr.groupesParHeure * B.lieu(S.lieu).affluence * B.argent.niveau(S).affluence * (S.carte ? B.carte.facteurAffluence(S) : 1);
 };
 
 B.clients.tirerType = function (S) {

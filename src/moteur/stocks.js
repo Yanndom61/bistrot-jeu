@@ -136,9 +136,8 @@ B.stock.commander = function (S, four, lignes, auto) {
   }
   if (!Object.keys(out).length) return { erreur: coupes ? 'stock_plein' : 'stock_rien' };
   const cout = B.r2(total + F.frais);
-  if (cout > S.argent) return { erreur: 'stock_pas_argent' };
-  S.argent = B.r2(S.argent - cout);
-  S.stats.jour.achats = B.r2((S.stats.jour.achats || 0) + cout);
+  if (!B.argent.peutPayer(S, cout, true)) return { erreur: 'stock_pas_argent' };
+  B.argent.payer(S, 'achats', cout);
   const c = { id: S.prochainId++, four: four, lignes: out, prix: prix, cout: cout, passee: B.maintenant(S), arrivee: B.maintenant(S) + F.delai, auto: !!auto };
   S.stocks.commandes.push(c);
   if (!auto) S.stocks.derniereManuelle = S.jour;

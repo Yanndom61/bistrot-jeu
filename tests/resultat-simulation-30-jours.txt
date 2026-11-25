@@ -1,4 +1,4 @@
-Simulation : 30 jours × 7 lieux (difficulté Facile)
+Simulation : 30 jours × 7 lieux (difficulté Facile, puis Normal et Difficile à l’étape 5)
 
 Équipe : patron en salle + 1 serveur + 1 commis de cuisine
 lieu           jour  groupes  arrivés  servis  repartis  attente     recettes  ticket moy. renvois  pourboires  fin
@@ -222,20 +222,20 @@ Moyenne par jour : lieu · clients servis · recettes · ticket moyen par table 
   tokyo          92 servis    3 355 €    97,16 €  coût 18 %   1.9 renvois     0,00 €
   mayotte        36 servis    1 222 €    92,81 €  coût 20 %   0.3 renvois    17,85 €
 
-Argent par jour en Facile (commande automatique) : recettes − achats de marchandise − salaires (39 h, charges non comptées, intérimaires des jours de repos compris) = résultat
-  paris        recettes  3 126 € · achats   704 € (23 %) · salaires  246 € (dont intérim 45 €, 9 jours) · propreté 6 · résultat  2 176 € · gaspillage 5.7 portions (12 €) · ruptures 0.0 · menus du jour 22 + 6 à emporter · boissons 108
-  idf          recettes  2 253 € · achats   614 € (27 %) · salaires  222 € (dont intérim 42 €, 9 jours) · propreté 63 · résultat  1 417 € · gaspillage 20.2 portions (58 €) · ruptures 0.2 · menus du jour 21 + 7 à emporter · boissons 86
-  bretagne     recettes  1 877 € · achats   478 € (25 %) · salaires  197 € (dont intérim 39 €, 9 jours) · propreté 77 · résultat  1 202 € · gaspillage 14.6 portions (29 €) · ruptures 0.0 · menus du jour 20 + 5 à emporter · boissons 83
-  reunion      recettes  1 949 € · achats   422 € (22 %) · salaires  206 € (dont intérim 39 €, 9 jours) · propreté 100 · résultat  1 321 € · gaspillage 4.9 portions (9 €) · ruptures 0.8 · menus du jour 18 + 5 à emporter · boissons 74
-  new-york     recettes  3 763 € · achats   836 € (22 %) · salaires  290 € (dont intérim 53 €, 9 jours) · propreté 0 · résultat  2 636 € · gaspillage 2.8 portions (2 €) · ruptures 0.4 · menus du jour 26 + 6 à emporter · boissons 110
-  tokyo        recettes  3 355 € · achats   691 € (21 %) · salaires  230 € (dont intérim 43 €, 9 jours) · propreté 0 · résultat  2 434 € · gaspillage 6.9 portions (22 €) · ruptures 1.3 · menus du jour 20 + 6 à emporter · boissons 112
-  mayotte      recettes  1 222 € · achats   349 € (29 %) · salaires  200 € (dont intérim 39 €, 9 jours) · propreté 100 · résultat    674 € · gaspillage 20.1 portions (61 €) · ruptures 0.9 · menus du jour 12 + 6 à emporter · boissons 46
+Argent par jour en Facile (commande automatique) : bénéfice réel du bilan du soir = recettes − achats − salaires payés (39 h, intérimaires des jours de repos compris) − charges courantes
+  paris        recettes  3 126 € · achats   704 € (23 %) · salaires  243 € (dont intérim 45 €, 9 jours) · charges 87 € · propreté 6 · résultat  2 092 € · caisse 661 527 € · gaspillage 5.7 portions (12 €) · ruptures 0.0 · menus du jour 22 + 6 à emporter · boissons 108
+  idf          recettes  2 253 € · achats   614 € (27 %) · salaires  220 € (dont intérim 42 €, 9 jours) · charges 76 € · propreté 63 · résultat  1 343 € · caisse 639 428 € · gaspillage 20.2 portions (58 €) · ruptures 0.2 · menus du jour 21 + 7 à emporter · boissons 86
+  bretagne     recettes  1 877 € · achats   478 € (25 %) · salaires  195 € (dont intérim 39 €, 9 jours) · charges 69 € · propreté 77 · résultat  1 135 € · caisse 633 421 € · gaspillage 14.6 portions (29 €) · ruptures 0.0 · menus du jour 20 + 5 à emporter · boissons 83
+  reunion      recettes  1 949 € · achats   422 € (22 %) · salaires  204 € (dont intérim 39 €, 9 jours) · charges 81 € · propreté 100 · résultat  1 242 € · caisse 636 512 € · gaspillage 4.9 portions (9 €) · ruptures 0.8 · menus du jour 18 + 5 à emporter · boissons 74
+  new-york     recettes  3 763 € · achats   836 € (22 %) · salaires  287 € (dont intérim 53 €, 9 jours) · charges 102 € · propreté 0 · résultat  2 538 € · caisse 674 442 € · gaspillage 2.8 portions (2 €) · ruptures 0.4 · menus du jour 26 + 6 à emporter · boissons 110
+  tokyo        recettes  3 355 € · achats   691 € (21 %) · salaires  228 € (dont intérim 43 €, 9 jours) · charges 91 € · propreté 0 · résultat  2 345 € · caisse 669 078 € · gaspillage 6.9 portions (22 €) · ruptures 1.3 · menus du jour 20 + 6 à emporter · boissons 112
+  mayotte      recettes  1 222 € · achats   349 € (29 %) · salaires  198 € (dont intérim 39 €, 9 jours) · charges 80 € · propreté 100 · résultat    596 € · caisse 617 383 € · gaspillage 20.1 portions (61 €) · ruptures 0.9 · menus du jour 12 + 6 à emporter · boissons 46
   ✓ joueur moyen bénéficiaire partout en Facile.
   causes des ruptures en Facile : 97 × « Il s’en est vendu plus que prévu : augmente la marge de sécurité ou commande en plus. » ; 10 × « La commande arrive …. »
 
 Ruptures : pourquoi elles arrivent (Paris, 6 jours) :
   sans jamais commander : 94 ruptures, 415 clients partis sans manger, causes : 94 × « Rien n’a été commandé depuis hier (la commande automatique est coupée). »
-  commande chaque soir chez le grossiste (quantités proposées) : 0 ruptures (aucune), achats 759 €/jour, gaspillage 14 €/jour, résultat avant salaires 2 136 €/jour
+  commande chaque soir chez le grossiste (quantités proposées) : 0 ruptures (aucune), achats 647 €/jour, gaspillage 14 €/jour, résultat avant salaires 2 248 €/jour
   commande automatique sans marge de sécurité : 1 ruptures (1 × « Il s’en est vendu plus que prévu : augmente la marge de sécurité ou commande en plus. »), gaspillage 9 €/jour
 
 Gaspillage : 300 pains achetés 158 € (argent 598 898 € → 598 740 €), personne pour les manger → 396 portions jetées en 3 matins.
@@ -261,7 +261,7 @@ Renvoi : serveur (addition) parti 0.3 min après, cuisinier parti 15.3 min aprè
 Effectif : 2/16 titulaires (2e chef refusé : poste complet), intérim : 2 en cuisine + 6 en salle pour la journée, repartis le lendemain.
 Intérim automatique : coupé → restaurant fermé ; activé → Yasmine Rousseau appelé en cuisine, restaurant ouvert.
 
-Sauvegarde Bistrot 0.2 relue : format 6, équipe de 3 (patron compris), service repris là où il était, journée terminée.
+Sauvegarde Bistrot 0.2 relue : format 7, équipe de 3 (patron compris), service repris là où il était, journée terminée.
 
 Carte : 44 lieux, 2675 plats proposés au total (spécialités + classiques), données complètes.
 
@@ -278,7 +278,7 @@ Entretiens : 216 réponses générées, 204 différentes (94 %).
   Lucas Simon (Serveur, discret) : « J’essaie de suivre, mais je peux perdre le fil quand ça va trop vite. »
 Minimum de la grille à Paris (débutant, ×1,15) : Serveur 14,47 € · Commis de salle 14,16 € · Commis de cuisine 14,47 € · Chef de cuisine 16,89 € · Responsable de salle 15,63 € · Second de cuisine 15,63 € · Aide de cuisine 14,16 € · Apprenti cuisine 7,50 € · Barman 14,47 € · Plongeur 14,16 € · Agent de nettoyage 14,16 €
 
-Sauvegarde Bistrot 0.1 relue : Chez YaYa, Bretagne, jour 1, équipe : Patron, 14 candidats, format 6.
+Sauvegarde Bistrot 0.1 relue : Chez YaYa, Bretagne, jour 1, équipe : Patron, 14 candidats, format 7.
 
 Reprise des anciennes parties (Chez YaYa) :
   ✓ save_v101_generated.json → Chez YaYa paris, Paris, jour 10, 593 966 €, note 3.3, 16 employés repris (salle 7 et cuisine 4, patron compris ; 6 au bar, à la plonge ou au nettoyage), carte : 56 plats relus, 32 plats de l’ancien jeu pas encore dans Bistrot, carte ajustée aux limites 6/9/6, stocks : 32 produits (4160 portions), 1 commande(s) en route livrée(s)
@@ -292,7 +292,7 @@ Reprise des anciennes parties (Chez YaYa) :
 Étape 4 — Équipe :
   11 sortes de postes ouvertes (Serveur, Commis de salle, Commis de cuisine, Chef de cuisine, Responsable de salle, Second de cuisine, Aide de cuisine, Apprenti cuisine, Barman, Plongeur, Agent de nettoyage).
   Paris, on embauche chaque candidat qui a une place : 16/16 au bout de 20 jours (salle 8, cuisine 6, nettoyage 2).
-  moyenne par jour : 93 servis, attente 3 min, recettes 3 298 €, salaires 1 522 €, résultat 1 012 €, propreté finale 100/100, 4.2 absents par jour.
+  moyenne par jour : 93 servis, attente 3 min, recettes 3 298 €, salaires 1 460 €, résultat 987 €, propreté finale 100/100, 4.2 absents par jour.
   plannings : 16/16 employés ont bien 2 jours de repos qui se suivent chaque semaine ; salle par jour (lun→dim) 5-5-5-6-5-5-6, cuisine 3-2-3-3-3-3-3.
   formation « Rapidité » (360 €) : inscrite le jour 1, en formation le jour 2, vitesse 5 → 6 le jour 3.
   sommellerie (600 €) : boissons vendues en 8 jours 862 sans sommelier → 948 avec.
@@ -306,7 +306,29 @@ Reprise des anciennes parties (Chez YaYa) :
     serveur aimable 9 / 2          : pourboires 102,44 €/j contre 31,88 €/j
     propreté après 20 jours        : 36/100 sans agent de nettoyage (0 clients partis), 100/100 avec un agent
     règles vérifiées : qualité en cuisine d’un commis à 5 → 5 seul, 6 avec le second, 6 avec le chef ; cuisine ×1.15 sans plongeur → ×1.07 avec ; préparation d’une boisson 9 s → 2.2 s avec un barman.
-  renvoi : barman (formation de 360 € remboursée) et plongeur partis tout de suite, en plein service.
-  sauvegarde 0.5.1 relue (format 6) : 17 personnes (7 salle, 4 cuisine, 2 bar, 2 plonge, 2 nettoyage), cagnotte 19,00 € gardée, 9 groupes repris en plein service, 3 jours joués ensuite (277 servis).
+  renvoi : barman (formation de 360 € remboursée, sa journée de 89 € payée, pas d’indemnité en période d’essai) et plongeur partis tout de suite, en plein service.
+  sauvegarde 0.5.1 relue (format 7) : 17 personnes (7 salle, 4 cuisine, 2 bar, 2 plonge, 2 nettoyage), cagnotte 19,00 € gardée, 9 groupes repris en plein service, 3 jours joués ensuite (277 servis).
+
+Étape 5 — Argent :
+  Gains d'un joueur moyen par jour (30 jours, bénéfice réel du bilan du soir, après tout ce qui est payé) :
+  lieu           Facile     Normal  Difficile   caisse finale Facile / Normal / Difficile
+  paris          2 092 €    1 561 €    1 122 €   661 527 € / 85 598 € / 47 422 €
+  idf            1 343 €    1 002 €      743 €   639 428 € / 69 193 € / 36 432 €
+  bretagne       1 135 €      884 €      591 €   633 421 € / 65 874 € / 32 096 €
+  reunion        1 242 €      982 €      732 €   636 512 € / 68 699 € / 36 219 €
+  new-york       2 538 €    1 809 €    1 624 €   674 442 € / 92 563 € / 62 041 €
+  tokyo          2 345 €    1 731 €    1 466 €   669 078 € / 90 653 € / 57 697 €
+  mayotte          596 €      422 €      231 €   617 383 € / 52 153 € / 21 426 €
+  détail Normal (paris) par jour : produits achetés 704 €, salaires 198 €, intérimaires 45 €, cotisations sur les salaires 50 €, loyer 197 €, charges (énergie, eau, assurances…) 87 €, tva 284 €
+  ✓ Facile rentable partout ; Normal plus serré mais bénéficiaire partout ; Difficile encore plus serré.
+  Difficile, erreurs d'un joueur (moyenne par jour sur 30 jours) :
+    paris      bien joué 1 122 € · prix 50 % trop hauts 312 € · oublie de commander -459 € · embauche tout le monde -217 €
+    mayotte    bien joué 231 € · prix 50 % trop hauts -116 € · oublie de commander -326 € · embauche tout le monde -1 045 € (faillite le jour 20)
+  Soir du jour 1 (Paris, Difficile) : salaires 184 €, intérimaire 151 €, cotisations 46 €, loyer 197 € (6 000 €/mois), charges 87 €, TVA 273 €, prêt 50 € (reste 79 961 € sur 80 000 €, 1 510 €/mois).
+  Loyer par mois (Normal et Difficile) : Paris 6 000 € · Île-de-France (hors Paris) 2 800 € · Bretagne 1 280 € · La Réunion 1 280 € · Mayotte 720 € · New York 10 000 € · Tokyo 8 000 €
+  Indemnités : serveur en période d’essai 0 € ; après 40 jours 229 € (3 jours) ; commis après 400 jours 895 € (3 jours + loi) ; plongeur renvoyé au jour 40 : 224 € payés tout de suite.
+  Faillite (Mayotte, Difficile, 500 € au départ, embauche de tout le monde) : le jour 9, après 7 soirs d’alerte ; caisse -10 835 € ; plus grosses dépenses : salaires 8 686 €, cotisations sur les salaires 2 171 €, charges (énergie, eau, assurances…) 559 € ; sauvegarde relue avec la faillite.
+  Bilans de la semaine (Bretagne, Normal) : semaine 1 6 195 €, semaine 2 6 738 € (= somme des bilans du jour) ; semaine 3 en cours (1 jour).
+  Sauvegarde 0.6 (Bretagne, jour 4, 9 groupes en salle, 602 605 €) : reprise en Facile, service fini, soir payé (salaires 481 €, charges 69 €), caisse 603 741 €.
 
 Aucun problème : pas de valeur impossible, pas de compteur négatif, toutes les journées se terminent.

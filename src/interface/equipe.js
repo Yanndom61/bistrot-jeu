@@ -188,6 +188,7 @@ UI.htmlFicheEmploye = function (p) {
   h += '<div class="gros-texte"><p><b>' + UI.esc(B.equipe.nomPoste(p) + ' · ' + B.t('equipe_service_' + p.service)) + '</b> · ' + UI.esc(B.t('eq_note', { n: p.note })) +
     (p.perso ? ' · ' + UI.esc(B.t('equipe_candidat_perso', { adj: B.equipe.adj(p) })) : '') + '</p>';
   h += '<p class="etat">' + UI.esc(UI.etatDuJour(S, p)) + '</p>';
+  if (p.embauche) h += '<p class="sous">' + UI.esc(UI.tGenre(S.jour - p.embauche < B.DATA.argent.indemnites.essaiJours ? 'eq_embauche_essai' : 'eq_embauche', p, { jour: p.embauche, fin: p.embauche + B.DATA.argent.indemnites.essaiJours, jourSalaire: B.euros(B.argent.salaireJour(p)) })) + '</p>';
   h += '<div class="qualites">';
   const ligne = function (nom, v, effet) {
     return '<div class="qualite"><span class="q-nom">' + UI.esc(nom) + '</span><b>' + v + '/10</b><span class="q-effet">' + UI.esc(effet) + '</span></div>';
@@ -262,7 +263,9 @@ UI.htmlRenvoi = function (p) {
   h += '<p><b>' + UI.esc(UI.tGenre('renvoi_question', p, v)) + '</b></p>';
   h += '<p>' + UI.esc(UI.tGenre('renvoi_definitif', p, v)) + '</p>';
   h += '<p>' + UI.esc(UI.tGenre(B.equipe.enService(S) && B.equipe.occupe(S, p) ? 'renvoi_en_service' : 'renvoi_tout_de_suite', p, v)) + '</p>';
-  h += '<p class="sous">' + UI.esc(B.t('renvoi_indemnite')) + '</p>';
+  const ind = B.argent.indemnite(S, p);
+  h += '<p class="indemnite">' + UI.esc(UI.tGenre(ind.raison, p, { prenom: UI.prenom(p), montant: B.euros(ind.montant), n: ind.jours })) + '</p>';
+  if (S.dejaOuvert && S.ouvert && !S.finJour) h += '<p class="sous">' + UI.esc(UI.tGenre('indem_journee', p, { prenom: UI.prenom(p), montant: B.euros(B.argent.salaireJour(p)) })) + '</p>';
   h += '<div class="offre"><button type="button" class="petit-btn principal" data-eq="renvoi-oui">' + UI.esc(UI.tGenre('renvoi_oui', p, v)) + '</button>' +
     '<button type="button" class="petit-btn" data-eq="renvoi-non">' + UI.esc(UI.tGenre('renvoi_non', p, v)) + '</button></div>';
   return h + '</div>';

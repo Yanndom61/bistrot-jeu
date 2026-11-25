@@ -8,7 +8,7 @@ UI.montrerAccueil = function (vue) {
   const sousTitre = B.t('canal_' + B.CANAL);
   h += '<p class="sous">' + UI.esc(B.t('jeu_sous_titre')) + (sousTitre ? ' · <b>' + UI.esc(sousTitre) + '</b>' : '') + '</p>';
   if (vue === 'menu') {
-    if (UI.S) h += '<button type="button" class="gros principal" data-a="continuer">' + UI.esc(B.t('accueil_continuer', { nom: UI.S.nom, lieu: B.lieu(UI.S.lieu).nom, jour: UI.S.jour })) + '</button>';
+    if (UI.S) h += '<button type="button" class="gros principal" data-a="continuer">' + UI.esc(B.t(UI.S.faillite ? 'accueil_continuer_faillite' : 'accueil_continuer', { nom: UI.S.nom, lieu: B.lieu(UI.S.lieu).nom, jour: UI.S.jour, niveau: UI.texteNiveau(UI.S) })) + '</button>';
     if (UI.erreurChargement) h += '<p class="alerte">' + UI.esc(B.t(UI.erreurChargement)) + '</p>';
     h += '<button type="button" class="gros' + (UI.S ? '' : ' principal') + '" data-a="nouvelle">' + UI.esc(B.t('accueil_nouvelle')) + '</button>';
     if (UI.anciennes().length) h += '<button type="button" class="gros" data-a="ancien">' + UI.esc(B.t('accueil_ancien')) + '</button>';
@@ -24,7 +24,9 @@ UI.montrerAccueil = function (vue) {
       h += '</optgroup>';
     });
     h += '</select></label>';
-    h += '<p>' + UI.esc(B.t('nouvelle_difficulte', { capital: B.euros(B.DATA.regles.difficultes.facile.capitalDepart) })) + '</p>';
+    h += '<label>' + UI.esc(B.t('nouvelle_niveau')) + '</label><div class="niveaux">' + ['facile', 'normal', 'difficile'].map(function (n) {
+      return '<button type="button" class="niveau' + (n === UI.niveauChoisi ? ' actif' : '') + '" data-a="niveau" data-n="' + n + '">' + UI.esc(B.t('niveau_' + n)) + '</button>';
+    }).join('') + '</div><p class="niveau-texte" id="n-niveau-texte">' + UI.esc(UI.texteChoixNiveau(UI.niveauChoisi)) + '</p>';
     h += '<div class="rang"><button type="button" class="gros" data-a="menu">' + UI.esc(B.t('accueil_retour')) + '</button>';
     h += '<button type="button" class="gros principal" data-a="ouvrir">' + UI.esc(B.t('nouvelle_ouvrir')) + '</button></div>';
   } else if (vue === 'ancien') {
@@ -47,10 +49,16 @@ UI.montrerAccueil = function (vue) {
   el.scrollTop = 0;
 };
 
+UI.niveauChoisi = 'facile';
+UI.texteChoixNiveau = function (n) {
+  const N = B.DATA.argent.niveaux[n];
+  return B.t('niveau_texte_' + n, { capital: B.euros(N.capital), pret: N.pret ? B.euros(N.pret.montant) : '', mensualite: N.pret ? B.euros(B.argent.mensualite(N.pret.montant, N.pret.tauxAnnuel, N.pret.mois)) : '', concurrence: Math.round((1 - N.affluence) * 100) });
+};
 UI.anciennes = function () { return B.ancien.trouver(UI.lireCase); };
 
 UI.remplacerOk = function () {
   if (!UI.S) return true;
+  if (UI.S.faillite) return true;   /* une copie de la partie en faillite est déjà gardée à part */
   return window.confirm(B.t('nouvelle_remplace', { nom: UI.S.nom, jour: UI.S.jour }));
 };
 
@@ -79,11 +87,16 @@ UI.initAccueil = function () {
     const b = e.target.closest('[data-a]');
     if (!b) return;
     const a = b.dataset.a;
-    if (a === 'continuer') { UI.cacherAccueil(); UI.majPlacement(); UI.majFin(); if (!UI.S.ouvert) UI.ouvrirVolet('equipe'); }
+    if (a === 'continuer') { UI.cacherAccueil(); UI.majPlacement(); UI.$('fin').hidden = true; UI.majFin(); if (!UI.S.ouvert && !UI.S.faillite) UI.ouvrirVolet('equipe'); }
+    else if (a === 'niveau') {
+      UI.niveauChoisi = b.dataset.n;
+      UI.$('accueil').querySelectorAll('.niveau').forEach(function (x) { x.classList.toggle('actif', x.dataset.n === UI.niveauChoisi); });
+      UI.$('n-niveau-texte').textContent = UI.texteChoixNiveau(UI.niveauChoisi);
+    }
     else if (a === 'nouvelle' || a === 'ancien' || a === 'menu') UI.montrerAccueil(a);
     else if (a === 'ouvrir') {
       if (!UI.remplacerOk()) return;
-      const S = B.creerPartie({ nom: UI.$('n-nom').value || B.t('nouvelle_nom_defaut'), lieu: UI.$('n-lieu').value, date: new Date().toISOString() });
+      const S = B.creerPartie({ nom: UI.$('n-nom').value || B.t('nouvelle_nom_defaut'), lieu: UI.$('n-lieu').value, difficulte: UI.niveauChoisi, date: new Date().toISOString() });
       UI.erreurChargement = null;
       UI.demarrer(S, 'msg_bienvenue', { chez: B.chezNom(S.nom), heure: B.heure(B.DATA.clients.affluence[0].de) });
     } else if (a === 'importer') {
