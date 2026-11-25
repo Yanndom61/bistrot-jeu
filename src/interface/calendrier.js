@@ -59,6 +59,10 @@ UI.htmlCalJour = function () {
   if (i.ferie) h += '<p>' + UI.esc(B.t('cal_effet_ferie', { nom: i.ferie.nom, midi: UI.pct(B.cal.coefJour(S, n, 700)), soir: UI.pct(B.cal.coefJour(S, n, 1200)) })) + '</p>';
   else if (i.fete && B.DATA.calendrier.effets.fetesQuiComptent.indexOf(i.fete.id) >= 0) h += '<p>' + UI.esc(B.t('cal_effet_fete', { nom: i.fete.nom, midi: UI.pct(B.cal.coefJour(S, n, 700)), soir: UI.pct(B.cal.coefJour(S, n, 1200)) })) + '</p>';
   (S.cal.effets || []).forEach(function (x) { if (x.jusqua >= S.jour) h += UI.ligneCal(B.t('cal_effet_' + x.k, { heure: B.heure(x.de || 0), jusqua: B.ev.texteJour(S, x.jusqua) }), x.m); });
+  const pa = B.ev.panne(S), gr = B.ev.greve(S);
+  if (pa) h += '<p class="alerte-ag">' + UI.esc(B.t('cal_panne', { objet: B.t('ev_panne_' + pa.type), effet: B.t('ev_panne_effet_' + pa.type), jusqua: B.ev.texteJour(S, pa.jusqua) })) + '</p>';
+  if (gr) h += '<p class="alerte-ag">' + UI.esc(B.t('cal_greve', { four: B.stock.nomFournisseur(S, gr.four), jusqua: B.ev.texteJour(S, gr.jusqua) })) + '</p>';
+  (S.cal.flambees || []).forEach(function (f) { if (f.jusqua >= S.jour) h += '<p class="alerte-ag">' + UI.esc(B.t('cal_flambee', { produit: B.stock.ing(f.ing).nom, jusqua: B.ev.texteJour(S, f.jusqua) })) + '</p>'; });
   h += '<p class="sous">' + UI.esc(B.t('cal_effet_note')) + '</p>';
   h += '<h3>' + UI.esc(B.t('cal_commandes_titre')) + '</h3><p>' + UI.esc(B.t('cal_commandes_' + i.meteo.ressenti)) + '</p>';
   h += '<h3>' + UI.esc(B.t('cal_clientele_titre')) + '</h3>';
@@ -171,12 +175,15 @@ UI.majEvenement = function () {
   if (!el.hidden && el._id === a.id + ':' + a.minute) return;
   el._id = a.id + ':' + a.minute;
   const suffixe = a.variante ? '_' + a.variante : '';
-  const vars = { sport: a.sport || '' };
-  let h = '<div class="carte-fin carte-evenement"><h2>' + UI.esc((a.id === 'match' ? a.emoji : B.t('ev_' + a.id + '_emoji')) + ' ' + B.t('ev_' + a.id + '_titre' + suffixe, vars)) + '</h2>';
-  h += '<p class="gros-texte">' + UI.esc(B.t('ev_' + a.id + '_texte' + suffixe, vars)) + '</p>';
+  const vars = Object.assign({ sport: a.sport || '' }, a.vars || {});
+  const emoji = a.id === 'resultat' || a.id === 'match' ? a.emoji : B.t('ev_' + a.id + '_emoji');
+  const titre = a.id === 'resultat' ? a.titre : 'ev_' + a.id + '_titre' + suffixe, texte = a.id === 'resultat' ? a.texte : 'ev_' + a.id + '_texte' + suffixe;
+  let h = '<div class="carte-fin carte-evenement"><h2>' + UI.esc(emoji + ' ' + B.t(titre, vars)) + '</h2>';
+  h += '<p class="gros-texte">' + UI.esc(B.t(texte, vars)) + '</p>';
   B.ev.choix(S, a).forEach(function (c, k) {
-    h += '<button type="button" class="gros' + (k === 0 ? ' principal' : '') + '" data-ev-choix="' + k + '">' + UI.esc(B.t(c.cle, { prix: c.prix ? B.euros(c.prix) : '' })) +
-      '<small>' + UI.esc(B.t(c.cle + '_effet', { prix: c.prix ? B.euros(c.prix) : '' })) + '</small></button>';
+    const v = Object.assign({}, vars, { prix: c.prix ? B.euros(c.prix) : '' }), effet = B.t(c.cle + '_effet', v);
+    h += '<button type="button" class="gros' + (k === 0 ? ' principal' : '') + '" data-ev-choix="' + k + '">' + UI.esc(B.t(c.cle, v)) +
+      (effet ? '<small>' + UI.esc(effet) + '</small>' : '') + '</button>';
   });
   el.innerHTML = h + '</div>';
   el.hidden = false;

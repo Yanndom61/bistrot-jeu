@@ -48,6 +48,8 @@ UI.prochainJourTravaille = function (S, p) {
 UI.etatDuJour = function (S, p) {
   if (p.partant) return UI.tGenre('equipe_partant', p);
   if (p.absent === 'repos') return B.t('eq_aujourdhui_repos');
+  if (p.absent === 'malade') return B.t('eq_aujourdhui_malade');
+  if (p.demission) return B.t('eq_demission');
   if (p.absent === 'formation') return B.t('eq_aujourdhui_formation', { formation: B.t('form_nom_' + p.formation.id) });
   let t = B.t('eq_aujourdhui_travail');
   if (p.formation) t += ' · ' + B.t('eq_formation_prevue', { formation: B.t('form_nom_' + p.formation.id), jour: UI.prochainJourTravaille(S, p) });

@@ -1,7 +1,7 @@
 # Règles du jeu Bistrot
 
 Ce document est **la référence unique** des règles. Il est tenu à jour à chaque version.
-Version décrite : **0.8 (étape 6 « Lieux, météo et calendrier » : les 44 lieux avec leur climat, leur saison touristique et leur calendrier ; météo qui change l'affluence et les commandes ; jours de la semaine, saisons, fériés, vacances ; menus de fête, événements du jour et événements privés de l'ancien jeu)**.
+Version décrite : **0.8.1 (les 13 événements du jour ont maintenant un vrai effet ; base : 0.8, étape 6 « Lieux, météo et calendrier » : les 44 lieux avec leur climat, leur saison touristique et leur calendrier ; météo qui change l'affluence et les commandes ; jours de la semaine, saisons, fériés, vacances ; menus de fête, événements du jour et événements privés de l'ancien jeu)**.
 
 ---
 
@@ -11,7 +11,7 @@ Version décrite : **0.8 (étape 6 « Lieux, météo et calendrier » : les 44 l
 - **Premier jour** : le restaurant reste **fermé** (l'horloge ne tourne pas) tant que l'équipe n'est pas prête et que tu n'as pas touché « Ouvrir le restaurant » dans le volet Équipe. Les jours suivants, il ouvre tout seul.
 - À la vitesse **1×**, une minute de jeu passe en une seconde. **2×** et **4×** vont deux et quatre fois plus vite. **Pause** arrête tout.
 - Le service du midi commence à 12:00 et celui du soir à 19:00. Plus aucun client n'arrive après **21:45**.
-- La journée se termine quand il est au moins **22:30**, que le dernier client est parti et que les tables sont débarrassées. À **23:59** au plus tard, les derniers clients partent d'eux-mêmes.
+- La journée se termine quand il est au moins **22:30**, que le dernier client est parti et que les tables sont débarrassées. À **23:59** au plus tard, les derniers clients partent d'eux-mêmes (ceux qui ont mangé paient ; les autres comptent comme repartis, *v0.8.1*).
 - À la fin de la journée, un écran montre 3 chiffres : clients servis, clients repartis faute de place, attente moyenne avant la commande. Un bouton lance le jour suivant.
 
 ### Pauses automatiques
@@ -350,14 +350,23 @@ Données : `donnees/stocks.json` (réserve, fournisseurs, règles), `donnees/pri
 - **7 jours avant** chaque fête (Noël, Saint-Valentin, Pâques, fête des mères, 14 juillet, fête locale, nouvel an chinois…), le chef propose un menu de 2 ou 3 plats. Tu réponds **Oui** ou **Non** dans le volet (onglet Fêtes et événements).
 - Si tu dis oui, ces plats sont à la carte **pendant la fête**, **en plus** de ta carte (ils ne comptent pas dans les limites 6/9/6), au prix conseillé, que tu peux changer dans Carte. Ils portent un badge « Fête ». Sans réponse, rien n'est ajouté.
 
-### Événements du jour (repris de l'ancien jeu)
-- Chaque matin à partir du jour 4, il y a **42 % de chances** qu'un événement soit tiré parmi les 13 de l'ancien jeu. Ceux qui jouent un rôle dans cette étape :
+### Événements du jour (repris de l'ancien jeu, tous actifs depuis la v0.8.1)
+- Chaque matin à partir du jour 4, il y a **42 % de chances** qu'un événement soit tiré parmi les 13 de l'ancien jeu (chacun a un délai avant de pouvoir revenir). Un événement impossible ce jour-là n'arrive pas (pas de pluie battante sans pluie, pas de malade si personne ne peut le remplacer…).
+- Une fenêtre s'ouvre au milieu de l'écran, avec de gros boutons qui disent l'effet, et le jeu se met en pause jusqu'à ta réponse. Les dépenses vont dans le poste « Événements (écran, amendes, réparations…) » du bilan ; la promo va dans « Achats ». Les effets en cours (panne, grève, hausse de prix) sont rappelés dans Calendrier → Aujourd'hui.
+- Les 13 événements :
   - 🚌 **Bus de touristes** : accueillir le groupe (5 groupes pressés arrivent d'un coup) ou refuser.
-  - ⚽ **Grand match ce soir** (le sport du lieu : rugby à Toulouse, baseball à Tokyo…) : installer un écran (150 €, + 60 % de clients le soir) ou ne rien faire (+ 20 % quand même).
+  - ⚽ **Grand match ce soir** (le sport du lieu) : installer un écran (150 €, + 60 % de clients le soir) ou ne rien faire (+ 20 % quand même).
   - 🌧️ **Pluie battante** (seulement un jour de pluie) : − 20 % de clients pour la journée.
   - 🥵 **Canicule** (seulement à 25° ou plus) : louer un climatiseur (180 €, − 8 % de clients pendant 3 jours) ou ouvrir les fenêtres (− 15 %).
-- Une fenêtre s'ouvre au milieu de l'écran, avec de gros boutons, et le jeu se met en pause jusqu'à ta réponse. Les dépenses vont dans le poste « Événements (écran, clim…) » du bilan.
-- Les 9 autres événements de l'ancien jeu (inspection, critique, panne, grève, influenceuse, augmentation, promo, flambée des prix, employé malade) sont tirés mais ne font encore rien : ils viendront avec leurs étapes.
+  - 🧑‍⚕️ **Inspection sanitaire** *(v0.8.1)* : nettoyage express (80 €, propreté + 25) ou le recevoir tel quel. Puis le résultat selon la propreté de la salle : **75 ou plus** = félicitations, + 5 % de clients pendant 5 jours ; **50 à 74** = rien ; **30 à 49** = amende de 250 € ; **sous 30** = amende de 800 € et − 5 % de clients pendant 5 jours.
+  - 🧐 **Critique gastronomique** *(v0.8.1)* : il arrive seul ; tu peux lui offrir l'apéritif (20 €). Sa note = la note habituelle du repas − 0,35 (il est exigeant), + 0,4 avec l'apéritif. **4 ★ ou plus** : + 10 % de clients pendant 7 jours ; **moins de 3 ★** (ou s'il repart sans manger) : − 10 % pendant 7 jours ; entre les deux, rien.
+  - 🔧 **Panne** *(v0.8.1)* : le **four** (la cuisine va presque 2 fois moins vite, × 1,82) ou le **réfrigérateur** (les produits frais perdent 1 jour de fraîcheur de plus chaque matin). Réparer tout de suite (180 à 420 €) ou bricoler (gratuit, panne aujourd'hui et demain).
+  - ✊ **Grève chez un fournisseur** *(v0.8.1)* : pendant 2 ou 3 jours, impossible de lui commander, et ses livraisons en route arrivent à la fin de la grève. La commande automatique passe par le fournisseur le moins cher qui reste.
+  - 📸 **Influenceuse** *(v0.8.1)* : lui offrir le repas (40 €, + 25 % de clients pendant 4 jours) ou rien (+ 8 % pendant 4 jours, elle parle quand même de toi).
+  - 💬 **Demande d'augmentation** *(v0.8.1)* : un employé demande 8 € de plus par jour. Accepter = + 1,44 € de l'heure sur son salaire ; refuser = 1 chance sur 5 qu'il démissionne (il part le soir, après le service).
+  - 🏷️ **Promo grossiste** *(v0.8.1)* : un lot de 30 portions (bœuf, paleron, poisson, jambon ou fromage) à − 40 %, livré tout de suite. Le lot est réduit s'il n'y a pas assez de place dans la réserve.
+  - 📈 **Flambée des prix** *(v0.8.1)* : un produit (bœuf, poisson, fromage, jambon, vin, café ou crème) coûte 30 % plus cher à l'achat pendant 5 jours.
+  - 🤒 **Employé malade** *(v0.8.1)* : il reste chez lui aujourd'hui (toujours payé) et revient demain. Il n'est choisi que si son service reste tenu par quelqu'un (ou par l'intérim automatique).
 
 ### Événements privés (repris de l'ancien jeu, en plus simple)
 - À partir du jour 4, environ **1 jour sur 9** (1,5 fois plus de mai à septembre), un client appelle pour un **anniversaire**, une **réunion de famille**, un **séminaire**, un **repas de mariage** ou le repas de fête du lieu, 1 à 4 semaines plus tard, à midi ou le soir.

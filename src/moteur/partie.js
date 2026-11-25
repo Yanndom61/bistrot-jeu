@@ -113,6 +113,7 @@ B.finDeJournee = function (S) {
   if (S.minute >= J.finForcee && S.groupes.length) {
     S.groupes.forEach(function (g) {
       if (g.aMange && g.etat !== 'depart') { S.stats.jour.servis += g.taille; B.carte.payer(S, g); }
+      else if (!g.aMange && g.etat !== 'depart' && g.etat !== 'repart') S.stats.jour.repartis += g.taille;   /* v0.8.1 : pas encore mangé à la fermeture forcée = reparti */
     });
     S.groupes = [];
     S.tables.forEach(function (t) { t.groupe = null; t.sale = false; t.serveur = null; t.reserve = null; });
@@ -209,7 +210,7 @@ B.verifier = function (S) {
       const places = g.tables.reduce(function (s, id) { return s + B.salle.geo(id).places; }, 0);
       if (places < g.taille) pb.push('groupe ' + g.id + ' trop nombreux pour sa table');
     }
-    if (['commande', 'pret', 'addition', 'cuisine'].indexOf(g.etat) >= 0 && S.minute - g.depuis > 120) pb.push('groupe ' + g.id + ' oublié depuis plus de 90 min (' + g.etat + ')');
+    if (['commande', 'pret', 'addition', 'cuisine'].indexOf(g.etat) >= 0 && S.minute - g.depuis > 120 * (g.etat === 'cuisine' ? B.ev.facteurCuisine(S) : 1)) pb.push('groupe ' + g.id + ' oublié depuis plus de 90 min (' + g.etat + ')');
   });
   S.equipe.forEach(function (w) {
     if (w.tache && w.tache.groupe && !S.groupes.find(function (g) { return g.id === w.tache.groupe; })) pb.push('serveur ' + w.nom + ' sert un groupe disparu');
@@ -235,7 +236,7 @@ B.verifier = function (S) {
   if (!S.cal) pb.push('calendrier absent');
   else {
     S.cal.prives.forEach(function (e) { if (e.etat === 'reserve' && !(e.prix > 0 && e.n > 0)) pb.push('événement privé sans prix'); });
-    if (S.cal.attente && !B.ev.defEvenement(S.cal.attente.id)) pb.push('événement du jour inconnu');
+    if (S.cal.attente && S.cal.attente.id !== 'resultat' && !B.ev.defEvenement(S.cal.attente.id)) pb.push('événement du jour inconnu');
   }
   return pb;
 };

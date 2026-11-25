@@ -1,5 +1,16 @@
 # Changements
 
+## v0.8.1 — les 13 événements du jour ont un vrai effet (demande de Yann, lien TEST)
+- **Inspection sanitaire** : nettoyage express ou pas, puis félicitations (plus de clients) ou amende selon la propreté.
+- **Critique gastronomique** : il vient manger ; apéritif offert ou non ; un bon article amène des clients, un mauvais en fait perdre.
+- **Panne** du four (cuisine plus lente) ou du réfrigérateur (produits frais qui se perdent) : réparer tout de suite ou bricoler 2 jours.
+- **Grève chez un fournisseur** : plus de commandes chez lui pendant 2-3 jours ; la commande automatique passe ailleurs.
+- **Influenceuse** : repas offert = beaucoup plus de clients pendant 4 jours.
+- **Augmentation** demandée par un employé : accepter (salaire en hausse) ou refuser (il peut démissionner).
+- **Promo grossiste** : un lot de 30 portions à − 40 %. **Flambée des prix** : un produit + 30 % pendant 5 jours. **Employé malade** : absent aujourd'hui, de retour demain.
+- Les effets en cours sont rappelés dans Calendrier → Aujourd'hui. Les sauvegardes 0.8 continuent sans changement.
+- Correction : à la fermeture forcée (23:59), les clients qui n'ont pas encore mangé comptent maintenant dans « repartis » (avant, ils n'étaient comptés nulle part).
+
 ## v0.8 — étape 6 : lieux, météo et calendrier (lien TEST)
 - **Les 44 lieux** ont maintenant toutes leurs particularités de l'ancien jeu : climat, saison touristique, jours fériés, vacances scolaires, fête locale et fête nationale (avec leurs plats), sport du coin.
 - **Météo** chaque jour (soleil, nuages, pluie, neige, température) : elle change le nombre de clients et ce qu'ils commandent (plats frais et boissons fraîches quand il fait chaud, plats chauds et boissons chaudes quand il fait froid).

@@ -724,6 +724,48 @@ async def main():
         problemes.extend('reprise 0.7 : ' + e for e in p.erreurs)
         await c.close()
 
+        print('1l) v0.8.1 — les 13 événements du jour :')
+        for nom, w, h in TAILLES:
+            taille = f'{w}x{h}'
+            c, p = await nouveau_contexte(b, w, h)
+            await lancer_partie(p)
+            await p.evaluate('() => { B.ev.choixAuto = null; }')
+            await au_coeur_du_service(p, 60)
+            liste = ['inspect', 'critic', 'panne', 'greve', 'influ', 'raise', 'promo', 'prix', 'malade'] if nom == 's22' else ['inspect', 'raise', 'panne']
+            for k, ev in enumerate(liste):
+                await p.evaluate(f"() => {{ const S = B.UI.S; S.cal.prochain = {{ id: '{ev}', minute: S.minute }}; B.avancer(S, 0.5); }}")
+                await p.wait_for_timeout(450)
+                ouvert = await p.evaluate("() => !document.getElementById('evenement').hidden && !!B.UI.pauses.evenement")
+                if not ouvert: problemes.append(f'événement {ev} {w}×{h} : pas de fenêtre'); continue
+                await p.screenshot(path=str(CAPTURES / f'{62 + k}-evenement-{ev}-{taille}.png'))
+                verifier(f'événement {ev} {w}×{h}', await p.evaluate(MESURES_JS), p)
+                txt = await p.locator('#evenement').inner_text()
+                if '{' in txt or '}' in txt: problemes.append(f'événement {ev} : texte mal rempli : {txt[:80]}')
+                n = await p.locator('#evenement [data-ev-choix]').count()
+                await p.locator(f'#evenement [data-ev-choix="{n - 1}"]').click(); await p.wait_for_timeout(300)
+                if ev == 'inspect':
+                    # deuxième fenêtre : le résultat de l'inspection
+                    if await p.evaluate("() => !document.getElementById('evenement').hidden"):
+                        if nom == 's22': await p.screenshot(path=str(CAPTURES / f'71-inspection-resultat-{taille}.png'))
+                        verifier(f'résultat inspection {w}×{h}', await p.evaluate(MESURES_JS), p)
+                        await p.locator('#evenement [data-ev-choix="0"]').click(); await p.wait_for_timeout(300)
+                    else: problemes.append('inspection : pas de fenêtre de résultat')
+                if await p.evaluate("() => !document.getElementById('evenement').hidden"): problemes.append(f'événement {ev} : la fenêtre ne se ferme pas')
+            if nom == 's22':
+                # le volet Calendrier montre les effets en cours (panne, grève, flambée…)
+                await p.evaluate("() => { const S = B.UI.S; S.cal.panne = { type: 'four', jusqua: S.jour + 1, prix: 200 }; }")
+                await p.locator('#btn-calendrier').click(); await p.wait_for_timeout(400)
+                await p.evaluate("() => { const a = document.querySelector('#volet-corps .alerte-ag'); if (a) a.scrollIntoView({ block: 'center' }); }"); await p.wait_for_timeout(150)
+                await p.screenshot(path=str(CAPTURES / '72-calendrier-effets-en-cours-780x360.png'))
+                verifier('calendrier effets en cours', await p.evaluate(MESURES_JS), p)
+                vt = await p.locator('#volet-corps').inner_text()
+                if 'Panne' not in vt: problemes.append('calendrier : la panne en cours n’est pas affichée')
+                await p.locator('#volet-fermer').click(); await p.wait_for_timeout(300)
+            pb = await p.evaluate('() => B.verifier(B.UI.S)')
+            if pb: problemes.append(f'13 événements {w}×{h} : ' + str(pb))
+            problemes.extend(f'13 événements {w}×{h} : ' + e for e in p.erreurs)
+            await c.close()
+
         print('2) Téléphone tenu en portrait :')
         c, p = await nouveau_contexte(b, 360, 780)
         await p.screenshot(path=str(CAPTURES / '06-portrait-360x780.png'))

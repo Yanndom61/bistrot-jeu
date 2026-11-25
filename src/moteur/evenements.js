@@ -111,10 +111,33 @@ B.ev.texteJour = function (S, jour) { return B.texteDate(S, jour - S.jour); };
 
 /* =================== Événements du jour =================== */
 B.ev.defEvenement = function (id) { return B.ev.D().evenementsDuJour.liste.find(function (e) { return e.id === id; }); };
+/* Les employés qui peuvent être concernés (pas le patron, pas les intérimaires, présents aujourd'hui). */
+B.ev.titulairesPresents = function (S) { return S.equipe.filter(function (p) { return !p.patron && !p.interim && !p.partant && !p.absent && !p.demission; }); };
+/* Malade : seulement quelqu'un dont le service tient sans lui (ou que l'intérim automatique remplacera). */
+B.ev.peutTomberMalade = function (S, p) {
+  if (p.service !== 'salle' && p.service !== 'cuisine') return true;
+  return B.equipe.actifs(S, p.service).length > 1 || (S.interimAuto && !B.equipe.interimPossible(S, p.service));
+};
+/* L'événement peut-il arriver aujourd'hui ? (conditions de l'ancien jeu, adaptées) */
+B.ev.possible = function (S, ev) {
+  const met = B.meteo.aujourdhui(S), C = B.ev.etat(S);
+  if (ev.id === 'pluie') return met.ciel === 'pluie' || met.ciel === 'neige';
+  if (ev.id === 'canicule') return met.temp >= ev.tempMin;
+  if (ev.id === 'panne') return !B.ev.panne(S);
+  if (ev.id === 'greve') return !B.ev.greve(S);
+  if (ev.id === 'raise') return B.ev.titulairesPresents(S).length > 0;
+  if (ev.id === 'malade') return B.ev.titulairesPresents(S).some(function (p) { return B.ev.peutTomberMalade(S, p); });
+  if (ev.id === 'critic') return !C.critique;
+  return true;
+};
 B.ev.matinDuJour = function (S) {
   const E = B.ev.D().evenementsDuJour, C = B.ev.etat(S), J = B.DATA.clients.journee;
   if (C.attente) { if (C.attente.id === 'canicule') B.ev.choisir(S, 1); C.attente = null; }   /* pas de réponse avant la fin du service : canicule = fenêtres ouvertes, le reste tombe */
   C.effets = C.effets.filter(function (f) { return f.jusqua >= S.jour; });
+  if (C.panne && C.panne.jusqua < S.jour) { B.message(S, 'msg_ev_panne_fin', { objet: B.t('ev_panne_' + C.panne.type) }); C.panne = null; }
+  if (C.greve && C.greve.jusqua < S.jour) { B.message(S, 'msg_ev_greve_fin', { four: B.stock.nomFournisseur(S, C.greve.four) }); C.greve = null; }
+  if (C.flambees) C.flambees = C.flambees.filter(function (f) { return f.jusqua >= S.jour; });
+  if (C.panne && C.panne.type === 'frigo') B.ev.frigoEnPanne(S);
   C.arrivees = [];
   C.prochain = null;
   if (S.jour < E.aPartirDuJour || B.hasard(S) > E.proba) return;
@@ -123,44 +146,92 @@ B.ev.matinDuJour = function (S) {
   let tot = 0; pool.forEach(function (e) { tot += e.poids; });
   let r = B.hasard(S) * tot, ev = pool[0];
   for (const e of pool) { r -= e.poids; if (r <= 0) { ev = e; break; } }
-  if (!ev.actif) return;   /* événement d'une autre étape : rien encore */
-  const met = B.meteo.aujourdhui(S);
-  if (ev.id === 'pluie' && met.ciel !== 'pluie' && met.ciel !== 'neige') return;
-  if (ev.id === 'canicule' && met.temp < ev.tempMin) return;
+  if (!ev.actif || !B.ev.possible(S, ev)) return;
   const minute = ev.quand === 'matin' ? J.ouverture + B.entier(S, E.matin[0], E.matin[1])
     : J.ouverture + (B.hasard(S) < E.partMidi ? B.entier(S, E.serviceMidi[0], E.serviceMidi[1]) : B.entier(S, E.serviceSoir[0], E.serviceSoir[1]));
   C.prochain = { id: ev.id, minute: minute };
   if (ev.recharge) C.recharge[ev.id] = S.jour + ev.recharge;
 };
 B.ev.sport = function (S) { return B.cal.lieu(S).sport || B.ev.D().evenementsDuJour.sportParDefaut; };
+B.ev.piocher = function (S, liste) { return liste[B.entier(S, 0, liste.length - 1)]; };
 /* L'événement arrive : il attend le choix du joueur (une fenêtre à l'écran ; le simulateur choisit tout seul). */
 B.ev.declencher = function (S) {
   const C = S.cal, p = C.prochain;
   C.prochain = null;
   const def = B.ev.defEvenement(p.id), L = B.cal.lieu(S);
-  const a = { id: p.id, minute: Math.floor(S.minute), variante: L.tropical && (p.id === 'pluie' || p.id === 'canicule') ? 'tropical' : '' };
+  if (['panne', 'greve', 'raise', 'malade', 'critic'].indexOf(p.id) >= 0 && !B.ev.possible(S, def)) return;   /* la situation a changé depuis le matin */
+  const a = { id: p.id, minute: Math.floor(S.minute), variante: L.tropical && (p.id === 'pluie' || p.id === 'canicule') ? 'tropical' : '', vars: {} };
   if (p.id === 'match') { const sp = B.ev.sport(S); a.sport = sp.nom; a.emoji = sp.emoji; }
   if (p.id === 'pluie') C.effets.push({ k: 'pluie', m: def.coef, de: 0, jusqua: S.jour });
+  if (p.id === 'inspect') a.vars.proprete = Math.round(S.proprete == null ? 80 : S.proprete);
+  if (p.id === 'panne') {
+    a.type = B.ev.piocher(S, def.types); a.prix = B.entier(S, def.prix[0], def.prix[1]);
+    a.vars = { objet: B.t('ev_panne_' + a.type), effet: B.t('ev_panne_effet_' + a.type) };
+  }
+  if (p.id === 'greve') {
+    const fours = Object.keys(B.DATA.stocks.fournisseurs), four = B.ev.piocher(S, fours), jours = B.entier(S, def.jours[0], def.jours[1]);
+    C.greve = { four: four, jusqua: S.jour + jours - 1 };
+    const fin = S.jour * 1440 + (jours - 1) * 1440;   /* les livraisons en route arrivent à la fin de la grève */
+    S.stocks.commandes.forEach(function (c) { if (c.four === four) c.arrivee = Math.max(c.arrivee, fin); });
+    a.vars = { four: B.stock.nomFournisseur(S, four), jours: jours };
+  }
+  if (p.id === 'raise') {
+    const pers = B.ev.piocher(S, B.ev.titulairesPresents(S));
+    a.pid = pers.id;
+    a.vars = { nom: pers.nom, poste: B.equipe.nomPoste(pers).toLowerCase(), montant: B.euros(def.parJour), horaire: B.equipe.euroHeure(B.ev.hausseHoraire(def.parJour)) };
+  }
+  if (p.id === 'promo') {
+    const i = B.ev.piocher(S, def.produits), rang = B.stock.info(i).rangement;
+    a.ing = i; a.q = Math.max(0, Math.min(def.portions, Math.floor(B.stock.place(S, rang))));
+    a.prix = B.r2(a.q * B.stock.prixAchat(S, i, 'grossiste') * (1 - def.remise));
+    a.vars = { q: a.q, produit: B.stock.ing(i).nom.toLowerCase() };
+  }
+  if (p.id === 'prix') {
+    const i = B.ev.piocher(S, def.produits);
+    (C.flambees = C.flambees || []).push({ ing: i, m: def.hausse, jusqua: S.jour + def.jours - 1 });
+    a.vars = { produit: B.stock.ing(i).nom.toLowerCase(), jours: def.jours };
+  }
+  if (p.id === 'malade') {
+    const pers = B.ev.piocher(S, B.ev.titulairesPresents(S).filter(function (x) { return B.ev.peutTomberMalade(S, x); }));
+    pers.absent = 'malade';
+    B.equipe.liberer(S, pers); B.equipe.replacer(S);
+    a.vars = { nom: pers.nom };
+    if ((pers.service === 'salle' || pers.service === 'cuisine') && !B.equipe.actifs(S, pers.service).length && S.interimAuto) {
+      const it = B.equipe.appelerInterim(S, pers.service, true);
+      if (it) a.vars.interim = it.nom;
+    }
+  }
+  a.vars.sport = a.sport || '';
   C.attente = a;
-  B.message(S, 'msg_ev_' + p.id + (a.variante ? '_' + a.variante : ''), { sport: a.sport || '' });
+  B.message(S, 'msg_ev_' + p.id + (a.variante ? '_' + a.variante : ''), a.vars);
   if (B.ev.choixAuto) B.ev.choisir(S, B.ev.choixAuto(S, a));
 };
-/* Les choix possibles : [{ cle du texte, prix }] */
+/* Les choix possibles : [{ cle du texte, prix, poste }] */
 B.ev.choix = function (S, a) {
-  const d = B.ev.defEvenement(a.id);
+  const d = B.ev.defEvenement(a.id) || {};
   if (a.id === 'bus') return [{ cle: 'ev_bus_oui' }, { cle: 'ev_bus_non' }];
   if (a.id === 'match') return [{ cle: 'ev_match_ecran', prix: d.prixEcran }, { cle: 'ev_match_rien' }];
   if (a.id === 'canicule') return [{ cle: 'ev_canicule_clim', prix: d.prixClim }, { cle: 'ev_canicule_fenetres' }];
+  if (a.id === 'inspect') return [{ cle: 'ev_inspect_nettoyer', prix: d.prixNettoyage }, { cle: 'ev_inspect_rien' }];
+  if (a.id === 'critic') return [{ cle: 'ev_critic_apero', prix: d.prixApero }, { cle: 'ev_critic_rien' }];
+  if (a.id === 'panne') return [{ cle: 'ev_panne_reparer', prix: a.prix }, { cle: 'ev_panne_bricoler' }];
+  if (a.id === 'influ') return [{ cle: 'ev_influ_repas', prix: d.prixRepas }, { cle: 'ev_influ_rien' }];
+  if (a.id === 'raise') return [{ cle: 'ev_raise_oui' }, { cle: 'ev_raise_non' }];
+  if (a.id === 'promo') return a.q > 0 ? [{ cle: 'ev_promo_oui', prix: a.prix, poste: 'achats' }, { cle: 'ev_promo_non' }] : [{ cle: 'ev_promo_plein' }];
+  if (a.id === 'greve' || a.id === 'prix' || a.id === 'malade') return [{ cle: 'ev_compris' }];
   return [{ cle: 'ev_ok' }];
 };
+B.ev.hausseHoraire = function (parJour) { return B.r2(parJour * B.DATA.argent.joursParMois / B.DATA.equipe.heuresParMois39h); };
+B.ev.effet = function (S, k, m, jours, de) { B.ev.etat(S).effets.push({ k: k, m: m, de: de || 0, jusqua: S.jour + jours - 1 }); };
 B.ev.choisir = function (S, k) {
   const C = B.ev.etat(S), a = C.attente;
   if (!a) return false;
-  const d = B.ev.defEvenement(a.id), E = B.ev.D().evenementsDuJour, ch = B.ev.choix(S, a)[k] || B.ev.choix(S, a)[0];
+  const d = B.ev.defEvenement(a.id) || {}, E = B.ev.D().evenementsDuJour, liste = B.ev.choix(S, a), ch = liste[k] || liste[0];
   C.attente = null;
+  if (a.id === 'resultat') return true;
   let payer = ch.prix || 0;
   if (payer && !B.argent.peutPayer(S, payer, false)) { B.message(S, 'msg_ev_pas_assez', { prix: B.euros(payer) }); payer = 0; k = 1; }
-  if (payer) B.argent.payer(S, 'divers', payer);
+  if (payer) B.argent.payer(S, ch.poste || 'divers', payer);
   if (a.id === 'bus' && k === 0) {
     for (let i = 0; i < E.bus.groupes; i++) C.arrivees.push(Math.floor(S.minute) + i * E.bus.ecartMinutes + B.entier(S, 0, 3));
     B.message(S, 'msg_ev_bus_arrive');
@@ -168,8 +239,67 @@ B.ev.choisir = function (S, k) {
     C.effets.push({ k: 'match', m: k === 0 ? d.coefEcran : d.coefRien, de: d.aPartirDe, jusqua: S.jour });
   } else if (a.id === 'canicule') {
     C.effets.push({ k: 'canicule', m: k === 0 ? d.coefClim : d.coefFenetres, de: 0, jusqua: S.jour + d.jours - 1 });
+  } else if (a.id === 'inspect') {
+    if (k === 0) S.proprete = Math.min(100, (S.proprete == null ? 80 : S.proprete) + d.nettoyage);
+    B.ev.inspecter(S, d);
+  } else if (a.id === 'critic') {
+    B.clients.arrivee(S, { type: 'solo' });
+    const g = S.groupes[S.groupes.length - 1];
+    if (g && g.etat === 'file') { g.critique = true; g.apero = k === 0; C.critique = { groupe: g.id, apero: k === 0 }; }
+    else B.ev.avisCritique(S, null, 1);
+  } else if (a.id === 'panne') {
+    if (k === 0) B.message(S, 'msg_ev_panne_reparee', { objet: B.t('ev_panne_' + a.type) });
+    else C.panne = { type: a.type, jusqua: S.jour + d.jours - 1, prix: a.prix };
+  } else if (a.id === 'influ') {
+    B.ev.effet(S, 'buzz', k === 0 ? d.coefRepas : d.coefRien, d.jours);
+  } else if (a.id === 'raise') {
+    const p = S.equipe.find(function (x) { return x.id === a.pid; });
+    if (p && k === 0) { p.salaire = B.r2(p.salaire + B.ev.hausseHoraire(d.parJour)); B.message(S, 'msg_ev_raise_oui', { nom: p.nom, horaire: B.equipe.euroHeure(p.salaire) }); }
+    else if (p && B.hasard(S) < d.demission) { p.demission = true; B.message(S, 'msg_ev_raise_demission', { nom: p.nom }); }
+    else if (p) B.message(S, 'msg_ev_raise_reste', { nom: p.nom });
+  } else if (a.id === 'promo' && k === 0 && a.q > 0 && payer) {
+    B.stock.ajouterLot(S, a.ing, a.q, B.r2(a.prix / a.q), 'grossiste');
+    B.message(S, 'msg_ev_promo_recu', { q: a.q, produit: B.stock.ing(a.ing).nom });
+    B.stock.finRuptures(S);
   }
   return true;
+};
+/* Inspection sanitaire (ancien jeu) : résultat selon la propreté, montré dans une deuxième fenêtre. */
+B.ev.inspecter = function (S, d) {
+  const h = S.proprete == null ? 80 : S.proprete, Sx = d.seuils;
+  let cle, amende = 0;
+  if (h >= Sx.bravo) { cle = 'bravo'; B.ev.effet(S, 'inspection', d.coefBravo, d.joursEffet); }
+  else if (h >= Sx.ok) cle = 'ok';
+  else if (h >= Sx.avertissement) { cle = 'avertissement'; amende = d.amendes.avertissement; }
+  else { cle = 'sanction'; amende = d.amendes.sanction; B.ev.effet(S, 'inspection', d.coefSanction, d.joursEffet); }
+  if (amende) B.argent.payer(S, 'divers', amende);
+  const vars = { proprete: Math.round(h), amende: B.euros(amende), jours: d.joursEffet };
+  B.message(S, 'msg_ev_inspect_' + cle, vars);
+  S.cal.attente = { id: 'resultat', minute: Math.floor(S.minute), emoji: h >= Sx.ok ? '✅' : '🚨', titre: 'ev_inspect_' + cle + '_titre', texte: 'ev_inspect_' + cle + '_texte', vars: vars };
+};
+/* Le critique paie : son article dépend de ses étoiles (−0,35 parce qu'il est exigeant, +0,4 avec l'apéritif offert, comme l'ancien jeu). */
+B.ev.avisCritique = function (S, g, etoiles) {
+  const d = B.ev.defEvenement('critic'), C = B.ev.etat(S);
+  C.critique = null;
+  const e = Math.round(etoiles * 10) / 10, vars = { etoiles: String(e).replace('.', ','), jours: d.joursEffet };
+  if (e >= d.bon) { B.ev.effet(S, 'critique', d.coefBon, d.joursEffet); B.message(S, 'msg_ev_critic_bon', vars); }
+  else if (e < d.mauvais) { B.ev.effet(S, 'critique', d.coefMauvais, d.joursEffet); B.message(S, g ? 'msg_ev_critic_mauvais' : 'msg_ev_critic_parti', vars); }
+  else B.message(S, 'msg_ev_critic_moyen', vars);
+};
+B.ev.etoilesCritique = function (g) { const d = B.ev.defEvenement('critic'); return -d.critiqueMoins + (g.apero ? d.aperoPlus : 0); };
+/* Pannes, grèves, flambée des prix : ce que les autres parties du jeu demandent. */
+B.ev.panne = function (S) { const p = S.cal && S.cal.panne; return p && p.jusqua >= S.jour ? p : null; };
+B.ev.facteurCuisine = function (S) { const p = B.ev.panne(S); return p && p.type === 'four' ? B.ev.defEvenement('panne').four : 1; };
+B.ev.frigoEnPanne = function (S) {   /* les produits frais se perdent 2 fois plus vite : un jour de conservation en moins chaque matin */
+  const n = B.ev.defEvenement('panne').frigoJoursPerdus;
+  for (const i in S.stocks.lots) if (B.stock.info(i).rangement === 'froid') S.stocks.lots[i].forEach(function (l) { if (l.dlc > S.jour) l.dlc = Math.max(S.jour, l.dlc - n); });
+};
+B.ev.greve = function (S) { const g = S.cal && S.cal.greve; return g && g.jusqua >= S.jour ? g : null; };
+B.ev.enGreve = function (S, four) { const g = B.ev.greve(S); return !!g && g.four === four; };
+B.ev.coefPrix = function (S, i) {
+  let m = 1;
+  ((S.cal && S.cal.flambees) || []).forEach(function (f) { if (f.ing === i && f.jusqua >= S.jour) m *= f.m; });
+  return m;
 };
 B.ev.facteur = function (S, minute) {
   let f = 1;
@@ -359,5 +489,6 @@ B.ev.pas = function (S) {
     C.arrivees.forEach(function (m) { if (S.minute >= m && S.minute < B.DATA.clients.journee.fermeture) B.clients.arrivee(S, { type: 'touristes', patience: B.ev.D().evenementsDuJour.bus.patience }); else if (S.minute < m) garde.push(m); });
     C.arrivees = garde;
   }
+  if (C.critique && !S.groupes.some(function (g) { return g.id === C.critique.groupe; })) B.ev.avisCritique(S, null, 1);   /* reparti sans manger */
   if (C.prives.length) B.ev.pasPrives(S);
 };

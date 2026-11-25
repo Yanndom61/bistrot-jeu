@@ -20,6 +20,6 @@ B.cuisine.avancer = function (S) {
     if (!choix) break;
     enCours[choix.id] = (enCours[choix.id] || 0) + 1;
     g.cuisinier = choix.id;
-    g.pret = S.minute + B.duree(S, B.DATA.clients.durees.cuisine) * B.equipe.facteurCuisine(choix) * plonge * (g.refait ? B.DATA.carte.cuissons.refaireFacteur : 1);
+    g.pret = S.minute + B.duree(S, B.DATA.clients.durees.cuisine) * B.equipe.facteurCuisine(choix) * plonge * (S.cal ? B.ev.facteurCuisine(S) : 1) * (g.refait ? B.DATA.carte.cuissons.refaireFacteur : 1);
   }
 };

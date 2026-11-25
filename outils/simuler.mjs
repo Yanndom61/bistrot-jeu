@@ -806,7 +806,7 @@ console.log('\nÉtape 5 — Argent :');
 // ===== Étape 6 : lieux, météo, calendrier, événements =====
 console.log('\nÉtape 6 — Lieux, météo et calendrier :');
 {
-  if (B.VERSION_SAUVEGARDE !== 8 || B.VERSION_JEU !== '0.8.0') probleme('versions attendues : sauvegarde 8, jeu 0.8.0');
+  if (B.VERSION_SAUVEGARDE !== 8 || B.VERSION_JEU !== '0.8.1') probleme('versions attendues : sauvegarde 8, jeu 0.8.1');
   // 1) Les 44 lieux : météo, calendrier, touristes sur 2 ans, sans valeur absurde.
   const L = B.DATA.lieux.lieux;
   if (L.length !== 44) probleme('il faut 44 lieux, il y en a ' + L.length);
@@ -898,6 +898,92 @@ console.log('\nÉtape 6 — Lieux, météo et calendrier :');
     }
     console.log('  Événements du jour (Tokyo) : ' + res.join(' ; '));
     S.cal.effets = [];
+  }
+  // 4b) v0.8.1 : les 13 événements du jour ont un effet. Chacun est déclenché à la main, avec chaque choix.
+  {
+    const E = B.DATA.calendrier.evenementsDuJour.liste;
+    if (E.length !== 13 || E.some((e) => !e.actif)) probleme('les 13 événements du jour doivent être actifs');
+    const nouvelle = () => { const S = B.creerPartie({ nom: 'T', lieu: 'paris', graine: 21, debut: '2027-03-10' }); recruter(S, ['serv', 'commis', 'serv', 'chef']); S.interimAuto = true; B.ouvrir(S); B.avancer(S, 60); return S; };
+    const lancer = (S, id, k) => { const auto = B.ev.choixAuto; B.ev.choixAuto = null; S.cal.prochain = { id, minute: S.minute }; B.ev.declencher(S); B.ev.choixAuto = auto; const a = S.cal.attente; if (!a || a.id !== id) { probleme('événement ' + id + ' : pas de fenêtre'); return null; } B.ev.choisir(S, k); return a; };
+    const res = [];
+    let S = nouvelle();
+    // inspection
+    S.proprete = 90; lancer(S, 'inspect', 1);
+    if (!S.cal.attente || S.cal.attente.id !== 'resultat' || Math.abs(B.ev.facteur(S, 700) - 1.05) > 1e-9) probleme('inspection : propreté 90 → félicitations et +5 % attendus');
+    B.ev.choisir(S, 0); S.cal.effets = [];
+    S.proprete = 40; let a0 = S.argent; lancer(S, 'inspect', 0); B.ev.choisir(S, 0);
+    if (S.proprete !== 65 || Math.abs(a0 - S.argent - 80) > 0.01) probleme('inspection : le nettoyage express (80 €, +25) ne marche pas');
+    S.proprete = 20; a0 = S.argent; lancer(S, 'inspect', 1); B.ev.choisir(S, 0);
+    if (Math.abs(a0 - S.argent - 800) > 0.01 || Math.abs(B.ev.facteur(S, 700) - 0.95) > 1e-9) probleme('inspection : propreté 20 → amende de 800 € et −5 % attendus');
+    res.push('inspection 90 → bravo +5 % ; 40 + nettoyage → 65, sans amende ; 20 → 800 € et −5 %');
+    S.cal.effets = []; S.proprete = 80;
+    // influenceuse
+    lancer(S, 'influ', 0); const f1 = B.ev.facteur(S, 700); S.cal.effets = []; lancer(S, 'influ', 1); const f2 = B.ev.facteur(S, 700); S.cal.effets = [];
+    if (Math.abs(f1 - 1.25) > 1e-9 || Math.abs(f2 - 1.08) > 1e-9) probleme('influenceuse : +25 % / +8 % attendus');
+    res.push(`influenceuse ×${f1} / ×${f2}`);
+    // flambée des prix
+    const pb = B.stock.prixAchat(S, 'boeuf', 'grossiste'), pp = B.stock.prixAchat(S, 'poisson', 'grossiste');
+    lancer(S, 'prix', 0); const fl = S.cal.flambees[0];
+    const avant = fl.ing === 'boeuf' ? pb : fl.ing === 'poisson' ? pp : null;
+    if (!fl || fl.jusqua !== S.jour + 4 || (avant && Math.abs(B.stock.prixAchat(S, fl.ing, 'grossiste') / avant - 1.3) > 0.02)) probleme('flambée : +30 % pendant 5 jours attendu');
+    res.push(`flambée : ${B.stock.ing(fl.ing).nom} +30 % jusqu’au jour ${fl.jusqua}`);
+    S.cal.flambees = [];
+    // promo
+    const q0 = B.stock.quantite(S, 'boeuf');
+    let a = null; for (let n = 0; n < 30 && (!a || a.ing !== 'boeuf'); n++) { S.cal.prochain = { id: 'promo', minute: S.minute }; const auto = B.ev.choixAuto; B.ev.choixAuto = null; B.ev.declencher(S); B.ev.choixAuto = auto; a = S.cal.attente; if (a.ing !== 'boeuf') B.ev.choisir(S, 1); }
+    const ach0 = S.stats.jour.achats; B.ev.choisir(S, 0);
+    if (B.stock.quantite(S, 'boeuf') - q0 !== a.q || Math.abs(S.stats.jour.achats - ach0 - a.prix) > 0.01 || Math.abs(a.prix - a.q * B.stock.prixAchat(S, 'boeuf', 'grossiste') * 0.6) > 0.05) probleme('promo : lot pas reçu ou mal payé');
+    res.push(`promo : ${a.q} portions de bœuf pour ${B.euros(a.prix)}`);
+    // panne du four (bricoler) puis du frigo
+    let pa; for (let n = 0; n < 30; n++) { S.cal.prochain = { id: 'panne', minute: S.minute }; const auto = B.ev.choixAuto; B.ev.choixAuto = null; B.ev.declencher(S); B.ev.choixAuto = auto; pa = S.cal.attente; if (pa.type === 'four') break; B.ev.choisir(S, 0); }
+    a0 = S.argent; B.ev.choisir(S, 1);
+    if (B.ev.facteurCuisine(S) !== 1.82 || S.argent !== a0 || S.cal.panne.jusqua !== S.jour + 1) probleme('panne du four : cuisine × 1,82 pendant 2 jours attendue');
+    S.cal.panne = null;
+    for (let n = 0; n < 30; n++) { S.cal.prochain = { id: 'panne', minute: S.minute }; const auto = B.ev.choixAuto; B.ev.choixAuto = null; B.ev.declencher(S); B.ev.choixAuto = auto; pa = S.cal.attente; if (pa.type === 'four') break; B.ev.choisir(S, 0); }
+    a0 = S.argent; B.ev.choisir(S, 0);
+    if (B.ev.panne(S) || Math.abs(a0 - S.argent - pa.prix) > 0.01) probleme('panne : la réparation immédiate ne marche pas');
+    res.push(`panne : four bricolé → cuisine × 1,82 pendant 2 jours ; réparation ${B.euros(pa.prix)}`);
+    // grève
+    lancer(S, 'greve', 0); const gr = S.cal.greve;
+    const rc = B.stock.commander(S, gr.four, { pain: 10 });
+    if (rc.erreur !== 'stock_greve' || gr.jusqua < S.jour + 1) probleme('grève : on peut encore commander chez le fournisseur en grève');
+    res.push(`grève : ${B.stock.nomFournisseur(S, gr.four)} jusqu’au jour ${gr.jusqua}, commande refusée`);
+    // augmentation : acceptée puis refusée avec démission forcée
+    const D = E.find((e) => e.id === 'raise');
+    let ar = lancer(S, 'raise', 0); let p = S.equipe.find((x) => x.id === ar.pid);
+    res.push(`augmentation : ${p.nom} passe à ${B.equipe.euroHeure(p.salaire)}`);
+    const dem = D.demission; D.demission = 1; ar = lancer(S, 'raise', 1); D.demission = dem; p = S.equipe.find((x) => x.id === ar.pid);
+    if (!p.demission) probleme('augmentation refusée : la démission (1 chance sur 5) ne marche pas');
+    const demNom = p.nom;
+    // malade
+    const am = lancer(S, 'malade', 0); const m = S.equipe.find((x) => x.nom === am.vars.nom);
+    if (!m || m.absent !== 'malade') probleme('employé malade : pas absent');
+    // critique avec apéritif : il vient, mange, paie, l'article sort
+    lancer(S, 'critic', 0);
+    const gc = S.groupes.find((g) => g.critique);
+    if (!gc || !gc.apero) probleme('critique : pas arrivé');
+    let n = 0; while (S.cal.critique && n++ < 600) B.avancer(S, 0.5);
+    const art = S.journal.map((x) => x.texte).filter((t) => t.startsWith('🧐')).pop();
+    if (S.cal.critique) probleme('critique : pas d’article');
+    res.push('critique (apéritif offert) : « ' + art + ' »');
+    n = 0; while (!S.finJour && n++ < 4000) B.avancer(S, 0.5);
+    B.verifier(S).forEach((x) => probleme('13 événements : ' + x));
+    B.jourSuivant(S);
+    if (S.equipe.some((x) => x.nom === demNom)) probleme('démission : la personne est encore là le lendemain');
+    if (m && S.equipe.find((x) => x.id === m.id) && S.equipe.find((x) => x.id === m.id).absent === 'malade') probleme('malade : encore absent le lendemain');
+    B.verifier(S).forEach((x) => probleme('13 événements lendemain : ' + x));
+    res.push(`démission : ${demNom} parti le lendemain ; malade : ${am.vars.nom} revenu le lendemain`);
+    console.log('  Les 13 événements du jour (Paris) :\n    ' + res.join('\n    '));
+    // fréquence sur 60 jours dans 4 lieux
+    const vus = {}, orig = B.message;
+    B.message = (T, cle, v) => { const mm = /^msg_ev_(inspect|bus|critic|panne|greve|canicule|match|pluie|influ|raise|promo|prix|malade)(_tropical)?$/.exec(cle); if (mm) vus[mm[1]] = (vus[mm[1]] || 0) + 1; return orig(T, cle, v); };
+    for (const lieu of ['paris', 'bretagne', 'tokyo', 'reunion']) {
+      const T = B.creerPartie({ nom: 'T', lieu, graine: 99 }); recruter(T, ['serv', 'commis']); T.interimAuto = true; T.stocks.auto = true;
+      const c = jouer(T, 'fréquence ' + lieu, 60, false);
+      if (c.faillite) probleme('fréquence : faillite à ' + lieu);
+    }
+    B.message = orig;
+    console.log('  Événements du jour arrivés sur 4 lieux × 60 jours : ' + Object.entries(vus).map(([k, v]) => k + ' ' + v).join(' · '));
   }
   // 5) Sauvegarde Bistrot 0.7 (format 7) en plein service : convertie, calendrier ajouté, service fini.
   {

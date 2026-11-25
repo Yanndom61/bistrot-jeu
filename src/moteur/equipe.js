@@ -156,7 +156,8 @@ B.equipe.appelerInterim = function (S, service, auto) {
 /* Le matin : les intérimaires de la veille repartent, on regarde qui est en repos ou en formation ;
    si l'option est active et qu'il manque quelqu'un pour ouvrir, un intérimaire est appelé automatiquement (dernier recours). */
 B.equipe.matin = function (S) {
-  S.equipe = S.equipe.filter(function (p) { return !p.partant && !p.interim; });
+  S.equipe.filter(function (p) { return p.demission && !p.partant && !p.interim; }).forEach(function (p) { if (p.formation) B.planning.annuler(S, p); B.message(S, 'msg_ev_raise_parti', { nom: p.nom }); });
+  S.equipe = S.equipe.filter(function (p) { return !p.partant && !p.interim && !p.demission; });
   B.planning.matin(S);
   B.equipe.replacer(S);
   if (S.proprete != null && S.proprete < B.DATA.equipe.effets.proprete.seuilEtoiles) B.message(S, 'msg_salle_sale', { n: S.proprete });

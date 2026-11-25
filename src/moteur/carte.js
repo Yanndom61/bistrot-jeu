@@ -282,6 +282,7 @@ B.carte.etoiles = function (S, g) {
   if (g.amabN) s += E.amabiliteParPoint * (g.amabS / g.amabN - 5);
   if (B.equipe.aLePoste(S, 'resp')) s += E.respEtoiles;
   s -= B.planning.malusProprete(S);
+  if (g.critique && S.cal) s += B.ev.etoilesCritique(g);   /* v0.8.1 : le critique est exigeant ; l'apéritif offert aide */
   const lignes = g.commande || [];
   if (lignes.length) {
     const pay = lignes.filter(function (l) { return l.prix > 0; });
@@ -323,6 +324,7 @@ B.carte.payer = function (S, g) {
   const etoiles = B.carte.etoiles(S, g);
   const tip = B.carte.pourboire(S, g, total, etoiles);
   g.paye = true; g.total = total; g.pourboire = tip; g.etoiles = etoiles;
+  if (g.critique && S.cal) B.ev.avisCritique(S, g, etoiles);
   S.argent = Math.round((S.argent + total) * 100) / 100;
   S.cagnotte = Math.round(((S.cagnotte || 0) + tip) * 100) / 100;
   const st = S.stats.jour;

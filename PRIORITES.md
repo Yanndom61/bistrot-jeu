@@ -10,7 +10,7 @@ On ne travaille que sur la colonne **Indispensable**, dans l'ordre. Toute nouvel
 | ✅ 3. Stocks, fournisseurs et vrais prix de gros (Rungis), **avec menu du jour, boissons et plats de saison** (décision de Yann) *(v0.5 ; menu du jour modifiable en v0.5.1, validé par Yann)* | Fiches techniques des plats (grammages, coût matière) | Mise à jour des prix Rungis (nouveau relevé) |
 | ✅ 4. Équipe : **les 16 postes tous recrutables** (décision de Yann), plannings avec 2 jours de repos qui se suivent, formations (dont sommellerie), cagnotte des pourboires partagée chaque mois, intérim pour les absences, effets des qualités, propreté *(v0.6, validé par Yann)* | Écran « Crédits et sources » | |
 | ✅ 5. Argent : loyer et charges selon les lieux, salaires payés (grille HCR) et intérim, indemnités de renvoi, niveaux Facile / Normal / Difficile, faillite claire (sauvegarde gardée), bilans du jour et de la semaine *(v0.7, validé par Yann : TVA et Difficile gardés tels quels)* | | |
-| ✅ 6. Lieux (effets complets), météo et calendrier : climat et saison touristique de chaque lieu, météo qui change l'affluence et les commandes, jours de la semaine, saisons, fériés et vacances selon le lieu, menus de fête, événements du jour (bus, match, pluie, canicule) et événements privés de l'ancien jeu *(v0.8, en test)* | Événements des autres étapes : inspection, critique, panne, grève, influenceuse… | |
+| ✅ 6. Lieux (effets complets), météo et calendrier : climat et saison touristique de chaque lieu, météo qui change l'affluence et les commandes, jours de la semaine, saisons, fériés et vacances selon le lieu, menus de fête, événements du jour et événements privés de l'ancien jeu *(v0.8)* ; les 13 événements du jour ont un vrai effet *(v0.8.1, demande de Yann, en test)* | ✅ Événements des autres étapes : inspection, critique, panne, grève, influenceuse… *(fait en v0.8.1)* | |
 | 7. Tutoriel progressif, mode d'emploi « ? », objectifs | | |
 | 8. Avis clients, réputation | | |
 
@@ -85,3 +85,15 @@ On ne travaille que sur la colonne **Indispensable**, dans l'ordre. Toute nouvel
   - **Vacances** : après l'été 2028 (fin des dates officielles connues), les vacances de 2027-2028 se répètent. Outre-mer et étranger : le calendrier simplifié de l'ancien jeu.
   - **Touristes** : la formule de l'ancien jeu (à Mayotte, presque aucun touriste hors vacances).
   - **Ajouts à l'écran** (pas dans la demande mot pour mot, nécessaires pour jouer) : le **bouton Calendrier** en haut du panneau de droite (sur l'écran de 300 px de haut, il se met en bas à côté de « Placement ») ; la **fenêtre d'événement** au milieu de l'écran ; la ligne **« Demain »** dans le bilan du soir ; le poste **« Événements (écran, clim…) »** dans l'argent ; les invités d'un événement privé dessinés en violet.
+- **Choix de la v0.8.1 à valider** (tous expliqués dans REGLES §5b « Événements du jour ») :
+  - **Réputation** : elle n'existe pas encore (étape 8). Là où l'ancien jeu changeait la réputation, Bistrot change le nombre de clients pendant quelques jours : inspection félicitée + 5 % (5 jours), sanction sévère − 5 % (5 jours) ; critique ≥ 4 ★ + 10 %, < 3 ★ − 10 % (7 jours) ; influenceuse + 25 % avec le repas offert, + 8 % sans (4 jours).
+  - **Inspection** : seuils (75 / 50 / 30) et amendes (250 / 800 €) de l'ancien jeu ; nettoyage express 80 € pour + 25 de propreté. Pas d'amende « allergènes » (Bistrot n'a pas d'allergènes). Une 2e fenêtre donne le résultat.
+  - **Critique** : − 0,35 sur sa note, + 0,4 avec l'apéritif (20 €), comme l'ancien jeu. S'il repart sans manger : mauvais article.
+  - **Panne** : four (× 1,82 en cuisine) ou réfrigérateur (produits frais 2 fois moins longtemps), comme l'ancien jeu ; pas de lave-vaisselle (Bistrot n'a pas de matériel). Réparation 180 à 420 € ; « bricoler » = panne aujourd'hui et demain, pas de bouton « réparer plus tard ».
+  - **Grève** : 2 ou 3 jours ; la commande automatique change de fournisseur (comme l'ancien jeu).
+  - **Influenceuse** : plus de condition de réputation minimale (elle n'existe pas encore).
+  - **Augmentation** : 8 € par jour = + 1,44 € de l'heure. Pas de moral des employés ; refus = 1 chance sur 5 de démission, départ le soir même après le service.
+  - **Promo** : 30 portions à − 40 %, moins si la réserve est pleine ; comptée dans les achats.
+  - **Flambée** : + 30 % sur le prix d'achat pendant 5 jours.
+  - **Malade** : seulement si quelqu'un d'autre (ou l'intérim automatique) tient son service ; il est payé et revient le lendemain.
+  - **Ajouts à l'écran** : la fenêtre de résultat de l'inspection ; les lignes « Panne », « grève » et « prix +30 % » dans Calendrier → Aujourd'hui ; « malade » et « démission » dans l'état du jour de l'équipe.

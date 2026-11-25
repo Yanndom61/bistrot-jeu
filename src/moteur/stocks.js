@@ -37,7 +37,7 @@ B.stock.prixAchat = function (S, i, four) {
   const p = B.DATA['prix-gros'].produits[i], F = B.DATA.stocks.fournisseurs[four || 'grossiste'];
   const base = (p ? p.prix : 0.5) * (B.lieu(S.lieu).prix || 1) * B.stock.coefSaison(S, i) * F.coef;
   const o = B.stock.offre(S, i, four);
-  return Math.max(0.01, B.r2(base * (o ? 1 - o.remise : 1)));
+  return Math.max(0.01, B.r2(base * (o ? 1 - o.remise : 1) * (S.cal ? B.ev.coefPrix(S, i) : 1)));
 };
 B.stock.habituel = function (S, i) {
   const h = S.stocks && S.stocks.habituel || B.DATA.stocks.fournisseurHabituel;
@@ -121,6 +121,7 @@ B.stock.aEcouler = function (S, i) {   /* portions qui ne seront plus bonnes apr
 B.stock.commander = function (S, four, lignes, auto) {
   const F = B.DATA.stocks.fournisseurs[four];
   if (!F) return { erreur: 'stock_four_inconnu' };
+  if (S.cal && B.ev.enGreve(S, four)) return { erreur: 'stock_greve' };
   const out = {}, prix = {}, place = {};
   let coupes = 0, total = 0;
   Object.keys(B.DATA.stocks.rangements).forEach(function (r) { place[r] = B.stock.place(S, r); });
@@ -232,8 +233,12 @@ B.stock.commandeAuto = function (S) {
     const besoin = cible - B.stock.bonJusqua(S, i, demain) - B.stock.enRoute(S, i);
     if (besoin < 1) return;
     let four = B.stock.habituel(S, i), meilleur = B.stock.prixAchat(S, i, four);
+    if (S.cal && B.ev.enGreve(S, four)) {   /* v0.8.1 : grève chez le fournisseur habituel → le moins cher des autres */
+      meilleur = Infinity;
+      Object.keys(B.DATA.stocks.fournisseurs).forEach(function (f) { if (!B.ev.enGreve(S, f) && B.stock.fourOk(f, i) && B.stock.prixAchat(S, i, f) < meilleur) { meilleur = B.stock.prixAchat(S, i, f); four = f; } });
+    }
     (S.stocks.offres || []).forEach(function (o) {
-      if (o.ing !== i || o.jour < S.jour || !B.stock.fourOk(o.four, i)) return;
+      if (o.ing !== i || o.jour < S.jour || !B.stock.fourOk(o.four, i) || (S.cal && B.ev.enGreve(S, o.four))) return;
       if (B.DATA.stocks.fournisseurs[o.four].delai > 720 && B.stock.info(i).dlc < 30) return;   /* arriverait trop tard */
       const p = B.stock.prixAchat(S, i, o.four);
       if (p < meilleur) { meilleur = p; four = o.four; }
