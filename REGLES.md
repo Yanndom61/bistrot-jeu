@@ -491,7 +491,7 @@ Tailles de référence testées (en pixels « CSS », téléphone en paysage) :
 - Ces chiffres sont mesurés automatiquement par `outils/tester.py` à chaque version.
 - Installé sur l'écran d'accueil, le jeu s'ouvre **en plein écran et en paysage**.
 
-## 10. Équilibre mesuré (simulateur, 30 jours, v0.8.1)
+## 10. Équilibre mesuré (simulateur, 30 jours, v0.9 : mêmes chiffres qu'en v0.8.1, le guide et les objectifs ne changent pas le jeu)
 
 Joueur moyen : patron en salle + 1 serveur + 1 commis de cuisine, prix conseillés, **commande automatique** et **intérim automatique** activés (ils le sont d'office en Facile ; en Normal et Difficile, il faut activer ces options ou s'en occuper soi-même), partie commencée le 25 novembre (météo, calendrier et événements compris depuis la v0.8 : il dit oui aux menus de fête, propose le prix conseillé aux événements privés et répond un événement du jour sur deux ; depuis la v0.8.1, les 13 événements ont leur effet). Les jours de repos du commis, un commis intérimaire est appelé ; ceux du serveur, le patron sert seul. Pas d'agent de nettoyage.
 
@@ -509,6 +509,7 @@ Joueur moyen : patron en salle + 1 serveur + 1 commis de cuisine, prix conseill�
 
 **Facile, les 44 lieux** (bénéfice réel par jour, 30 jours, v0.8.1) : tous bénéficiaires. Les plus serrés : Mayotte 516 €, Brasilia 635 €, Guyane 685 €, Dakar 751 €, Hauts-de-France 919 €, Canberra 924 € ; les plus forts : New York 2 853 €, Londres 2 558 €, Tokyo 2 267 €, Paris 2 148 €. Détail lieu par lieu dans `tests/resultat-simulation-30-jours.txt`.
 
+- **Objectifs** *(v0.9)* : en 30 jours, le joueur moyen en réussit 11,5 sur 12 en moyenne (Facile, 44 lieux). Les 7 premiers et « semaine en bénéfice » partout (servir 300 clients vers le jour 5, 1 000 clients vers le jour 15) ; salle propre dans 77 % des lieux (il n'embauche pas d'agent de nettoyage) ; événement privé dans 68 % des lieux (vers le jour 23).
 - **Facile : un joueur moyen reste bénéficiaire partout** (contrôle automatique). Paris, par jour : recettes 3 198 €, produits 704 €, salaires 198 € + intérim 45 €, charges 87 €.
 - **Normal : plus serré** (≈ 25 à 30 % de moins), mais encore bénéficiaire partout. Paris, en plus : loyer 197 €, cotisations 50 €, TVA 291 €, événements (écran, amendes, réparations…) 16 € par jour.
 - **Difficile : encore plus serré** (≈ 35 à 60 % de moins que Facile) : 20 % de clients en moins, prêt (≈ 50 € par jour) et seulement 15 000 € en caisse au départ. **Les erreurs coûtent cher** (Difficile, 30 jours, par jour) :

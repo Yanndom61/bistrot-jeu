@@ -1415,6 +1415,7 @@ Argent par jour en Facile (commande automatique) : bénéfice réel du bilan du 
   bangkok      recettes  1 772 € · achats   366 € (21 %) · salaires  195 € (dont intérim 39 €, 9 jours) · charges 47 € · propreté 0 · résultat  1 154 € · caisse 634 007 € · gaspillage 0.7 portions (0 €) · ruptures 1.1 · menus du jour 26 + 6 à emporter · boissons 111
   canberra     recettes  1 709 € · achats   424 € (25 %) · salaires  262 € (dont intérim 47 €, 9 jours) · charges 87 € · propreté 100 · résultat    924 € · caisse 627 142 € · gaspillage 15.7 portions (39 €) · ruptures 1.5 · menus du jour 13 + 6 à emporter · boissons 55
   ✓ joueur moyen bénéficiaire partout en Facile.
+  objectifs réussis en 30 jours (Facile, joueur moyen) : 11.5 sur 12 en moyenne ; cuisinier 100 % (jour 1) · ouvrir 100 % (jour 1) · servis20 100 % (jour 1) · benefice 100 % (jour 1) · serveur 100 % (jour 1) · semaine 100 % (jour 7) · servis300 100 % (jour 5) · propre 77 % (jour 2) · prive 68 % (jour 23) · semaine_benef 100 % (jour 7) · mois 100 % (jour 30) · servis1000 100 % (jour 15)
   causes des ruptures en Facile : 145 × « La commande arrive …. » ; 1030 × « Il s’en est vendu plus que prévu : augmente la marge de sécurité ou commande en plus. »
 
 Ruptures : pourquoi elles arrivent (Paris, 6 jours) :
