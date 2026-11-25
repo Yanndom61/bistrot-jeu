@@ -32,7 +32,7 @@ MESURES_JS = r"""() => {
   out.partSalleDessinee = (fond.width * fond.height) / (vw * vh);
   out.texteSvgMin = Math.min(...[...svg.querySelectorAll('text')].map(t => parseFloat(getComputedStyle(t).fontSize) * m.a));
   const pb = [];
-  const dessus = ['evenement', 'accueil', 'fin', 'volet'].map(id => document.getElementById(id)).find(el => el && !el.hidden);
+  const dessus = ['tuto', 'evenement', 'accueil', 'fin', 'volet'].map(id => document.getElementById(id)).find(el => el && !el.hidden);
   (dessus || document).querySelectorAll('button').forEach(b => {
     if (!b.offsetParent) return;
     const r = b.getBoundingClientRect();
@@ -44,7 +44,7 @@ MESURES_JS = r"""() => {
     const e = document.elementFromPoint(r.left + r.width / 2, r.top + r.height / 2);
     if (e && e !== b && !b.contains(e)) pb.push('bouton recouvert : ' + b.textContent);
   });
-  document.querySelectorAll('#app *, #accueil *, #volet *, #fin *, #evenement *').forEach(el => {
+  document.querySelectorAll('#app *, #accueil *, #volet *, #fin *, #evenement *, #tuto *').forEach(el => {
     if (!el.offsetParent || el.closest('svg')) return;
     const txt = [...el.childNodes].some(n => n.nodeType === 3 && n.textContent.trim());
     if (txt && parseFloat(getComputedStyle(el).fontSize) < 11.9) pb.push('texte < 12 px : ' + el.textContent.slice(0, 30));
@@ -767,6 +767,103 @@ async def main():
             if pb: problemes.append(f'13 événements {w}×{h} : ' + str(pb))
             problemes.extend(f'13 événements {w}×{h} : ' + e for e in p.erreurs)
             await c.close()
+
+        print('1m) v0.9 — guide pas à pas, aide et objectifs :')
+        TAILLE_MIN_JS = """(sel) => Math.min(...[...document.querySelectorAll(sel)].filter(e => e.offsetParent && [...e.childNodes].some(n => n.nodeType === 3 && n.textContent.trim())).map(e => parseFloat(getComputedStyle(e).fontSize)))"""
+        for nom, w, h in TAILLES:
+            taille = f'{w}x{h}'
+            c, p = await nouveau_contexte(b, w, h)
+            await p.evaluate('() => { window.__sansTuto = false; }')
+            await p.get_by_role('button', name='Nouvelle partie').click(); await p.wait_for_timeout(300)
+            await p.get_by_role('button', name='Ouvrir le restaurant').click(); await p.wait_for_timeout(500)
+            if await p.evaluate("() => document.getElementById('tuto').hidden"): problemes.append(f'guide {taille} : pas affiché pour une nouvelle partie')
+            if await p.evaluate("() => !!B.UI.voletOuvert"): problemes.append(f'guide {taille} : le volet Équipe ne doit s’ouvrir qu’après le guide')
+            if not await p.evaluate("() => B.UI.enPause()"): problemes.append(f'guide {taille} : le jeu doit être en pause')
+            n_etapes = await p.evaluate('() => B.UI.TUTO.length')
+            for k in range(n_etapes):
+                m = await p.evaluate(MESURES_JS)
+                verifier(f'guide étape {k + 1} {w}×{h}', m, p) if k in (0, 2, n_etapes - 1) else [problemes.append(f'guide étape {k + 1} {w}×{h} : {x}') for x in m['problemes']]
+                tmin = await p.evaluate(TAILLE_MIN_JS, '.carte-tuto *')
+                if tmin < 15.9: problemes.append(f'guide étape {k + 1} {w}×{h} : texte trop petit ({tmin} px)')
+                cible = await p.evaluate("() => { const e = document.querySelector('.tuto-cible'); if (!e) return null; const r = e.getBoundingClientRect(), c = document.querySelector('.carte-tuto').getBoundingClientRect(); const x = Math.max(0, Math.min(r.right, c.right) - Math.max(r.left, c.left)), y = Math.max(0, Math.min(r.bottom, c.bottom) - Math.max(r.top, c.top)); return x * y / (r.width * r.height); }")
+                if cible is not None and cible > 0.35 and k != 3: problemes.append(f'guide étape {k + 1} {w}×{h} : la carte cache le bouton montré ({cible:.0%})')
+                if k == 0: await p.screenshot(path=str(CAPTURES / f'73-guide-bienvenue-{taille}.png'))
+                if k == 2: await p.screenshot(path=str(CAPTURES / f'74-guide-equipe-{taille}.png'))
+                if k == 6 and nom == 's22': await p.screenshot(path=str(CAPTURES / f'75-guide-argent-{taille}.png'))
+                if k == n_etapes - 1 and nom == 's22': await p.screenshot(path=str(CAPTURES / f'76-guide-objectif-{taille}.png'))
+                if k == 3 and nom == 'barres':
+                    # Retour, puis on recharge la page en plein guide : il reprend à la même étape
+                    await p.locator('[data-tuto="retour"]').click(); await p.wait_for_timeout(200)
+                    if await p.evaluate('() => B.UI.S.tuto.etape') != 2: problemes.append('guide : Retour ne revient pas à l’étape d’avant')
+                    await p.reload(); await p.wait_for_timeout(600)
+                    await p.locator('[data-a="continuer"]').click(); await p.wait_for_timeout(400)
+                    if await p.evaluate("() => document.getElementById('tuto').hidden || B.UI.S.tuto.etape !== 2"): problemes.append('guide : après rechargement, il ne reprend pas à la même étape')
+                    await p.locator('[data-tuto="passer"]').click(); await p.wait_for_timeout(400)
+                    break
+                await p.locator('[data-tuto="suivant"]').click(); await p.wait_for_timeout(250)
+            etat = await p.evaluate("() => ({fini: !!B.UI.S.tuto.fini, volet: B.UI.voletOuvert, cache: document.getElementById('tuto').hidden, cibles: document.querySelectorAll('.tuto-cible').length})")
+            if not etat['fini'] or etat['volet'] != 'equipe' or not etat['cache'] or etat['cibles']: problemes.append(f'guide {taille} : fin du guide mal faite {etat}')
+            # Aide et objectifs (Menu → Aide et objectifs)
+            await p.locator('#volet-fermer').click(); await p.wait_for_timeout(300)
+            await p.locator('#btn-menu').click(); await p.wait_for_timeout(300)
+            await p.locator('[data-action="aide"]').click(); await p.wait_for_timeout(300)
+            await p.screenshot(path=str(CAPTURES / f'77-aide-objectifs-{taille}.png'))
+            verifier(f'aide objectifs {w}×{h}', await p.evaluate(MESURES_JS), p)
+            tx = await p.locator('#volet-corps').inner_text()
+            if 'Recrute un cuisinier' not in tx or 'En cours' not in tx: problemes.append(f'objectifs {taille} : le premier objectif n’est pas en cours')
+            await p.locator('[data-aide-onglet="aide"]').click(); await p.wait_for_timeout(200)
+            for s in ['salle', 'carte', 'stocks', 'equipe', 'argent', 'calendrier', 'evenements', 'proprete']:
+                await p.locator(f'[data-aide-sujet="{s}"]').click(); await p.wait_for_timeout(150)
+                if await p.locator('.texte-aide li').count() < 3: problemes.append(f'aide {s} : explication trop courte ou absente')
+                tmin = await p.evaluate(TAILLE_MIN_JS, '.aide-corps *')
+                if tmin < 17.9: problemes.append(f'aide {s} {taille} : texte trop petit pour quelqu’un qui voit mal ({tmin} px)')
+                if s == 'stocks': await p.screenshot(path=str(CAPTURES / f'78-aide-stocks-{taille}.png')); verifier(f'aide stocks {w}×{h}', await p.evaluate(MESURES_JS), p)
+            if nom == 's22':
+                await p.locator('[data-aide-sujet="proprete"]').scroll_into_view_if_needed()
+                await p.screenshot(path=str(CAPTURES / f'79-aide-proprete-{taille}.png'))
+            # Revoir le guide depuis l'aide
+            await p.locator('[data-aide-onglet="aide"]').scroll_into_view_if_needed()
+            await p.locator('[data-aide="tuto"]').click(); await p.wait_for_timeout(400)
+            if await p.evaluate("() => document.getElementById('tuto').hidden || B.UI.S.tuto.etape !== 0 || !!B.UI.voletOuvert"): problemes.append(f'aide {taille} : « Revoir le guide » ne relance pas le guide')
+            await p.locator('[data-tuto="passer"]').click(); await p.wait_for_timeout(300)
+            if await p.evaluate('() => !!B.UI.voletOuvert'): await p.locator('#volet-fermer').click(); await p.wait_for_timeout(300)
+            # Objectifs : on recrute (moteur), la ligne d'objectif et le message suivent
+            await p.evaluate("""() => { const S = B.UI.S; ['commis', 'serv'].forEach(po => { const k = S.candidats.find(x => x.poste === po); B.equipe.repondre(S, k, 'salaire'); B.equipe.proposer(S, k, k.demande); }); }""")
+            await p.wait_for_timeout(500)
+            faits = await p.evaluate('() => Object.keys(B.UI.S.objectifs.faits)')
+            if 'cuisinier' not in faits or 'serveur' not in faits: problemes.append(f'objectifs {taille} : recrutement pas compté {faits}')
+            jr = await p.evaluate("() => B.UI.S.journal.map(m => m.texte).join(' | ')")
+            if 'Objectif réussi : Recrute un cuisinier' not in jr: problemes.append('objectifs : pas de message « Objectif réussi »')
+            await p.evaluate('() => { const S = B.UI.S; B.ouvrir(S); S.vitesse = 0; }'); await p.wait_for_timeout(500)
+            ligne = await p.locator('#detail [data-objectif]').inner_text()
+            if 'Sers 20 clients' not in ligne: problemes.append(f'ligne d’objectif {taille} : « {ligne} »')
+            if nom == 's22' or nom == 'barres': await p.screenshot(path=str(CAPTURES / f'80-ligne-objectif-{taille}.png'))
+            verifier(f'ligne d’objectif {w}×{h}', await p.evaluate(MESURES_JS), p)
+            await p.locator('#detail [data-objectif]').click(); await p.wait_for_timeout(300)
+            if await p.evaluate("() => B.UI.voletOuvert !== 'aide' || B.UI.aideOnglet !== 'objectifs'"): problemes.append('ligne d’objectif : ne mène pas aux objectifs')
+            await p.locator('#volet-fermer').click(); await p.wait_for_timeout(300)
+            # La partie se recharge sans guide
+            await p.evaluate('() => B.UI.sauver()'); await p.reload(); await p.wait_for_timeout(600)
+            await p.locator('[data-a="continuer"]').click(); await p.wait_for_timeout(400)
+            if not await p.evaluate("() => document.getElementById('tuto').hidden"): problemes.append('guide : réapparaît après rechargement alors qu’il est fini')
+            pb = await p.evaluate('() => B.verifier(B.UI.S)')
+            if pb: problemes.append(f'guide/objectifs {taille} : ' + str(pb))
+            problemes.extend(f'guide/objectifs {taille} : ' + e for e in p.erreurs)
+            await c.close()
+        # Partie 0.8.1 en plein service : jamais forcée dans le guide, objectifs déjà acquis cochés sans message
+        v8 = (RACINE / 'tests/sauvegardes-bistrot/v8-bistrot-0.8.1-en-service.json').read_text()
+        c, p = await nouveau_contexte(b, 780, 360, "if(!sessionStorage.getItem('g8')){sessionStorage.setItem('g8','1');localStorage.setItem('bistrotjeu.test.partie'," + json.dumps(v8) + ");}")
+        await p.evaluate('() => { window.__sansTuto = false; }')
+        await p.locator('[data-a="continuer"]').click(); await p.wait_for_timeout(600)
+        etat = await p.evaluate("() => ({v: B.UI.S.version, tuto: document.getElementById('tuto').hidden, faits: Object.keys(B.UI.S.objectifs.faits), groupes: B.UI.S.groupes.length, msgs: B.UI.S.journal.filter(m => /Objectif/.test(m.texte)).length, pb: B.verifier(B.UI.S)})")
+        print('  partie 0.8.1 reprise :', etat)
+        if etat['v'] != 8 or not etat['tuto'] or etat['groupes'] < 1 or etat['pb'] or etat['msgs']: problemes.append('partie 0.8.1 : ' + str(etat))
+        for o in ('cuisinier', 'ouvrir', 'servis20', 'serveur'):
+            if o not in etat['faits']: problemes.append(f'partie 0.8.1 : objectif {o} déjà acquis mais pas coché')
+        await p.screenshot(path=str(CAPTURES / '81-reprise-0.8.1-sans-guide-780x360.png'))
+        verifier('reprise 0.8.1', await p.evaluate(MESURES_JS), p)
+        problemes.extend('reprise 0.8.1 : ' + e for e in p.erreurs)
+        await c.close()
 
         print('2) Téléphone tenu en portrait :')
         c, p = await nouveau_contexte(b, 360, 780)

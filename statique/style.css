@@ -340,13 +340,14 @@ table.cal-7 .marque { font-size: 13px; }
 .carte-tuto { pointer-events: auto; background: #fffaf2; border: 4px solid #ffd54a; border-radius: 16px; padding: 8px 18px 6px; width: min(500px, 62vw); max-height: 100%; overflow-y: auto; text-align: center; box-shadow: 0 6px 24px rgba(0, 0, 0, .45); }
 #tuto.sans-cible .carte-tuto { width: min(540px, 92vw); }
 .carte-tuto h2 { margin: 0 0 4px; font-size: 22px; color: #3a2a22; }
-.carte-tuto .tuto-etape { margin: 0; font-size: 14px; font-weight: 700; color: #6d5546; }
+.carte-tuto .tuto-etape { margin: 0; font-size: 16px; font-weight: 700; color: #6d5546; }
 .carte-tuto .tuto-texte { margin: 2px 0 6px; font-size: 18px; line-height: 1.35; color: #2b1a14; }
 .carte-tuto .gros { margin: 4px 0; min-height: 50px; font-size: 18px; }
 .gros.discret { border-color: transparent; background: transparent; text-decoration: underline; min-height: 44px; font-size: 16px; }
 .tuto-cible { position: relative; z-index: 27; outline: 4px solid #ffd54a; outline-offset: -2px; box-shadow: 0 0 0 9999px rgba(20, 12, 8, .6); border-radius: 8px; }
-.obj-ligne { display: block; width: 100%; min-height: 36px; margin: 0 0 3px; padding: 3px 6px; border: 2px solid #c9a227; border-radius: 8px; background: #fff7d6; color: #3a2a22; font-size: 13px; font-weight: 700; line-height: 1.2; text-align: left; }
+.obj-ligne { display: block; width: 100%; min-height: 44px; margin: 0 0 3px; padding: 3px 6px; border: 2px solid #c9a227; border-radius: 8px; background: #fff7d6; color: #3a2a22; font-size: 13px; font-weight: 700; line-height: 1.2; text-align: left; }
 .aide-corps { font-size: 18px; line-height: 1.4; color: #2b1a14; }
+.aide-corps .gros { font-size: 19px; min-height: 52px; }
 .aide-compte, .aide-intro { margin: 4px 0 8px; font-size: 18px; font-weight: 700; }
 .objectif { display: flex; flex-direction: column; gap: 2px; margin: 6px 0; padding: 8px 12px; border: 2px solid #d8c8b0; border-radius: 12px; background: #fff; }
 .objectif b { font-size: 19px; }
@@ -362,5 +363,4 @@ table.cal-7 .marque { font-size: 13px; }
   .carte-tuto { padding: 4px 14px 2px; }
   .carte-tuto h2 { font-size: 19px; } .carte-tuto .tuto-texte { font-size: 16px; margin: 0 0 2px; }
   .carte-tuto .gros { min-height: 44px; font-size: 16px; margin: 2px 0; }
-  .gros.discret { min-height: 40px; }
 }

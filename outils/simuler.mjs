@@ -129,6 +129,22 @@ for (const [lieu, c] of resumeLieux) {
   if (!c.boissons) probleme(lieu + ' : aucune boisson vendue');
 }
 if (!pertes) console.log('  ✓ joueur moyen bénéficiaire partout en Facile.');
+// v0.9 : objectifs réussis par le joueur moyen (Facile, sur la durée simulée)
+{
+  const L = B.objectifs.liste(), par = {};
+  let total = 0;
+  for (const [lieu, c] of resumeLieux) {
+    const F = (c.S.objectifs && c.S.objectifs.faits) || {};
+    total += Object.keys(F).length;
+    for (const o of L) if (F[o.id]) (par[o.id] = par[o.id] || []).push(F[o.id]);
+    /* dans l'ordre : on ne réussit pas un objectif « long » avant le tout premier */
+    if (F.servis1000 && !F.servis20) probleme(lieu + ' : objectifs dans le désordre');
+  }
+  const n = resumeLieux.length || 1;
+  console.log(`  objectifs réussis en ${jours} jours (Facile, joueur moyen) : ${(total / n).toFixed(1)} sur ${L.length} en moyenne ; ` +
+    L.map((o) => `${o.id} ${Math.round(100 * (par[o.id] || []).length / n)} %${par[o.id] ? ' (jour ' + Math.round(par[o.id].reduce((a, b) => a + b, 0) / par[o.id].length) + ')' : ''}`).join(' · '));
+  if (jours >= 7 && resumeLieux.some(([, c]) => !(c.S.objectifs.faits.ouvrir && c.S.objectifs.faits.servis20))) probleme('objectifs : les premiers objectifs devraient être réussis partout en Facile');
+}
 {
   const tout = {};
   for (const [, c] of resumeLieux) for (const k in c.causes) tout[k] = (tout[k] || 0) + c.causes[k];
@@ -806,7 +822,7 @@ console.log('\nÉtape 5 — Argent :');
 // ===== Étape 6 : lieux, météo, calendrier, événements =====
 console.log('\nÉtape 6 — Lieux, météo et calendrier :');
 {
-  if (B.VERSION_SAUVEGARDE !== 8 || B.VERSION_JEU !== '0.8.1') probleme('versions attendues : sauvegarde 8, jeu 0.8.1');
+  if (B.VERSION_SAUVEGARDE !== 8 || B.VERSION_JEU !== '0.9') probleme('versions attendues : sauvegarde 8, jeu 0.9');
   // 1) Les 44 lieux : météo, calendrier, touristes sur 2 ans, sans valeur absurde.
   const L = B.DATA.lieux.lieux;
   if (L.length !== 44) probleme('il faut 44 lieux, il y en a ' + L.length);
