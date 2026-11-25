@@ -1,0 +1,5664 @@
+{
+ "_explication": "Calendrier (étape 6, v0.8). Repris de l'ancien jeu Chez YaYa (v7, v9.5, v9.6, v10) : jours de la semaine, jours fériés, vacances scolaires, fêtes, menus de fête, événements du jour et événements privés. Les dates sont « MM-JJ » ; { paques: n } = n jours après Pâques ; { nieme: [mois, jour de la semaine (0 = dimanche), n] } ; { dernier: [mois, jour de la semaine] }.",
+ "joursSemaine": {
+  "_explication": "Affluence selon le jour (0 = dimanche … 6 = samedi), comme dans l'ancien jeu.",
+  "coef": [
+   1.05,
+   0.95,
+   0.95,
+   1,
+   1.08,
+   1.18,
+   1.28
+  ]
+ },
+ "effets": {
+  "vacancesParZone": 0.035,
+  "ferieMidi": 1.2,
+  "ferieSoir": 0.9,
+  "ferieCalme": {
+   "ids": [
+    "an",
+    "noel"
+   ],
+   "coef": 0.8
+  },
+  "feteMidi": 1.15,
+  "feteSoir": 1.1,
+  "fetesQuiComptent": [
+   "meres",
+   "peres",
+   "valent"
+  ],
+  "valentinMidi": 1.1,
+  "midiAvant": 960,
+  "familles": {
+   "vacancesParZone": 0.18,
+   "ferieMidi": 1.8,
+   "ferieSoir": 1.2,
+   "feteParentsMidi": 1.6
+  },
+  "touristes": {
+   "vacancesBase": 0.03,
+   "vacancesParZone": 0.035,
+   "parPointDeTourisme": 0.4,
+   "bonusToutelAnnee": 0.04,
+   "max": 0.35
+  }
+ },
+ "tourisme": {
+  "_explication": "Mois de forte saison touristique devinés depuis la description du lieu (ancien jeu v9.6). Mois de 1 à 12. Les capitales du sud ont leurs saisons décalées de 6 mois.",
+  "faible": [
+   "très faible",
+   "faible"
+  ],
+  "motifs": [
+   {
+    "motif": "hiver|sèche|déc.-avr|nov.-mars",
+    "mois": [
+     12,
+     1,
+     2,
+     3
+    ]
+   },
+   {
+    "motif": "été|juil|côte|plage",
+    "mois": [
+     6,
+     7,
+     8
+    ]
+   },
+   {
+    "motif": "printemps|sakura|tulipe|ceris",
+    "mois": [
+     3,
+     4,
+     5
+    ]
+   },
+   {
+    "motif": "automne",
+    "mois": [
+     9,
+     10
+    ]
+   },
+   {
+    "motif": "vendange",
+    "mois": [
+     9
+    ]
+   },
+   {
+    "motif": "noël|déc\\.",
+    "mois": [
+     12
+    ]
+   }
+  ],
+  "coefPic": 1.35,
+  "coefToutelAnnee": 1.15,
+  "coefAutre": 1.05,
+  "coefFaible": 1,
+  "toutelAnnee": "toute l'année|très fort",
+  "lieuReference": "paris"
+ },
+ "feriesFrance": [
+  {
+   "id": "an",
+   "nom": "Jour de l’An",
+   "date": "01-01"
+  },
+  {
+   "id": "paques",
+   "nom": "Lundi de Pâques",
+   "date": {
+    "paques": 1
+   }
+  },
+  {
+   "id": "travail",
+   "nom": "Fête du Travail",
+   "date": "05-01"
+  },
+  {
+   "id": "v45",
+   "nom": "Victoire 1945",
+   "date": "05-08"
+  },
+  {
+   "id": "asc",
+   "nom": "Ascension",
+   "date": {
+    "paques": 39
+   }
+  },
+  {
+   "id": "pent",
+   "nom": "Lundi de Pentecôte",
+   "date": {
+    "paques": 50
+   }
+  },
+  {
+   "id": "j14",
+   "nom": "Fête nationale",
+   "date": "07-14"
+  },
+  {
+   "id": "ass",
+   "nom": "Assomption",
+   "date": "08-15"
+  },
+  {
+   "id": "tous",
+   "nom": "Toussaint",
+   "date": "11-01"
+  },
+  {
+   "id": "arm",
+   "nom": "Armistice 1918",
+   "date": "11-11"
+  },
+  {
+   "id": "noel",
+   "nom": "Noël",
+   "date": "12-25"
+  }
+ ],
+ "feriesMonde": {
+  "jourDeLAn": true,
+  "noelSaufA": [
+   "tokyo",
+   "pekin",
+   "bangkok",
+   "caire",
+   "dakar",
+   "moscou"
+  ]
+ },
+ "fetesFrance": [
+  {
+   "id": "epiph",
+   "nom": "Épiphanie (galette)",
+   "emoji": "👑",
+   "date": {
+    "special": "epiphanie"
+   }
+  },
+  {
+   "id": "chand",
+   "nom": "Chandeleur",
+   "emoji": "🥞",
+   "date": "02-02"
+  },
+  {
+   "id": "valent",
+   "nom": "Saint-Valentin",
+   "emoji": "💘",
+   "date": "02-14"
+  },
+  {
+   "id": "mgras",
+   "nom": "Mardi gras",
+   "emoji": "🎭",
+   "date": {
+    "paques": -47
+   }
+  },
+  {
+   "id": "paques",
+   "nom": "Pâques",
+   "emoji": "🐣",
+   "date": {
+    "paques": 0
+   }
+  },
+  {
+   "id": "meres",
+   "nom": "Fête des mères",
+   "emoji": "💐",
+   "date": {
+    "special": "meres"
+   }
+  },
+  {
+   "id": "peres",
+   "nom": "Fête des pères",
+   "emoji": "👔",
+   "date": {
+    "nieme": [
+     6,
+     0,
+     3
+    ]
+   }
+  },
+  {
+   "id": "musique",
+   "nom": "Fête de la musique",
+   "emoji": "🎶",
+   "date": "06-21"
+  },
+  {
+   "id": "j14",
+   "nom": "14 juillet",
+   "emoji": "🎆",
+   "date": "07-14"
+  },
+  {
+   "id": "hallo",
+   "nom": "Halloween",
+   "emoji": "🎃",
+   "date": "10-31"
+  },
+  {
+   "id": "beauj",
+   "nom": "Beaujolais nouveau",
+   "emoji": "🍷",
+   "date": {
+    "nieme": [
+     11,
+     4,
+     3
+    ]
+   }
+  },
+  {
+   "id": "reveil",
+   "nom": "Réveillon de Noël",
+   "emoji": "🎄",
+   "date": "12-24"
+  },
+  {
+   "id": "noel",
+   "nom": "Noël",
+   "emoji": "🎄",
+   "date": "12-25"
+  },
+  {
+   "id": "sylv",
+   "nom": "Saint-Sylvestre",
+   "emoji": "🥂",
+   "date": "12-31"
+  },
+  {
+   "id": "an",
+   "nom": "Jour de l’An",
+   "emoji": "🥂",
+   "date": "01-01"
+  }
+ ],
+ "vacancesFrance": {
+  "_explication": "Vacances scolaires officielles des zones A, B et C (dates de l'ancien jeu, 2026 à 2028). Après l'été 2028, le jeu reprend les dates de 2027-2028 (une année plus tard).",
+  "periodes": [
+   {
+    "nom": "Toussaint",
+    "emoji": "🍂",
+    "A": [
+     "2026-10-17",
+     "2026-11-01"
+    ],
+    "B": [
+     "2026-10-17",
+     "2026-11-01"
+    ],
+    "C": [
+     "2026-10-17",
+     "2026-11-01"
+    ]
+   },
+   {
+    "nom": "Noël",
+    "emoji": "🎄",
+    "A": [
+     "2026-12-19",
+     "2027-01-03"
+    ],
+    "B": [
+     "2026-12-19",
+     "2027-01-03"
+    ],
+    "C": [
+     "2026-12-19",
+     "2027-01-03"
+    ]
+   },
+   {
+    "nom": "Hiver",
+    "emoji": "⛷️",
+    "A": [
+     "2027-02-13",
+     "2027-02-28"
+    ],
+    "B": [
+     "2027-02-20",
+     "2027-03-07"
+    ],
+    "C": [
+     "2027-02-06",
+     "2027-02-21"
+    ]
+   },
+   {
+    "nom": "Printemps",
+    "emoji": "🌷",
+    "A": [
+     "2027-04-10",
+     "2027-04-25"
+    ],
+    "B": [
+     "2027-04-17",
+     "2027-05-02"
+    ],
+    "C": [
+     "2027-04-03",
+     "2027-04-18"
+    ]
+   },
+   {
+    "nom": "Été",
+    "emoji": "☀️",
+    "A": [
+     "2027-07-03",
+     "2027-09-01"
+    ],
+    "B": [
+     "2027-07-03",
+     "2027-09-01"
+    ],
+    "C": [
+     "2027-07-03",
+     "2027-09-01"
+    ]
+   },
+   {
+    "nom": "Toussaint",
+    "emoji": "🍂",
+    "A": [
+     "2027-10-23",
+     "2027-11-07"
+    ],
+    "B": [
+     "2027-10-23",
+     "2027-11-07"
+    ],
+    "C": [
+     "2027-10-23",
+     "2027-11-07"
+    ]
+   },
+   {
+    "nom": "Noël",
+    "emoji": "🎄",
+    "A": [
+     "2027-12-18",
+     "2028-01-02"
+    ],
+    "B": [
+     "2027-12-18",
+     "2028-01-02"
+    ],
+    "C": [
+     "2027-12-18",
+     "2028-01-02"
+    ]
+   },
+   {
+    "nom": "Hiver",
+    "emoji": "⛷️",
+    "A": [
+     "2028-02-19",
+     "2028-03-05"
+    ],
+    "B": [
+     "2028-02-05",
+     "2028-02-20"
+    ],
+    "C": [
+     "2028-02-12",
+     "2028-02-27"
+    ]
+   },
+   {
+    "nom": "Printemps",
+    "emoji": "🌷",
+    "A": [
+     "2028-04-22",
+     "2028-05-08"
+    ],
+    "B": [
+     "2028-04-08",
+     "2028-04-23"
+    ],
+    "C": [
+     "2028-04-15",
+     "2028-05-01"
+    ]
+   },
+   {
+    "nom": "Été",
+    "emoji": "☀️",
+    "A": [
+     "2028-07-04",
+     "2028-09-03"
+    ],
+    "B": [
+     "2028-07-04",
+     "2028-09-03"
+    ],
+    "C": [
+     "2028-07-04",
+     "2028-09-03"
+    ]
+   }
+  ],
+  "avantPremiere": "2026-10-17",
+  "repriseDepuis": "2027-09-02",
+  "fin": "2028-09-03"
+ },
+ "vacancesAilleurs": {
+  "_explication": "Outre-mer et monde : calendrier simplifié de l'ancien jeu (indiqué comme tel).",
+  "grandes": {
+   "nord": [
+    7,
+    8
+   ],
+   "sud": [
+    12,
+    1
+   ],
+   "nom": "Grandes vacances (simplifiées)",
+   "emoji": "🏖️"
+  },
+  "finDAnnee": {
+   "de": "12-20",
+   "a": "01-05",
+   "nom": "Fin d’année (simplifiées)",
+   "emoji": "🎄"
+  },
+  "pause": {
+   "de": "04-01",
+   "a": "04-14",
+   "nom": "Pause scolaire (simplifiée)",
+   "emoji": "🌷"
+  },
+  "sudSauf": [
+   "tokyo",
+   "pekin",
+   "seoul"
+  ]
+ },
+ "calendriersAsie": {
+  "nouvelAnChinois": {
+   "2024": "02-10",
+   "2025": "01-29",
+   "2026": "02-17",
+   "2027": "02-06",
+   "2028": "01-26",
+   "2029": "02-13",
+   "2030": "02-03",
+   "2031": "01-23",
+   "2032": "02-11",
+   "2033": "01-31",
+   "2034": "02-19",
+   "2035": "02-08",
+   "2036": "01-28",
+   "2037": "02-15",
+   "2038": "02-04",
+   "2039": "01-24",
+   "2040": "02-12"
+  },
+  "chuseok": {
+   "2024": "09-17",
+   "2025": "10-06",
+   "2026": "09-25",
+   "2027": "09-15",
+   "2028": "10-03",
+   "2029": "09-22",
+   "2030": "09-12",
+   "2031": "10-01",
+   "2032": "09-19",
+   "2033": "09-08",
+   "2034": "09-27",
+   "2035": "09-16",
+   "2036": "10-04",
+   "2037": "09-24",
+   "2038": "09-13",
+   "2039": "10-02",
+   "2040": "09-21"
+  }
+ },
+ "menusDeFete": {
+  "_explication": "Menus de fête de l'ancien jeu (v7 et v9.5, menu A) : le chef les propose 7 jours avant ; si tu dis oui, les plats sont à la carte pendant la fête, en plus de la carte habituelle.",
+  "proposerJoursAvant": 7,
+  "ordre": [
+   "an",
+   "epiph",
+   "chand",
+   "valent",
+   "mardi",
+   "paques",
+   "mai1",
+   "meres",
+   "peres",
+   "musique",
+   "j14",
+   "a15",
+   "vend",
+   "hallo",
+   "beauj",
+   "loc",
+   "noel",
+   "sylv",
+   "vac"
+  ],
+  "menus": {
+   "an": {
+    "nom": "Menu du Nouvel An",
+    "emoji": "🎉",
+    "fenetre": {
+     "de": "01-01",
+     "a": "01-03"
+    }
+   },
+   "epiph": {
+    "nom": "Galette des rois",
+    "emoji": "👑",
+    "fenetre": {
+     "jour": {
+      "special": "epiphanie"
+     },
+     "jours": 5
+    }
+   },
+   "chand": {
+    "nom": "Chandeleur",
+    "emoji": "🥞",
+    "fenetre": {
+     "de": "01-30",
+     "a": "02-02"
+    }
+   },
+   "valent": {
+    "nom": "Menu de la Saint-Valentin",
+    "emoji": "💘",
+    "fenetre": {
+     "de": "02-10",
+     "a": "02-14"
+    }
+   },
+   "mardi": {
+    "nom": "Menu de Mardi gras",
+    "emoji": "🎭",
+    "fenetre": {
+     "de": {
+      "paques": -50
+     },
+     "a": {
+      "paques": -47
+     }
+    }
+   },
+   "paques": {
+    "nom": "Menu de Pâques",
+    "emoji": "🐣",
+    "fenetre": {
+     "de": {
+      "paques": -3
+     },
+     "a": {
+      "paques": 1
+     }
+    }
+   },
+   "mai1": {
+    "nom": "Menu du 1er mai",
+    "emoji": "🌿",
+    "fenetre": {
+     "de": "04-29",
+     "a": "05-01"
+    }
+   },
+   "meres": {
+    "nom": "Menu de la fête des mères",
+    "emoji": "💐",
+    "fenetre": {
+     "jour": {
+      "special": "meres"
+     },
+     "jours": 4
+    }
+   },
+   "peres": {
+    "nom": "Menu de la fête des pères",
+    "emoji": "👔",
+    "fenetre": {
+     "jour": {
+      "nieme": [
+       6,
+       0,
+       3
+      ]
+     },
+     "jours": 4
+    }
+   },
+   "musique": {
+    "nom": "Menu de la fête de la musique",
+    "emoji": "🎸",
+    "fenetre": {
+     "de": "06-19",
+     "a": "06-21"
+    }
+   },
+   "j14": {
+    "nom": "Menu du 14 juillet",
+    "emoji": "🎆",
+    "fenetre": {
+     "de": "07-10",
+     "a": "07-14"
+    }
+   },
+   "a15": {
+    "nom": "Menu du 15 août",
+    "emoji": "☀️",
+    "fenetre": {
+     "de": "08-13",
+     "a": "08-15"
+    }
+   },
+   "vend": {
+    "nom": "Menu des vendanges",
+    "emoji": "🍇",
+    "fenetre": {
+     "de": "09-20",
+     "a": "09-27"
+    }
+   },
+   "hallo": {
+    "nom": "Menu d’Halloween",
+    "emoji": "🎃",
+    "fenetre": {
+     "de": "10-27",
+     "a": "10-31"
+    }
+   },
+   "beauj": {
+    "nom": "Beaujolais nouveau",
+    "emoji": "🍷",
+    "fenetre": {
+     "jour": {
+      "nieme": [
+       11,
+       4,
+       3
+      ],
+      "plus": 3
+     },
+     "jours": 4
+    }
+   },
+   "noel": {
+    "nom": "Menu de Noël",
+    "emoji": "🎄",
+    "fenetre": {
+     "de": "12-19",
+     "a": "12-26"
+    }
+   },
+   "sylv": {
+    "nom": "Menu de la Saint-Sylvestre",
+    "emoji": "🥂",
+    "fenetre": {
+     "de": "12-29",
+     "a": "01-01"
+    }
+   },
+   "vac": {
+    "nom": "Menu des vacances scolaires",
+    "emoji": "🧳",
+    "fenetre": "vacances"
+   },
+   "loc": {
+    "nom": "Menu de la fête locale",
+    "emoji": "🎊"
+   }
+  },
+  "plats": {
+   "noel": [
+    {
+     "id": "f_noel_e",
+     "nom": "Foie gras maison & pain d’épices",
+     "emoji": "🦪",
+     "cat": "entree",
+     "prixRef": 16,
+     "popularite": 1.5,
+     "recette": {
+      "volaille": 1,
+      "pain": 1,
+      "epicerie": 1
+     },
+     "allergenes": [
+      "gluten"
+     ],
+     "vegetarien": false,
+     "cuisson": null
+    },
+    {
+     "id": "f_noel_p",
+     "nom": "Volaille farcie aux marrons",
+     "emoji": "🦃",
+     "cat": "plat",
+     "prixRef": 26,
+     "popularite": 1.5,
+     "recette": {
+      "volaille": 2,
+      "patate": 1,
+      "creme": 1
+     },
+     "allergenes": [
+      "lait"
+     ],
+     "vegetarien": false,
+     "cuisson": null
+    },
+    {
+     "id": "f_noel_d",
+     "nom": "Bûche de Noël maison",
+     "emoji": "🎄",
+     "cat": "dessert",
+     "prixRef": 9.5,
+     "popularite": 1.5,
+     "recette": {
+      "chocolat": 1,
+      "creme": 1,
+      "epicerie": 1
+     },
+     "allergenes": [
+      "gluten",
+      "lait",
+      "oeufs"
+     ],
+     "vegetarien": true,
+     "cuisson": null
+    }
+   ],
+   "sylv": [
+    {
+     "id": "f_sylv_e",
+     "nom": "Saumon fumé & blinis",
+     "emoji": "🥂",
+     "cat": "entree",
+     "prixRef": 15,
+     "popularite": 1.5,
+     "recette": {
+      "poisson": 1,
+      "creme": 1,
+      "pain": 1
+     },
+     "allergenes": [
+      "poissons",
+      "lait",
+      "gluten"
+     ],
+     "vegetarien": true,
+     "cuisson": null
+    },
+    {
+     "id": "f_sylv_p",
+     "nom": "Filet de bœuf, sauce au vin",
+     "emoji": "🥩",
+     "cat": "plat",
+     "prixRef": 32,
+     "popularite": 1.5,
+     "recette": {
+      "boeuf": 2,
+      "patate": 1,
+      "vin": 1
+     },
+     "allergenes": [
+      "sulfites"
+     ],
+     "vegetarien": false,
+     "cuisson": null
+    },
+    {
+     "id": "f_sylv_d",
+     "nom": "Entremets chocolat-champagne",
+     "emoji": "🍾",
+     "cat": "dessert",
+     "prixRef": 10.5,
+     "popularite": 1.5,
+     "recette": {
+      "chocolat": 1,
+      "creme": 1,
+      "spirit": 1
+     },
+     "allergenes": [
+      "gluten",
+      "lait",
+      "oeufs"
+     ],
+     "vegetarien": true,
+     "cuisson": null
+    }
+   ],
+   "valent": [
+    {
+     "id": "f_valent_e",
+     "nom": "Velouté de homard, cœur de crème",
+     "emoji": "💘",
+     "cat": "entree",
+     "prixRef": 14,
+     "popularite": 1.5,
+     "recette": {
+      "poisson": 1,
+      "creme": 1
+     },
+     "allergenes": [
+      "poissons",
+      "lait"
+     ],
+     "vegetarien": true,
+     "cuisson": null
+    },
+    {
+     "id": "f_valent_p",
+     "nom": "Magret & purée truffée (pour deux)",
+     "emoji": "🥩",
+     "cat": "plat",
+     "prixRef": 34,
+     "popularite": 1.5,
+     "recette": {
+      "volaille": 2,
+      "patate": 1,
+      "creme": 1
+     },
+     "allergenes": [
+      "lait"
+     ],
+     "vegetarien": false,
+     "cuisson": null
+    },
+    {
+     "id": "f_valent_d",
+     "nom": "Fondant cœur coulant, fraises",
+     "emoji": "🍓",
+     "cat": "dessert",
+     "prixRef": 9.5,
+     "popularite": 1.5,
+     "recette": {
+      "chocolat": 1,
+      "fruits": 1,
+      "creme": 1
+     },
+     "allergenes": [
+      "gluten",
+      "lait",
+      "oeufs"
+     ],
+     "vegetarien": true,
+     "cuisson": null
+    }
+   ],
+   "paques": [
+    {
+     "id": "f_paques_e",
+     "nom": "Œufs mimosa de Pâques",
+     "emoji": "🥚",
+     "cat": "entree",
+     "prixRef": 8,
+     "popularite": 1.5,
+     "recette": {
+      "creme": 1,
+      "legumes": 1
+     },
+     "allergenes": [
+      "oeufs",
+      "moutarde"
+     ],
+     "vegetarien": true,
+     "cuisson": null
+    },
+    {
+     "id": "f_paques_p",
+     "nom": "Gigot d’agneau & flageolets",
+     "emoji": "🐑",
+     "cat": "plat",
+     "prixRef": 24,
+     "popularite": 1.5,
+     "recette": {
+      "veau": 2,
+      "legumes": 1,
+      "patate": 1
+     },
+     "allergenes": [],
+     "vegetarien": false,
+     "cuisson": null
+    },
+    {
+     "id": "f_paques_d",
+     "nom": "Nid de Pâques au chocolat",
+     "emoji": "🐣",
+     "cat": "dessert",
+     "prixRef": 8.5,
+     "popularite": 1.5,
+     "recette": {
+      "chocolat": 1,
+      "creme": 1
+     },
+     "allergenes": [
+      "lait",
+      "oeufs"
+     ],
+     "vegetarien": true,
+     "cuisson": null
+    }
+   ],
+   "meres": [
+    {
+     "id": "f_meres_p",
+     "nom": "Suprême de volaille, sauce forestière",
+     "emoji": "💐",
+     "cat": "plat",
+     "prixRef": 22,
+     "popularite": 1.5,
+     "recette": {
+      "volaille": 1,
+      "creme": 1,
+      "feculents": 1
+     },
+     "allergenes": [
+      "lait"
+     ],
+     "vegetarien": false,
+     "cuisson": null
+    },
+    {
+     "id": "f_meres_d",
+     "nom": "Entremets fraise-rose",
+     "emoji": "🌸",
+     "cat": "dessert",
+     "prixRef": 9,
+     "popularite": 1.5,
+     "recette": {
+      "fruits": 1,
+      "creme": 1,
+      "epicerie": 1
+     },
+     "allergenes": [
+      "gluten",
+      "lait",
+      "oeufs"
+     ],
+     "vegetarien": true,
+     "cuisson": null
+    },
+    {
+     "id": "f_meres_e",
+     "nom": "Velouté d’asperges, chantilly au cerfeuil",
+     "emoji": "🌷",
+     "cat": "entree",
+     "prixRef": 11,
+     "popularite": 1.5,
+     "recette": {
+      "legumes": 1,
+      "creme": 1
+     },
+     "allergenes": [
+      "lait",
+      "celeri"
+     ],
+     "vegetarien": true,
+     "cuisson": null
+    }
+   ],
+   "peres": [
+    {
+     "id": "f_peres_p",
+     "nom": "Côte de bœuf à partager",
+     "emoji": "👔",
+     "cat": "plat",
+     "prixRef": 28,
+     "popularite": 1.5,
+     "recette": {
+      "boeuf": 2,
+      "patate": 2
+     },
+     "allergenes": [],
+     "vegetarien": false,
+     "cuisson": null
+    },
+    {
+     "id": "f_peres_d",
+     "nom": "Brownie & bière brune",
+     "emoji": "🍺",
+     "cat": "dessert",
+     "prixRef": 8.5,
+     "popularite": 1.5,
+     "recette": {
+      "chocolat": 1,
+      "epicerie": 1,
+      "biere": 1
+     },
+     "allergenes": [
+      "gluten",
+      "lait",
+      "oeufs"
+     ],
+     "vegetarien": true,
+     "cuisson": null
+    },
+    {
+     "id": "f_peres_e",
+     "nom": "Terrine de campagne à la bière",
+     "emoji": "🍺",
+     "cat": "entree",
+     "prixRef": 10,
+     "popularite": 1.5,
+     "recette": {
+      "jambon": 1,
+      "biere": 1,
+      "pain": 1
+     },
+     "allergenes": [
+      "gluten"
+     ],
+     "vegetarien": false,
+     "cuisson": null
+    }
+   ],
+   "j14": [
+    {
+     "id": "f_j14_p",
+     "nom": "Grillade bleu-blanc-rouge",
+     "emoji": "🎆",
+     "cat": "plat",
+     "prixRef": 19,
+     "popularite": 1.5,
+     "recette": {
+      "boeuf": 1,
+      "patate": 1,
+      "legumes": 1
+     },
+     "allergenes": [],
+     "vegetarien": false,
+     "cuisson": null
+    },
+    {
+     "id": "f_j14_d",
+     "nom": "Tarte tricolore fraises-myrtilles",
+     "emoji": "🇫🇷",
+     "cat": "dessert",
+     "prixRef": 8,
+     "popularite": 1.5,
+     "recette": {
+      "fruits": 1,
+      "epicerie": 1,
+      "creme": 1
+     },
+     "allergenes": [
+      "gluten",
+      "lait",
+      "oeufs"
+     ],
+     "vegetarien": true,
+     "cuisson": null
+    },
+    {
+     "id": "f_j14_e",
+     "nom": "Tomates-mozzarella tricolores",
+     "emoji": "🇫🇷",
+     "cat": "entree",
+     "prixRef": 9,
+     "popularite": 1.5,
+     "recette": {
+      "legumes": 1,
+      "fromage": 1
+     },
+     "allergenes": [
+      "lait"
+     ],
+     "vegetarien": true,
+     "cuisson": null
+    }
+   ],
+   "hallo": [
+    {
+     "id": "f_hallo_p",
+     "nom": "Gratin de potiron, lard croustillant",
+     "emoji": "🎃",
+     "cat": "plat",
+     "prixRef": 16,
+     "popularite": 1.5,
+     "recette": {
+      "legumes": 1,
+      "jambon": 1,
+      "fromage": 1,
+      "creme": 1
+     },
+     "allergenes": [
+      "lait"
+     ],
+     "vegetarien": false,
+     "cuisson": null
+    },
+    {
+     "id": "f_hallo_d",
+     "nom": "Muffin citrouille & chocolat",
+     "emoji": "👻",
+     "cat": "dessert",
+     "prixRef": 7,
+     "popularite": 1.5,
+     "recette": {
+      "chocolat": 1,
+      "epicerie": 1,
+      "creme": 1
+     },
+     "allergenes": [
+      "gluten",
+      "lait",
+      "oeufs"
+     ],
+     "vegetarien": true,
+     "cuisson": null
+    },
+    {
+     "id": "f_hallo_e",
+     "nom": "Velouté de potiron, graines torréfiées",
+     "emoji": "🎃",
+     "cat": "entree",
+     "prixRef": 9,
+     "popularite": 1.5,
+     "recette": {
+      "legumes": 1,
+      "creme": 1
+     },
+     "allergenes": [
+      "lait"
+     ],
+     "vegetarien": true,
+     "cuisson": null
+    }
+   ],
+   "epiph": [
+    {
+     "id": "f_epiph_d",
+     "nom": "Galette des rois frangipane",
+     "emoji": "👑",
+     "cat": "dessert",
+     "prixRef": 7.5,
+     "popularite": 1.5,
+     "recette": {
+      "epicerie": 1,
+      "creme": 1
+     },
+     "allergenes": [
+      "gluten",
+      "lait",
+      "oeufs"
+     ],
+     "vegetarien": true,
+     "cuisson": null
+    },
+    {
+     "id": "f_epiph_e",
+     "nom": "Feuilleté au fromage de la fève",
+     "emoji": "🥐",
+     "cat": "entree",
+     "prixRef": 9,
+     "popularite": 1.5,
+     "recette": {
+      "fromage": 1,
+      "epicerie": 1
+     },
+     "allergenes": [
+      "gluten",
+      "lait",
+      "oeufs"
+     ],
+     "vegetarien": true,
+     "cuisson": null
+    },
+    {
+     "id": "f_epiph_p",
+     "nom": "Pintade rôtie aux marrons",
+     "emoji": "👑",
+     "cat": "plat",
+     "prixRef": 22,
+     "popularite": 1.5,
+     "recette": {
+      "volaille": 1,
+      "legumes": 1,
+      "patate": 1
+     },
+     "allergenes": [],
+     "vegetarien": false,
+     "cuisson": null
+    }
+   ],
+   "chand": [
+    {
+     "id": "f_chand_d",
+     "nom": "Crêpes de la Chandeleur",
+     "emoji": "🥞",
+     "cat": "dessert",
+     "prixRef": 6.5,
+     "popularite": 1.5,
+     "recette": {
+      "epicerie": 1,
+      "creme": 1
+     },
+     "allergenes": [
+      "gluten",
+      "lait",
+      "oeufs"
+     ],
+     "vegetarien": true,
+     "cuisson": null
+    },
+    {
+     "id": "f_chand_e",
+     "nom": "Galette complète jambon-œuf-fromage",
+     "emoji": "🥞",
+     "cat": "entree",
+     "prixRef": 10,
+     "popularite": 1.5,
+     "recette": {
+      "jambon": 1,
+      "fromage": 1,
+      "epicerie": 1
+     },
+     "allergenes": [
+      "gluten",
+      "lait",
+      "oeufs"
+     ],
+     "vegetarien": false,
+     "cuisson": null
+    },
+    {
+     "id": "f_chand_p",
+     "nom": "Galette bretonne aux poireaux et Saint-Jacques",
+     "emoji": "🧀",
+     "cat": "plat",
+     "prixRef": 19,
+     "popularite": 1.5,
+     "recette": {
+      "poisson": 1,
+      "legumes": 1,
+      "epicerie": 1
+     },
+     "allergenes": [
+      "mollusques",
+      "lait",
+      "gluten"
+     ],
+     "vegetarien": true,
+     "cuisson": null
+    }
+   ],
+   "beauj": [
+    {
+     "id": "f_beauj_p",
+     "nom": "Planche de charcuteries du Beaujolais",
+     "emoji": "🍷",
+     "cat": "plat",
+     "prixRef": 17,
+     "popularite": 1.5,
+     "recette": {
+      "jambon": 2,
+      "fromage": 1,
+      "pain": 1
+     },
+     "allergenes": [
+      "gluten",
+      "lait"
+     ],
+     "vegetarien": false,
+     "cuisson": null
+    },
+    {
+     "id": "f_beauj_e",
+     "nom": "Œufs en meurette",
+     "emoji": "🍇",
+     "cat": "entree",
+     "prixRef": 11,
+     "popularite": 1.5,
+     "recette": {
+      "creme": 1,
+      "vin": 1,
+      "oignon": 1
+     },
+     "allergenes": [
+      "oeufs",
+      "sulfites"
+     ],
+     "vegetarien": true,
+     "cuisson": null
+    },
+    {
+     "id": "f_beauj_d",
+     "nom": "Poire pochée au Beaujolais",
+     "emoji": "🍐",
+     "cat": "dessert",
+     "prixRef": 8.5,
+     "popularite": 1.5,
+     "recette": {
+      "fruits": 1,
+      "vin": 1
+     },
+     "allergenes": [
+      "sulfites"
+     ],
+     "vegetarien": true,
+     "cuisson": null
+    }
+   ],
+   "vac": [
+    {
+     "id": "f_vac_e",
+     "nom": "Mini-croque & crudités (enfants)",
+     "emoji": "🧒",
+     "cat": "entree",
+     "prixRef": 6,
+     "popularite": 1.5,
+     "recette": {
+      "pain": 1,
+      "jambon": 1,
+      "legumes": 1
+     },
+     "allergenes": [
+      "gluten"
+     ],
+     "vegetarien": false,
+     "cuisson": null
+    },
+    {
+     "id": "f_vac_p",
+     "nom": "Nuggets de poulet maison & frites",
+     "emoji": "👨‍👩‍👧",
+     "cat": "plat",
+     "prixRef": 12,
+     "popularite": 1.5,
+     "recette": {
+      "volaille": 1,
+      "patate": 1
+     },
+     "allergenes": [
+      "gluten"
+     ],
+     "vegetarien": false,
+     "cuisson": null
+    },
+    {
+     "id": "f_vac_d",
+     "nom": "Coupe glacée des vacances",
+     "emoji": "🍦",
+     "cat": "dessert",
+     "prixRef": 6.5,
+     "popularite": 1.5,
+     "recette": {
+      "creme": 1,
+      "fruits": 1
+     },
+     "allergenes": [
+      "lait"
+     ],
+     "vegetarien": true,
+     "cuisson": null
+    }
+   ],
+   "an": [
+    {
+     "id": "f_an_aE",
+     "nom": "Foie gras mi-cuit, chutney de figues",
+     "emoji": "🥂",
+     "cat": "entree",
+     "prixRef": 17,
+     "popularite": 1.5,
+     "recette": {
+      "volaille": 1,
+      "fruits": 1,
+      "pain": 1
+     },
+     "allergenes": [
+      "gluten"
+     ],
+     "vegetarien": false,
+     "cuisson": null
+    },
+    {
+     "id": "f_an_aP",
+     "nom": "Suprême de chapon, purée truffée",
+     "emoji": "🦃",
+     "cat": "plat",
+     "prixRef": 29,
+     "popularite": 1.5,
+     "recette": {
+      "volaille": 2,
+      "patate": 1,
+      "creme": 1
+     },
+     "allergenes": [
+      "lait"
+     ],
+     "vegetarien": false,
+     "cuisson": null
+    },
+    {
+     "id": "f_an_aD",
+     "nom": "Entremets trois chocolats",
+     "emoji": "🎆",
+     "cat": "dessert",
+     "prixRef": 10,
+     "popularite": 1.5,
+     "recette": {
+      "chocolat": 1,
+      "creme": 1,
+      "epicerie": 1
+     },
+     "allergenes": [
+      "gluten",
+      "lait",
+      "oeufs"
+     ],
+     "vegetarien": true,
+     "cuisson": null
+    }
+   ],
+   "mardi": [
+    {
+     "id": "f_mardi_aE",
+     "nom": "Bugnes salées au fromage",
+     "emoji": "🥨",
+     "cat": "entree",
+     "prixRef": 8,
+     "popularite": 1.5,
+     "recette": {
+      "fromage": 1,
+      "epicerie": 1
+     },
+     "allergenes": [
+      "gluten",
+      "lait",
+      "oeufs"
+     ],
+     "vegetarien": true,
+     "cuisson": null
+    },
+    {
+     "id": "f_mardi_aP",
+     "nom": "Tartiflette de carnaval",
+     "emoji": "🎭",
+     "cat": "plat",
+     "prixRef": 17,
+     "popularite": 1.5,
+     "recette": {
+      "patate": 2,
+      "fromage": 1,
+      "jambon": 1
+     },
+     "allergenes": [
+      "lait"
+     ],
+     "vegetarien": false,
+     "cuisson": null
+    },
+    {
+     "id": "f_mardi_aD",
+     "nom": "Beignets et bugnes lyonnaises",
+     "emoji": "🍩",
+     "cat": "dessert",
+     "prixRef": 7,
+     "popularite": 1.5,
+     "recette": {
+      "epicerie": 1,
+      "creme": 1
+     },
+     "allergenes": [
+      "gluten",
+      "lait",
+      "oeufs"
+     ],
+     "vegetarien": true,
+     "cuisson": null
+    }
+   ],
+   "mai1": [
+    {
+     "id": "f_mai1_aE",
+     "nom": "Salade printanière aux herbes",
+     "emoji": "🌿",
+     "cat": "entree",
+     "prixRef": 9,
+     "popularite": 1.5,
+     "recette": {
+      "legumes": 2,
+      "fromage": 1
+     },
+     "allergenes": [
+      "lait"
+     ],
+     "vegetarien": true,
+     "cuisson": null
+    },
+    {
+     "id": "f_mai1_aP",
+     "nom": "Épaule d’agneau confite, légumes nouveaux",
+     "emoji": "🐑",
+     "cat": "plat",
+     "prixRef": 22,
+     "popularite": 1.5,
+     "recette": {
+      "veau": 1,
+      "legumes": 1,
+      "patate": 1
+     },
+     "allergenes": [],
+     "vegetarien": false,
+     "cuisson": null
+    },
+    {
+     "id": "f_mai1_aD",
+     "nom": "Fraisier du printemps",
+     "emoji": "🍓",
+     "cat": "dessert",
+     "prixRef": 9,
+     "popularite": 1.5,
+     "recette": {
+      "fruits": 1,
+      "creme": 1,
+      "epicerie": 1
+     },
+     "allergenes": [
+      "gluten",
+      "lait",
+      "oeufs"
+     ],
+     "vegetarien": true,
+     "cuisson": null
+    }
+   ],
+   "musique": [
+    {
+     "id": "f_musique_aE",
+     "nom": "Planche apéro (charcuterie, fromages)",
+     "emoji": "🎸",
+     "cat": "entree",
+     "prixRef": 12,
+     "popularite": 1.5,
+     "recette": {
+      "jambon": 1,
+      "fromage": 1,
+      "pain": 1
+     },
+     "allergenes": [
+      "gluten",
+      "lait"
+     ],
+     "vegetarien": false,
+     "cuisson": null
+    },
+    {
+     "id": "f_musique_aP",
+     "nom": "Burger du bistrot, frites maison",
+     "emoji": "🍔",
+     "cat": "plat",
+     "prixRef": 17,
+     "popularite": 1.5,
+     "recette": {
+      "boeuf": 1,
+      "pain": 1,
+      "patate": 1,
+      "fromage": 1
+     },
+     "allergenes": [
+      "gluten",
+      "lait"
+     ],
+     "vegetarien": false,
+     "cuisson": null
+    },
+    {
+     "id": "f_musique_aD",
+     "nom": "Coupe glacée rock’n’roll",
+     "emoji": "🍦",
+     "cat": "dessert",
+     "prixRef": 7,
+     "popularite": 1.5,
+     "recette": {
+      "creme": 1,
+      "chocolat": 1,
+      "fruits": 1
+     },
+     "allergenes": [
+      "lait"
+     ],
+     "vegetarien": true,
+     "cuisson": null
+    }
+   ],
+   "a15": [
+    {
+     "id": "f_a15_aE",
+     "nom": "Gaspacho et tartines à la tapenade",
+     "emoji": "🍅",
+     "cat": "entree",
+     "prixRef": 9,
+     "popularite": 1.5,
+     "recette": {
+      "legumes": 2,
+      "pain": 1
+     },
+     "allergenes": [
+      "gluten"
+     ],
+     "vegetarien": true,
+     "cuisson": null
+    },
+    {
+     "id": "f_a15_aP",
+     "nom": "Loup grillé au fenouil, ratatouille",
+     "emoji": "🐟",
+     "cat": "plat",
+     "prixRef": 25,
+     "popularite": 1.5,
+     "recette": {
+      "poisson": 1,
+      "legumes": 2
+     },
+     "allergenes": [
+      "poissons"
+     ],
+     "vegetarien": true,
+     "cuisson": null
+    },
+    {
+     "id": "f_a15_aD",
+     "nom": "Pêches melba",
+     "emoji": "🍑",
+     "cat": "dessert",
+     "prixRef": 8,
+     "popularite": 1.5,
+     "recette": {
+      "fruits": 1,
+      "creme": 1
+     },
+     "allergenes": [
+      "lait"
+     ],
+     "vegetarien": true,
+     "cuisson": null
+    }
+   ],
+   "vend": [
+    {
+     "id": "f_vend_aE",
+     "nom": "Œufs en meurette du vigneron",
+     "emoji": "🍇",
+     "cat": "entree",
+     "prixRef": 11,
+     "popularite": 1.5,
+     "recette": {
+      "creme": 1,
+      "vin": 1,
+      "oignon": 1
+     },
+     "allergenes": [
+      "oeufs",
+      "sulfites"
+     ],
+     "vegetarien": true,
+     "cuisson": null
+    },
+    {
+     "id": "f_vend_aP",
+     "nom": "Civet de lièvre (façon chevreuil) au vin",
+     "emoji": "🍷",
+     "cat": "plat",
+     "prixRef": 24,
+     "popularite": 1.5,
+     "recette": {
+      "paleron": 1,
+      "vin": 1,
+      "feculents": 1
+     },
+     "allergenes": [
+      "sulfites"
+     ],
+     "vegetarien": false,
+     "cuisson": null
+    },
+    {
+     "id": "f_vend_aD",
+     "nom": "Tarte aux raisins et crème d’amande",
+     "emoji": "🥧",
+     "cat": "dessert",
+     "prixRef": 8.5,
+     "popularite": 1.5,
+     "recette": {
+      "fruits": 1,
+      "epicerie": 1,
+      "creme": 1
+     },
+     "allergenes": [
+      "gluten",
+      "lait",
+      "oeufs",
+      "coque"
+     ],
+     "vegetarien": true,
+     "cuisson": null
+    }
+   ]
+  }
+ },
+ "evenementsDuJour": {
+  "_explication": "Événements du jour de l'ancien jeu. Chaque matin (à partir du jour 4), 42 % de chances qu'un événement soit tiré parmi tous ceux de l'ancien jeu, avec leurs poids. Ceux des autres étapes (inspection, critique, panne, grève, influenceuse, augmentation, promo, flambée des prix, employé malade) ne font encore rien.",
+  "aPartirDuJour": 4,
+  "proba": 0.42,
+  "liste": [
+   {
+    "id": "inspect",
+    "poids": 2
+   },
+   {
+    "id": "bus",
+    "poids": 2,
+    "recharge": 5,
+    "quand": "service",
+    "actif": true
+   },
+   {
+    "id": "critic",
+    "poids": 1.6
+   },
+   {
+    "id": "panne",
+    "poids": 2
+   },
+   {
+    "id": "greve",
+    "poids": 1.4
+   },
+   {
+    "id": "canicule",
+    "poids": 1.2,
+    "recharge": 12,
+    "quand": "matin",
+    "actif": true,
+    "tempMin": 25,
+    "jours": 3,
+    "prixClim": 180,
+    "coefClim": 0.92,
+    "coefFenetres": 0.85
+   },
+   {
+    "id": "match",
+    "poids": 1.3,
+    "recharge": 5,
+    "quand": "matin",
+    "actif": true,
+    "prixEcran": 150,
+    "coefEcran": 1.6,
+    "coefRien": 1.2,
+    "aPartirDe": 1080
+   },
+   {
+    "id": "pluie",
+    "poids": 1.2,
+    "recharge": 4,
+    "quand": "matin",
+    "actif": true,
+    "coef": 0.8
+   },
+   {
+    "id": "influ",
+    "poids": 1
+   },
+   {
+    "id": "raise",
+    "poids": 1.2
+   },
+   {
+    "id": "promo",
+    "poids": 1.4
+   },
+   {
+    "id": "prix",
+    "poids": 1.2
+   },
+   {
+    "id": "malade",
+    "poids": 1
+   }
+  ],
+  "bus": {
+   "groupes": 5,
+   "ecartMinutes": 4,
+   "patience": 0.6
+  },
+  "matin": [
+   5,
+   60
+  ],
+  "serviceMidi": [
+   45,
+   150
+  ],
+  "serviceSoir": [
+   480,
+   600
+  ],
+  "partMidi": 0.45,
+  "sportParDefaut": {
+   "nom": "football",
+   "emoji": "⚽"
+  }
+ },
+ "evenementsPrives": {
+  "_explication": "Événements privés de l'ancien jeu (v7) : un client appelle 1 à 4 semaines avant ; le chef propose un menu pris dans ta carte ; tu proposes un prix par personne ; le client accepte, négocie ou refuse. Acompte de 30 % à l'accord, le reste le jour même.",
+  "aPartirDuJour": 4,
+  "probaParJour": 0.11,
+  "bonusMaiSeptembre": 1.5,
+  "demandesMax": 2,
+  "joursPourRepondre": 3,
+  "partDesPlaces": 0.6,
+  "minimumPersonnes": 6,
+  "acompte": 0.3,
+  "margeCout": 1.25,
+  "servicePersonne": 3,
+  "coefConseille": 3.2,
+  "contreOffreJusqua": 1.2,
+  "toursMax": 2,
+  "midi": {
+   "debut": 750,
+   "fin": 930
+  },
+  "soir": {
+   "debut": 1170,
+   "fin": 1335
+  },
+  "reserverAvant": 60,
+  "types": {
+   "anniv": {
+    "nom": "Anniversaire",
+    "emoji": "🎂",
+    "personnes": [
+     8,
+     25
+    ],
+    "delai": [
+     7,
+     28
+    ],
+    "poids": 0.35,
+    "budget": [
+     26,
+     42
+    ]
+   },
+   "famille": {
+    "nom": "Réunion de famille",
+    "emoji": "👨‍👩‍👧‍👦",
+    "personnes": [
+     10,
+     30
+    ],
+    "delai": [
+     7,
+     28
+    ],
+    "poids": 0.3,
+    "budget": [
+     24,
+     38
+    ]
+   },
+   "sem": {
+    "nom": "Séminaire d’entreprise",
+    "emoji": "💼",
+    "personnes": [
+     10,
+     40
+    ],
+    "delai": [
+     7,
+     28
+    ],
+    "poids": 0.2,
+    "budget": [
+     26,
+     40
+    ],
+    "semaine": true
+   },
+   "mariage": {
+    "nom": "Repas de mariage",
+    "emoji": "💍",
+    "personnes": [
+     30,
+     70
+    ],
+    "delai": [
+     21,
+     28
+    ],
+    "poids": 0.15,
+    "budget": [
+     55,
+     90
+    ],
+    "samedi": true
+   },
+   "loc": {
+    "nom": "Repas de fête",
+    "emoji": "🎉",
+    "personnes": [
+     10,
+     30
+    ],
+    "delai": [
+     7,
+     28
+    ],
+    "poids": 0.2,
+    "budget": [
+     26,
+     42
+    ]
+   }
+  }
+ },
+ "lieux": {
+  "paris": {
+   "tropical": false,
+   "sport": {
+    "nom": "football (PSG)",
+    "emoji": "⚽"
+   },
+   "feteLocale": {
+    "nom": "Fête des vendanges de Montmartre",
+    "quand": "début octobre",
+    "fenetre": {
+     "de": "10-01",
+     "a": "10-05"
+    },
+    "plats": [
+     {
+      "id": "f_loc_paris_0",
+      "nom": "Coq au vin de Montmartre",
+      "emoji": "🍷",
+      "cat": "plat",
+      "prixRef": 16,
+      "popularite": 1.5,
+      "recette": {
+       "volaille": 1,
+       "vin": 1,
+       "oignon": 1
+      },
+      "allergenes": [
+       "sulfites"
+      ],
+      "vegetarien": false,
+      "cuisson": null
+     },
+     {
+      "id": "f_loc_paris_1",
+      "nom": "Tarte fine aux raisins",
+      "emoji": "🍇",
+      "cat": "dessert",
+      "prixRef": 8.5,
+      "popularite": 1.5,
+      "recette": {
+       "fruits": 1,
+       "epicerie": 1,
+       "creme": 1
+      },
+      "allergenes": [
+       "gluten",
+       "lait",
+       "oeufs"
+      ],
+      "vegetarien": true,
+      "cuisson": null
+     }
+    ]
+   }
+  },
+  "idf": {
+   "tropical": false,
+   "sport": {
+    "nom": "football",
+    "emoji": "⚽"
+   },
+   "feteLocale": {
+    "nom": "Foire au brie de Meaux",
+    "quand": "printemps",
+    "fenetre": {
+     "de": "04-24",
+     "a": "04-28"
+    },
+    "plats": [
+     {
+      "id": "f_loc_idf_0",
+      "nom": "Croûte au brie & salade",
+      "emoji": "🧀",
+      "cat": "plat",
+      "prixRef": 12,
+      "popularite": 1.5,
+      "recette": {
+       "fromage": 1,
+       "pain": 1,
+       "salverte": 1
+      },
+      "allergenes": [
+       "gluten",
+       "lait"
+      ],
+      "vegetarien": true,
+      "cuisson": null
+     },
+     {
+      "id": "f_loc_idf_1",
+      "nom": "Gâteau au fromage frais & miel",
+      "emoji": "🍰",
+      "cat": "dessert",
+      "prixRef": 8.5,
+      "popularite": 1.5,
+      "recette": {
+       "yaourt": 1,
+       "miel": 1,
+       "epicerie": 1
+      },
+      "allergenes": [
+       "gluten",
+       "lait"
+      ],
+      "vegetarien": true,
+      "cuisson": null
+     }
+    ]
+   }
+  },
+  "ara": {
+   "tropical": false,
+   "sport": {
+    "nom": "football (OL)",
+    "emoji": "⚽"
+   },
+   "feteLocale": {
+    "nom": "Fête des Lumières",
+    "quand": "8 décembre",
+    "fenetre": {
+     "jour": "12-08",
+     "jours": 4
+    },
+    "plats": [
+     {
+      "id": "f_loc_ara_0",
+      "nom": "Tablier de sapeur",
+      "emoji": "🍲",
+      "cat": "plat",
+      "prixRef": 17,
+      "popularite": 1.5,
+      "recette": {
+       "paleron": 1,
+       "epicerie": 1,
+       "patate": 1
+      },
+      "allergenes": [
+       "gluten"
+      ],
+      "vegetarien": false,
+      "cuisson": null
+     },
+     {
+      "id": "f_loc_ara_1",
+      "nom": "Papillotes au chocolat",
+      "emoji": "🕯️",
+      "cat": "dessert",
+      "prixRef": 7,
+      "popularite": 1.5,
+      "recette": {
+       "chocolat": 1,
+       "epicerie": 1
+      },
+      "allergenes": [
+       "gluten"
+      ],
+      "vegetarien": true,
+      "cuisson": null
+     }
+    ]
+   }
+  },
+  "bfc": {
+   "tropical": false,
+   "sport": {
+    "nom": "football (AJ Auxerre)",
+    "emoji": "⚽"
+   },
+   "feteLocale": {
+    "nom": "Vente des vins des Hospices de Beaune",
+    "quand": "novembre",
+    "fenetre": {
+     "jour": {
+      "nieme": [
+       11,
+       0,
+       3
+      ]
+     },
+     "jours": 3
+    },
+    "plats": [
+     {
+      "id": "f_loc_bfc_0",
+      "nom": "Bœuf bourguignon des Hospices",
+      "emoji": "🍲",
+      "cat": "plat",
+      "prixRef": 18,
+      "popularite": 1.5,
+      "recette": {
+       "paleron": 1,
+       "vin": 1,
+       "oignon": 1
+      },
+      "allergenes": [
+       "oeufs",
+       "sulfites"
+      ],
+      "vegetarien": false,
+      "cuisson": null
+     },
+     {
+      "id": "f_loc_bfc_1",
+      "nom": "Nonnettes de Dijon au pain d’épices",
+      "emoji": "🍪",
+      "cat": "dessert",
+      "prixRef": 7.5,
+      "popularite": 1.5,
+      "recette": {
+       "epicerie": 1,
+       "miel": 1
+      },
+      "allergenes": [
+       "gluten",
+       "moutarde"
+      ],
+      "vegetarien": true,
+      "cuisson": null
+     }
+    ]
+   }
+  },
+  "bretagne": {
+   "tropical": false,
+   "sport": {
+    "nom": "football (Stade rennais)",
+    "emoji": "⚽"
+   },
+   "feteLocale": {
+    "nom": "Festival interceltique",
+    "quand": "août",
+    "fenetre": {
+     "de": "08-02",
+     "a": "08-08"
+    },
+    "plats": [
+     {
+      "id": "f_loc_bretagne_0",
+      "nom": "Galette-saucisse du festival",
+      "emoji": "🥞",
+      "cat": "plat",
+      "prixRef": 13,
+      "popularite": 1.5,
+      "recette": {
+       "sarrasin": 1,
+       "saucisse": 1
+      },
+      "allergenes": [],
+      "vegetarien": false,
+      "cuisson": null
+     },
+     {
+      "id": "f_loc_bretagne_1",
+      "nom": "Kouign-amann aux pommes",
+      "emoji": "🧈",
+      "cat": "dessert",
+      "prixRef": 7.5,
+      "popularite": 1.5,
+      "recette": {
+       "epicerie": 1,
+       "beurre": 1,
+       "pomme": 1
+      },
+      "allergenes": [
+       "gluten",
+       "lait"
+      ],
+      "vegetarien": true,
+      "cuisson": null
+     }
+    ]
+   }
+  },
+  "centre": {
+   "tropical": false,
+   "sport": {
+    "nom": "football",
+    "emoji": "⚽"
+   },
+   "feteLocale": {
+    "nom": "Fête des vendanges de Touraine",
+    "quand": "septembre",
+    "fenetre": {
+     "de": "09-12",
+     "a": "09-16"
+    },
+    "plats": [
+     {
+      "id": "f_loc_centre_0",
+      "nom": "Rillons & pommes sautées",
+      "emoji": "🍖",
+      "cat": "plat",
+      "prixRef": 14,
+      "popularite": 1.5,
+      "recette": {
+       "porc": 1,
+       "patate": 1
+      },
+      "allergenes": [],
+      "vegetarien": false,
+      "cuisson": null
+     },
+     {
+      "id": "f_loc_centre_1",
+      "nom": "Tarte aux raisins de Touraine",
+      "emoji": "🍇",
+      "cat": "dessert",
+      "prixRef": 7.5,
+      "popularite": 1.5,
+      "recette": {
+       "fruits": 1,
+       "epicerie": 1
+      },
+      "allergenes": [
+       "gluten"
+      ],
+      "vegetarien": true,
+      "cuisson": null
+     }
+    ]
+   }
+  },
+  "corse": {
+   "tropical": false,
+   "sport": {
+    "nom": "football (SC Bastia)",
+    "emoji": "⚽"
+   },
+   "feteLocale": {
+    "nom": "Foire de la châtaigne",
+    "quand": "décembre",
+    "fenetre": {
+     "de": "12-01",
+     "a": "12-04"
+    },
+    "plats": [
+     {
+      "id": "f_loc_corse_0",
+      "nom": "Pulenda & figatellu",
+      "emoji": "🌰",
+      "cat": "plat",
+      "prixRef": 13,
+      "popularite": 1.5,
+      "recette": {
+       "epicerie": 1,
+       "saucisse": 1
+      },
+      "allergenes": [
+       "gluten"
+      ],
+      "vegetarien": false,
+      "cuisson": null
+     },
+     {
+      "id": "f_loc_corse_1",
+      "nom": "Beignets à la farine de châtaigne",
+      "emoji": "🌰",
+      "cat": "dessert",
+      "prixRef": 6.5,
+      "popularite": 1.5,
+      "recette": {
+       "epicerie": 1,
+       "huile": 1
+      },
+      "allergenes": [
+       "gluten"
+      ],
+      "vegetarien": true,
+      "cuisson": null
+     }
+    ]
+   }
+  },
+  "grand-est": {
+   "tropical": false,
+   "sport": {
+    "nom": "football (RC Strasbourg)",
+    "emoji": "⚽"
+   },
+   "feteLocale": {
+    "nom": "Saint-Nicolas",
+    "quand": "6 décembre",
+    "fenetre": {
+     "jour": "12-06",
+     "jours": 4
+    },
+    "plats": [
+     {
+      "id": "f_loc_grand-est_0",
+      "nom": "Bretzel & saucisses de Strasbourg",
+      "emoji": "🥨",
+      "cat": "plat",
+      "prixRef": 13,
+      "popularite": 1.5,
+      "recette": {
+       "epicerie": 1,
+       "saucisse": 1
+      },
+      "allergenes": [
+       "gluten"
+      ],
+      "vegetarien": false,
+      "cuisson": null
+     },
+     {
+      "id": "f_loc_grand-est_1",
+      "nom": "Manala (bonhomme briochée)",
+      "emoji": "🍞",
+      "cat": "dessert",
+      "prixRef": 6.5,
+      "popularite": 1.5,
+      "recette": {
+       "epicerie": 1,
+       "beurre": 1
+      },
+      "allergenes": [
+       "gluten",
+       "lait"
+      ],
+      "vegetarien": true,
+      "cuisson": null
+     }
+    ]
+   },
+   "feries": [
+    {
+     "date": {
+      "paques": -2
+     },
+     "nom": "Vendredi saint"
+    },
+    {
+     "date": "12-26",
+     "nom": "Saint-Étienne"
+    }
+   ]
+  },
+  "hauts": {
+   "tropical": false,
+   "sport": {
+    "nom": "football (LOSC)",
+    "emoji": "⚽"
+   },
+   "feteLocale": {
+    "nom": "Braderie de Lille",
+    "quand": "début septembre",
+    "fenetre": {
+     "jour": {
+      "nieme": [
+       9,
+       0,
+       1
+      ]
+     },
+     "jours": 3
+    },
+    "plats": [
+     {
+      "id": "f_loc_hauts_0",
+      "nom": "Moules-frites de la Braderie",
+      "emoji": "🦐",
+      "cat": "plat",
+      "prixRef": 16.5,
+      "popularite": 1.5,
+      "recette": {
+       "fdm": 1,
+       "patate": 1
+      },
+      "allergenes": [
+       "mollusques"
+      ],
+      "vegetarien": true,
+      "cuisson": null
+     },
+     {
+      "id": "f_loc_hauts_1",
+      "nom": "Gaufre lilloise",
+      "emoji": "🧇",
+      "cat": "dessert",
+      "prixRef": 7.5,
+      "popularite": 1.5,
+      "recette": {
+       "epicerie": 1,
+       "creme": 1
+      },
+      "allergenes": [
+       "gluten",
+       "lait",
+       "oeufs"
+      ],
+      "vegetarien": true,
+      "cuisson": null
+     }
+    ]
+   }
+  },
+  "normandie": {
+   "tropical": false,
+   "sport": {
+    "nom": "football (SM Caen)",
+    "emoji": "⚽"
+   },
+   "feteLocale": {
+    "nom": "Fête de la coquille Saint-Jacques",
+    "quand": "novembre",
+    "fenetre": {
+     "de": "11-14",
+     "a": "11-18"
+    },
+    "plats": [
+     {
+      "id": "f_loc_normandie_0",
+      "nom": "Saint-Jacques à la crème",
+      "emoji": "🦪",
+      "cat": "plat",
+      "prixRef": 18,
+      "popularite": 1.5,
+      "recette": {
+       "fdm": 1,
+       "creme": 1,
+       "feculents": 1
+      },
+      "allergenes": [
+       "crustaces",
+       "lait",
+       "mollusques",
+       "oeufs"
+      ],
+      "vegetarien": true,
+      "cuisson": null
+     },
+     {
+      "id": "f_loc_normandie_1",
+      "nom": "Sorbet pomme-calvados",
+      "emoji": "🍏",
+      "cat": "dessert",
+      "prixRef": 9,
+      "popularite": 1.5,
+      "recette": {
+       "glace": 1,
+       "spirit": 1
+      },
+      "allergenes": [
+       "lait"
+      ],
+      "vegetarien": true,
+      "cuisson": null
+     }
+    ]
+   }
+  },
+  "aquitaine": {
+   "tropical": false,
+   "sport": {
+    "nom": "rugby (Union Bordeaux-Bègles)",
+    "emoji": "🏉"
+   },
+   "feteLocale": {
+    "nom": "Fêtes de Bayonne",
+    "quand": "fin juillet",
+    "fenetre": {
+     "de": "07-24",
+     "a": "07-28"
+    },
+    "plats": [
+     {
+      "id": "f_loc_aquitaine_0",
+      "nom": "Axoa de veau des fêtes",
+      "emoji": "🌭",
+      "cat": "plat",
+      "prixRef": 18,
+      "popularite": 1.5,
+      "recette": {
+       "veau": 1,
+       "epices": 1,
+       "patate": 1
+      },
+      "allergenes": [],
+      "vegetarien": false,
+      "cuisson": null
+     },
+     {
+      "id": "f_loc_aquitaine_1",
+      "nom": "Chocolat de Bayonne & churros",
+      "emoji": "🍫",
+      "cat": "dessert",
+      "prixRef": 7.5,
+      "popularite": 1.5,
+      "recette": {
+       "chocolat": 1,
+       "epicerie": 1,
+       "huile": 1
+      },
+      "allergenes": [
+       "gluten"
+      ],
+      "vegetarien": true,
+      "cuisson": null
+     }
+    ]
+   }
+  },
+  "occitanie": {
+   "tropical": false,
+   "sport": {
+    "nom": "rugby (Stade toulousain)",
+    "emoji": "🏉"
+   },
+   "feteLocale": {
+    "nom": "Féria de Nîmes",
+    "quand": "Pentecôte",
+    "fenetre": {
+     "de": {
+      "paques": 45
+     },
+     "a": {
+      "paques": 50
+     }
+    },
+    "plats": [
+     {
+      "id": "f_loc_occitanie_0",
+      "nom": "Gardiane de taureau",
+      "emoji": "🍲",
+      "cat": "plat",
+      "prixRef": 18,
+      "popularite": 1.5,
+      "recette": {
+       "paleron": 1,
+       "vin": 1,
+       "feculents": 1
+      },
+      "allergenes": [
+       "sulfites"
+      ],
+      "vegetarien": false,
+      "cuisson": null
+     },
+     {
+      "id": "f_loc_occitanie_1",
+      "nom": "Croquants aux amandes",
+      "emoji": "🍯",
+      "cat": "dessert",
+      "prixRef": 7.5,
+      "popularite": 1.5,
+      "recette": {
+       "epicerie": 1,
+       "miel": 1
+      },
+      "allergenes": [
+       "coque",
+       "gluten"
+      ],
+      "vegetarien": true,
+      "cuisson": null
+     }
+    ]
+   }
+  },
+  "loire": {
+   "tropical": false,
+   "sport": {
+    "nom": "football (FC Nantes)",
+    "emoji": "⚽"
+   },
+   "feteLocale": {
+    "nom": "Fête du muscadet nouveau",
+    "quand": "novembre",
+    "fenetre": {
+     "de": "11-05",
+     "a": "11-09"
+    },
+    "plats": [
+     {
+      "id": "f_loc_loire_0",
+      "nom": "Sandre au muscadet",
+      "emoji": "🐟",
+      "cat": "plat",
+      "prixRef": 21.5,
+      "popularite": 1.5,
+      "recette": {
+       "poisson": 1,
+       "vin": 1,
+       "patate": 1
+      },
+      "allergenes": [
+       "poissons",
+       "sulfites"
+      ],
+      "vegetarien": true,
+      "cuisson": null
+     },
+     {
+      "id": "f_loc_loire_1",
+      "nom": "Brioche vendéenne",
+      "emoji": "🥐",
+      "cat": "dessert",
+      "prixRef": 6.5,
+      "popularite": 1.5,
+      "recette": {
+       "epicerie": 1,
+       "beurre": 1
+      },
+      "allergenes": [
+       "gluten",
+       "lait",
+       "oeufs"
+      ],
+      "vegetarien": true,
+      "cuisson": null
+     }
+    ]
+   }
+  },
+  "provence": {
+   "tropical": false,
+   "sport": {
+    "nom": "football (OM)",
+    "emoji": "⚽"
+   },
+   "feteLocale": {
+    "nom": "Les treize desserts de Noël",
+    "quand": "24 décembre",
+    "fenetre": {
+     "de": "12-22",
+     "a": "12-24"
+    },
+    "plats": [
+     {
+      "id": "f_loc_provence_0",
+      "nom": "Morue en raïto",
+      "emoji": "🐟",
+      "cat": "plat",
+      "prixRef": 17,
+      "popularite": 1.5,
+      "recette": {
+       "morue": 1,
+       "legumes": 1,
+       "olive": 1
+      },
+      "allergenes": [
+       "poissons"
+      ],
+      "vegetarien": true,
+      "cuisson": null
+     },
+     {
+      "id": "f_loc_provence_1",
+      "nom": "Assiette des treize desserts",
+      "emoji": "🍯",
+      "cat": "dessert",
+      "prixRef": 9,
+      "popularite": 1.5,
+      "recette": {
+       "miel": 1,
+       "fruits": 1,
+       "epicerie": 1
+      },
+      "allergenes": [
+       "gluten"
+      ],
+      "vegetarien": true,
+      "cuisson": null
+     }
+    ]
+   }
+  },
+  "guadeloupe": {
+   "tropical": true,
+   "sport": {
+    "nom": "football",
+    "emoji": "⚽"
+   },
+   "menusRetires": [
+    "vend"
+   ],
+   "menusRenommes": {
+    "mardi": {
+     "nom": "Menu du Carnaval",
+     "emoji": "🎭"
+    }
+   },
+   "feteLocale": {
+    "nom": "Fête des cuisinières",
+    "quand": "août",
+    "fenetre": {
+     "jour": {
+      "nieme": [
+       8,
+       6,
+       2
+      ]
+     },
+     "jours": 3
+    },
+    "plats": [
+     {
+      "id": "f_loc_guadeloupe_0",
+      "nom": "Colombo des cuisinières",
+      "emoji": "🍛",
+      "cat": "plat",
+      "prixRef": 15,
+      "popularite": 1.5,
+      "recette": {
+       "volaille": 1,
+       "epices": 1,
+       "feculents": 1
+      },
+      "allergenes": [],
+      "vegetarien": false,
+      "cuisson": null
+     },
+     {
+      "id": "f_loc_guadeloupe_1",
+      "nom": "Gâteau au coco des cuisinières",
+      "emoji": "🍰",
+      "cat": "dessert",
+      "prixRef": 7,
+      "popularite": 1.5,
+      "recette": {
+       "coco": 1,
+       "epicerie": 1
+      },
+      "allergenes": [
+       "gluten"
+      ],
+      "vegetarien": true,
+      "cuisson": null
+     }
+    ]
+   },
+   "evenementPrive": "Repas de baptême ou de communion",
+   "feries": [
+    {
+     "date": "05-27",
+     "nom": "Abolition de l’esclavage"
+    }
+   ]
+  },
+  "martinique": {
+   "tropical": true,
+   "sport": {
+    "nom": "football",
+    "emoji": "⚽"
+   },
+   "menusRetires": [
+    "vend",
+    "mardi"
+   ],
+   "feteLocale": {
+    "nom": "Carnaval",
+    "quand": "février",
+    "fenetre": {
+     "de": {
+      "paques": -51
+     },
+     "a": {
+      "paques": -47
+     }
+    },
+    "plats": [
+     {
+      "id": "f_loc_martinique_0",
+      "nom": "Boudin créole du carnaval",
+      "emoji": "🌭",
+      "cat": "plat",
+      "prixRef": 13.5,
+      "popularite": 1.5,
+      "recette": {
+       "porc": 1,
+       "epices": 1
+      },
+      "allergenes": [],
+      "vegetarien": false,
+      "cuisson": null
+     },
+     {
+      "id": "f_loc_martinique_1",
+      "nom": "Beignets du carnaval",
+      "emoji": "🍩",
+      "cat": "dessert",
+      "prixRef": 6.5,
+      "popularite": 1.5,
+      "recette": {
+       "epicerie": 1,
+       "huile": 1
+      },
+      "allergenes": [
+       "gluten"
+      ],
+      "vegetarien": true,
+      "cuisson": null
+     }
+    ]
+   },
+   "evenementPrive": "Repas de baptême ou de communion",
+   "feries": [
+    {
+     "date": "05-22",
+     "nom": "Abolition de l’esclavage"
+    }
+   ]
+  },
+  "guyane": {
+   "tropical": true,
+   "sport": {
+    "nom": "football",
+    "emoji": "⚽"
+   },
+   "menusRetires": [
+    "vend",
+    "mardi"
+   ],
+   "feteLocale": {
+    "nom": "Carnaval de Guyane",
+    "quand": "janvier à mars",
+    "fenetre": {
+     "de": {
+      "paques": -54
+     },
+     "a": {
+      "paques": -47
+     }
+    },
+    "plats": [
+     {
+      "id": "f_loc_guyane_0",
+      "nom": "Soupe à la queue de bœuf du carnaval",
+      "emoji": "🍲",
+      "cat": "plat",
+      "prixRef": 17,
+      "popularite": 1.5,
+      "recette": {
+       "paleron": 1,
+       "legumes": 1
+      },
+      "allergenes": [
+       "oeufs"
+      ],
+      "vegetarien": false,
+      "cuisson": null
+     },
+     {
+      "id": "f_loc_guyane_1",
+      "nom": "Gâteau du carnaval",
+      "emoji": "🍰",
+      "cat": "dessert",
+      "prixRef": 7,
+      "popularite": 1.5,
+      "recette": {
+       "epicerie": 1,
+       "coco": 1
+      },
+      "allergenes": [
+       "gluten"
+      ],
+      "vegetarien": true,
+      "cuisson": null
+     }
+    ]
+   },
+   "evenementPrive": "Repas de baptême ou de communion",
+   "feries": [
+    {
+     "date": "06-10",
+     "nom": "Abolition de l’esclavage"
+    }
+   ]
+  },
+  "reunion": {
+   "tropical": true,
+   "sport": {
+    "nom": "football",
+    "emoji": "⚽"
+   },
+   "menusRetires": [
+    "vend"
+   ],
+   "feteLocale": {
+    "nom": "Fèt Kaf (abolition de l’esclavage)",
+    "quand": "20 décembre",
+    "fenetre": {
+     "jour": "12-20",
+     "jours": 4
+    },
+    "plats": [
+     {
+      "id": "f_loc_reunion_0",
+      "nom": "Cari poulet au feu de bois",
+      "emoji": "🍛",
+      "cat": "plat",
+      "prixRef": 15,
+      "popularite": 1.5,
+      "recette": {
+       "volaille": 1,
+       "epices": 1,
+       "feculents": 1
+      },
+      "allergenes": [],
+      "vegetarien": false,
+      "cuisson": null
+     },
+     {
+      "id": "f_loc_reunion_1",
+      "nom": "Gâteau ti-son (au son de blé)",
+      "emoji": "🍰",
+      "cat": "dessert",
+      "prixRef": 7.5,
+      "popularite": 1.5,
+      "recette": {
+       "epicerie": 1,
+       "miel": 1
+      },
+      "allergenes": [
+       "gluten"
+      ],
+      "vegetarien": true,
+      "cuisson": null
+     }
+    ]
+   },
+   "evenementPrive": "Repas de baptême",
+   "feries": [
+    {
+     "date": "12-20",
+     "nom": "Fèt Kaf"
+    }
+   ]
+  },
+  "mayotte": {
+   "tropical": true,
+   "sport": {
+    "nom": "football",
+    "emoji": "⚽"
+   },
+   "menusRetires": [
+    "vend"
+   ],
+   "feteLocale": {
+    "nom": "Fête du Grand Mariage (manzaraka)",
+    "quand": "saison sèche (juillet-août)",
+    "fenetre": {
+     "de": "07-20",
+     "a": "07-27"
+    },
+    "plats": [
+     {
+      "id": "f_loc_mayotte_0",
+      "nom": "Pilao du grand mariage",
+      "emoji": "🍛",
+      "cat": "plat",
+      "prixRef": 16.5,
+      "popularite": 1.5,
+      "recette": {
+       "feculents": 1,
+       "paleron": 1,
+       "epices": 1
+      },
+      "allergenes": [],
+      "vegetarien": false,
+      "cuisson": null
+     },
+     {
+      "id": "f_loc_mayotte_1",
+      "nom": "Gâteaux coco du mariage",
+      "emoji": "🍰",
+      "cat": "dessert",
+      "prixRef": 7,
+      "popularite": 1.5,
+      "recette": {
+       "coco": 1,
+       "epicerie": 1
+      },
+      "allergenes": [
+       "gluten"
+      ],
+      "vegetarien": true,
+      "cuisson": null
+     }
+    ]
+   },
+   "evenementPrive": "Repas du Grand Mariage",
+   "feries": [
+    {
+     "date": "04-27",
+     "nom": "Abolition de l’esclavage"
+    }
+   ]
+  },
+  "polynesie": {
+   "tropical": true,
+   "sport": {
+    "nom": "va’a (pirogue) et football",
+    "emoji": "🛶"
+   },
+   "menusRetires": [
+    "vend"
+   ],
+   "feteLocale": {
+    "nom": "Heiva",
+    "quand": "juillet",
+    "fenetre": {
+     "de": "07-04",
+     "a": "07-10"
+    },
+    "plats": [
+     {
+      "id": "f_loc_polynesie_0",
+      "nom": "Ma’a tahiti du Heiva",
+      "emoji": "🍖",
+      "cat": "plat",
+      "prixRef": 15,
+      "popularite": 1.5,
+      "recette": {
+       "porc": 1,
+       "manioc": 1,
+       "coco": 1
+      },
+      "allergenes": [],
+      "vegetarien": false,
+      "cuisson": null
+     },
+     {
+      "id": "f_loc_polynesie_1",
+      "nom": "Pain coco du Heiva",
+      "emoji": "🥥",
+      "cat": "dessert",
+      "prixRef": 7,
+      "popularite": 1.5,
+      "recette": {
+       "coco": 1,
+       "epicerie": 1
+      },
+      "allergenes": [
+       "gluten"
+      ],
+      "vegetarien": true,
+      "cuisson": null
+     }
+    ]
+   },
+   "evenementPrive": "Repas de famille du dimanche (grande tablée)",
+   "feries": [
+    {
+     "date": "06-29",
+     "nom": "Fête de l’autonomie"
+    }
+   ]
+  },
+  "caledonie": {
+   "tropical": true,
+   "sport": {
+    "nom": "rugby et football",
+    "emoji": "🏉"
+   },
+   "menusRetires": [
+    "vend"
+   ],
+   "feteLocale": {
+    "nom": "Foire de Bourail",
+    "quand": "août",
+    "fenetre": {
+     "de": "08-13",
+     "a": "08-17"
+    },
+    "plats": [
+     {
+      "id": "f_loc_caledonie_0",
+      "nom": "Brochettes de cerf de la foire",
+      "emoji": "🦌",
+      "cat": "plat",
+      "prixRef": 17,
+      "popularite": 1.5,
+      "recette": {
+       "paleron": 1,
+       "legumes": 1
+      },
+      "allergenes": [],
+      "vegetarien": false,
+      "cuisson": null
+     },
+     {
+      "id": "f_loc_caledonie_1",
+      "nom": "Gâteau au coco de la foire",
+      "emoji": "🍰",
+      "cat": "dessert",
+      "prixRef": 7,
+      "popularite": 1.5,
+      "recette": {
+       "coco": 1,
+       "epicerie": 1
+      },
+      "allergenes": [
+       "gluten"
+      ],
+      "vegetarien": true,
+      "cuisson": null
+     }
+    ]
+   },
+   "evenementPrive": "Repas de famille du dimanche (grande tablée)",
+   "feries": [
+    {
+     "date": "09-24",
+     "nom": "Fête de la citoyenneté"
+    }
+   ]
+  },
+  "londres": {
+   "tropical": false,
+   "sport": {
+    "nom": "football (Premier League)",
+    "emoji": "⚽"
+   },
+   "menusRetires": [
+    "mai1",
+    "a15",
+    "vend"
+   ],
+   "menusRenommes": {
+    "j14": {
+     "nom": "Menu de la fête nationale",
+     "emoji": "🎆"
+    }
+   },
+   "fenetres": {
+    "meres": {
+     "de": {
+      "paques": -21
+     },
+     "a": {
+      "paques": -21
+     }
+    },
+    "peres": {
+     "jour": {
+      "nieme": [
+       6,
+       0,
+       3
+      ]
+     },
+     "jours": 3
+    },
+    "j14": {
+     "jour": {
+      "nieme": [
+       6,
+       6,
+       2
+      ]
+     },
+     "jours": 3
+    }
+   },
+   "feteLocale": {
+    "nom": "Bonfire Night",
+    "quand": "5 novembre",
+    "fenetre": {
+     "jour": "11-05",
+     "jours": 4
+    },
+    "plats": [
+     {
+      "id": "f_loc_londres_0",
+      "nom": "Saucisses-purée de Bonfire Night",
+      "emoji": "🌭",
+      "cat": "plat",
+      "prixRef": 13,
+      "popularite": 1.5,
+      "recette": {
+       "saucisse": 1,
+       "patate": 1
+      },
+      "allergenes": [],
+      "vegetarien": false,
+      "cuisson": null
+     },
+     {
+      "id": "f_loc_londres_1",
+      "nom": "Gâteau au gingembre (parkin)",
+      "emoji": "🍰",
+      "cat": "dessert",
+      "prixRef": 7.5,
+      "popularite": 1.5,
+      "recette": {
+       "epicerie": 1,
+       "miel": 1
+      },
+      "allergenes": [
+       "gluten"
+      ],
+      "vegetarien": true,
+      "cuisson": null
+     }
+    ]
+   },
+   "feteNationale": {
+    "nom": "Anniversaire officiel du roi",
+    "quand": "juin"
+   },
+   "evenementPrive": "Pot de départ entre collègues",
+   "feries": [
+    {
+     "date": "12-26",
+     "nom": "Boxing Day"
+    },
+    {
+     "date": {
+      "paques": -2
+     },
+     "nom": "Bank holiday"
+    },
+    {
+     "date": {
+      "paques": 1
+     },
+     "nom": "Bank holiday"
+    },
+    {
+     "date": {
+      "nieme": [
+       5,
+       1,
+       1
+      ]
+     },
+     "nom": "Bank holiday"
+    },
+    {
+     "date": {
+      "dernier": [
+       5,
+       1
+      ]
+     },
+     "nom": "Bank holiday"
+    },
+    {
+     "date": {
+      "dernier": [
+       8,
+       1
+      ]
+     },
+     "nom": "Bank holiday"
+    }
+   ]
+  },
+  "berlin": {
+   "tropical": false,
+   "sport": {
+    "nom": "football (Bundesliga)",
+    "emoji": "⚽"
+   },
+   "menusRetires": [
+    "mai1",
+    "a15",
+    "vend",
+    "hallo"
+   ],
+   "menusRenommes": {
+    "j14": {
+     "nom": "Menu de la fête nationale",
+     "emoji": "🎆"
+    }
+   },
+   "fenetres": {
+    "meres": {
+     "jour": {
+      "nieme": [
+       5,
+       0,
+       2
+      ]
+     },
+     "jours": 3
+    },
+    "peres": {
+     "de": {
+      "paques": 39
+     },
+     "a": {
+      "paques": 39
+     }
+    },
+    "j14": {
+     "jour": "10-03",
+     "jours": 3
+    }
+   },
+   "feteLocale": {
+    "nom": "Fête de la bière (Oktoberfest)",
+    "quand": "fin septembre-octobre",
+    "fenetre": {
+     "de": "09-24",
+     "a": "09-30"
+    },
+    "plats": [
+     {
+      "id": "f_loc_berlin_0",
+      "nom": "Jarret de porc grillé & bretzel",
+      "emoji": "🍖",
+      "cat": "plat",
+      "prixRef": 14,
+      "popularite": 1.5,
+      "recette": {
+       "porc": 1,
+       "epicerie": 1
+      },
+      "allergenes": [
+       "gluten"
+      ],
+      "vegetarien": false,
+      "cuisson": null
+     },
+     {
+      "id": "f_loc_berlin_1",
+      "nom": "Tarte aux quetsches de saison",
+      "emoji": "🍰",
+      "cat": "dessert",
+      "prixRef": 7.5,
+      "popularite": 1.5,
+      "recette": {
+       "fruits": 1,
+       "epicerie": 1
+      },
+      "allergenes": [
+       "gluten"
+      ],
+      "vegetarien": true,
+      "cuisson": null
+     }
+    ]
+   },
+   "feteNationale": {
+    "nom": "Jour de l’Unité allemande",
+    "quand": "3 octobre"
+   },
+   "evenementPrive": "Repas d’entreprise de fin d’année",
+   "feries": [
+    {
+     "date": "05-01",
+     "nom": "Fête du Travail"
+    },
+    {
+     "date": "10-03",
+     "nom": "Unité allemande"
+    },
+    {
+     "date": "12-26",
+     "nom": "Saint-Étienne"
+    }
+   ]
+  },
+  "madrid": {
+   "tropical": false,
+   "sport": {
+    "nom": "football (Liga)",
+    "emoji": "⚽"
+   },
+   "menusRetires": [
+    "mai1",
+    "a15",
+    "hallo"
+   ],
+   "menusRenommes": {
+    "j14": {
+     "nom": "Menu de la fête nationale",
+     "emoji": "🎆"
+    }
+   },
+   "fenetres": {
+    "meres": {
+     "jour": {
+      "nieme": [
+       5,
+       0,
+       1
+      ]
+     },
+     "jours": 3
+    },
+    "peres": {
+     "jour": "03-19",
+     "jours": 3
+    },
+    "j14": {
+     "jour": "10-12",
+     "jours": 3
+    }
+   },
+   "feteLocale": {
+    "nom": "Fête de San Isidro",
+    "quand": "15 mai",
+    "fenetre": {
+     "jour": "05-15",
+     "jours": 4
+    },
+    "plats": [
+     {
+      "id": "f_loc_madrid_0",
+      "nom": "Poulet rôti à l’ail de San Isidro",
+      "emoji": "🍗",
+      "cat": "plat",
+      "prixRef": 15,
+      "popularite": 1.5,
+      "recette": {
+       "volaille": 1,
+       "oignon": 1,
+       "patate": 1
+      },
+      "allergenes": [],
+      "vegetarien": false,
+      "cuisson": null
+     },
+     {
+      "id": "f_loc_madrid_1",
+      "nom": "Rosquillas (beignets anisés)",
+      "emoji": "🍩",
+      "cat": "dessert",
+      "prixRef": 6.5,
+      "popularite": 1.5,
+      "recette": {
+       "epicerie": 1,
+       "huile": 1
+      },
+      "allergenes": [
+       "gluten"
+      ],
+      "vegetarien": true,
+      "cuisson": null
+     }
+    ]
+   },
+   "feteNationale": {
+    "nom": "Fête nationale espagnole",
+    "quand": "12 octobre"
+   },
+   "evenementPrive": "Repas de communion",
+   "feries": [
+    {
+     "date": "01-06",
+     "nom": "Épiphanie"
+    },
+    {
+     "date": "10-12",
+     "nom": "Fête nationale"
+    },
+    {
+     "date": "12-06",
+     "nom": "Constitution"
+    }
+   ]
+  },
+  "rome": {
+   "tropical": false,
+   "sport": {
+    "nom": "football (AS Roma / Lazio)",
+    "emoji": "⚽"
+   },
+   "menusRetires": [
+    "mai1",
+    "a15",
+    "hallo"
+   ],
+   "menusRenommes": {
+    "j14": {
+     "nom": "Menu de la fête nationale",
+     "emoji": "🎆"
+    }
+   },
+   "fenetres": {
+    "meres": {
+     "jour": {
+      "nieme": [
+       5,
+       0,
+       2
+      ]
+     },
+     "jours": 3
+    },
+    "peres": {
+     "jour": "03-19",
+     "jours": 3
+    },
+    "j14": {
+     "jour": "06-02",
+     "jours": 3
+    }
+   },
+   "feteLocale": {
+    "nom": "Ferragosto",
+    "quand": "15 août",
+    "fenetre": {
+     "jour": "08-15",
+     "jours": 4
+    },
+    "plats": [
+     {
+      "id": "f_loc_rome_0",
+      "nom": "Poulet aux poivrons de Ferragosto",
+      "emoji": "🍗",
+      "cat": "plat",
+      "prixRef": 15.5,
+      "popularite": 1.5,
+      "recette": {
+       "volaille": 1,
+       "legumes": 1
+      },
+      "allergenes": [],
+      "vegetarien": false,
+      "cuisson": null
+     },
+     {
+      "id": "f_loc_rome_1",
+      "nom": "Pastèque glacée de Ferragosto",
+      "emoji": "🍉",
+      "cat": "dessert",
+      "prixRef": 7,
+      "popularite": 1.5,
+      "recette": {
+       "fruitex": 1
+      },
+      "allergenes": [],
+      "vegetarien": true,
+      "cuisson": null
+     }
+    ]
+   },
+   "feteNationale": {
+    "nom": "Fête de la République",
+    "quand": "2 juin"
+   },
+   "evenementPrive": "Repas de communion",
+   "feries": [
+    {
+     "date": "04-25",
+     "nom": "Libération"
+    },
+    {
+     "date": "06-02",
+     "nom": "Fête de la République"
+    },
+    {
+     "date": "08-15",
+     "nom": "Ferragosto"
+    }
+   ]
+  },
+  "lisbonne": {
+   "tropical": false,
+   "sport": {
+    "nom": "football (Benfica / Sporting)",
+    "emoji": "⚽"
+   },
+   "menusRetires": [
+    "mai1",
+    "a15",
+    "hallo"
+   ],
+   "menusRenommes": {
+    "j14": {
+     "nom": "Menu de la fête nationale",
+     "emoji": "🎆"
+    }
+   },
+   "fenetres": {
+    "meres": {
+     "jour": {
+      "nieme": [
+       5,
+       0,
+       1
+      ]
+     },
+     "jours": 3
+    },
+    "peres": {
+     "jour": "03-19",
+     "jours": 3
+    },
+    "j14": {
+     "jour": "06-10",
+     "jours": 3
+    }
+   },
+   "feteLocale": {
+    "nom": "Fête de Santo António",
+    "quand": "13 juin",
+    "fenetre": {
+     "jour": "06-13",
+     "jours": 4
+    },
+    "plats": [
+     {
+      "id": "f_loc_lisbonne_0",
+      "nom": "Sardines grillées sur pain",
+      "emoji": "🐟",
+      "cat": "plat",
+      "prixRef": 16,
+      "popularite": 1.5,
+      "recette": {
+       "poissonl": 1,
+       "pain": 1
+      },
+      "allergenes": [
+       "gluten",
+       "poissons"
+      ],
+      "vegetarien": true,
+      "cuisson": null
+     },
+     {
+      "id": "f_loc_lisbonne_1",
+      "nom": "Pastel de nata de la fête",
+      "emoji": "🥧",
+      "cat": "dessert",
+      "prixRef": 7.5,
+      "popularite": 1.5,
+      "recette": {
+       "creme": 1,
+       "epicerie": 1
+      },
+      "allergenes": [
+       "gluten",
+       "lait",
+       "oeufs"
+      ],
+      "vegetarien": true,
+      "cuisson": null
+     }
+    ]
+   },
+   "feteNationale": {
+    "nom": "Jour du Portugal",
+    "quand": "10 juin"
+   },
+   "evenementPrive": "Repas de baptême",
+   "feries": [
+    {
+     "date": "04-25",
+     "nom": "Liberté"
+    },
+    {
+     "date": "06-10",
+     "nom": "Fête nationale"
+    },
+    {
+     "date": "06-13",
+     "nom": "Saint-Antoine"
+    }
+   ]
+  },
+  "bruxelles": {
+   "tropical": false,
+   "sport": {
+    "nom": "football (Diables rouges)",
+    "emoji": "⚽"
+   },
+   "menusRetires": [
+    "mai1",
+    "a15",
+    "vend",
+    "hallo",
+    "j14"
+   ],
+   "fenetres": {
+    "meres": {
+     "jour": {
+      "nieme": [
+       5,
+       0,
+       2
+      ]
+     },
+     "jours": 3
+    },
+    "peres": {
+     "jour": {
+      "nieme": [
+       6,
+       0,
+       2
+      ]
+     },
+     "jours": 3
+    }
+   },
+   "feteLocale": {
+    "nom": "Fête nationale belge",
+    "quand": "21 juillet",
+    "fenetre": {
+     "jour": "07-21",
+     "jours": 4
+    },
+    "plats": [
+     {
+      "id": "f_loc_bruxelles_0",
+      "nom": "Moules-frites de la fête nationale",
+      "emoji": "🦐",
+      "cat": "plat",
+      "prixRef": 16.5,
+      "popularite": 1.5,
+      "recette": {
+       "fdm": 1,
+       "patate": 1
+      },
+      "allergenes": [
+       "mollusques"
+      ],
+      "vegetarien": true,
+      "cuisson": null
+     },
+     {
+      "id": "f_loc_bruxelles_1",
+      "nom": "Gaufre de Liège",
+      "emoji": "🧇",
+      "cat": "dessert",
+      "prixRef": 6.5,
+      "popularite": 1.5,
+      "recette": {
+       "epicerie": 1,
+       "beurre": 1
+      },
+      "allergenes": [
+       "gluten",
+       "lait",
+       "oeufs"
+      ],
+      "vegetarien": true,
+      "cuisson": null
+     }
+    ]
+   },
+   "feteNationale": {
+    "nom": "Fête nationale belge",
+    "quand": "21 juillet"
+   },
+   "evenementPrive": "Repas de communion",
+   "feries": [
+    {
+     "date": "05-01",
+     "nom": "Fête du Travail"
+    },
+    {
+     "date": "07-21",
+     "nom": "Fête nationale"
+    },
+    {
+     "date": "11-11",
+     "nom": "Armistice"
+    }
+   ]
+  },
+  "amsterdam": {
+   "tropical": false,
+   "sport": {
+    "nom": "football (Ajax)",
+    "emoji": "⚽"
+   },
+   "menusRetires": [
+    "mai1",
+    "a15",
+    "vend",
+    "hallo",
+    "j14"
+   ],
+   "fenetres": {
+    "meres": {
+     "jour": {
+      "nieme": [
+       5,
+       0,
+       2
+      ]
+     },
+     "jours": 3
+    },
+    "peres": {
+     "jour": {
+      "nieme": [
+       6,
+       0,
+       3
+      ]
+     },
+     "jours": 3
+    }
+   },
+   "feteLocale": {
+    "nom": "Fête du Roi",
+    "quand": "27 avril",
+    "fenetre": {
+     "jour": "04-27",
+     "jours": 4
+    },
+    "plats": [
+     {
+      "id": "f_loc_amsterdam_0",
+      "nom": "Boulettes de la fête du Roi",
+      "emoji": "🧆",
+      "cat": "plat",
+      "prixRef": 16.5,
+      "popularite": 1.5,
+      "recette": {
+       "paleron": 1,
+       "epicerie": 1,
+       "huile": 1
+      },
+      "allergenes": [
+       "gluten"
+      ],
+      "vegetarien": false,
+      "cuisson": null
+     },
+     {
+      "id": "f_loc_amsterdam_1",
+      "nom": "Mille-feuille rose de la fête du Roi",
+      "emoji": "🍰",
+      "cat": "dessert",
+      "prixRef": 7.5,
+      "popularite": 1.5,
+      "recette": {
+       "epicerie": 1,
+       "creme": 1
+      },
+      "allergenes": [
+       "gluten",
+       "lait",
+       "oeufs"
+      ],
+      "vegetarien": true,
+      "cuisson": null
+     }
+    ]
+   },
+   "feteNationale": {
+    "nom": "Fête du Roi",
+    "quand": "27 avril"
+   },
+   "evenementPrive": "Repas d’anniversaire « de cercle » (tout le monde félicite tout le monde)",
+   "feries": [
+    {
+     "date": "04-27",
+     "nom": "Fête du Roi"
+    },
+    {
+     "date": "05-05",
+     "nom": "Libération"
+    },
+    {
+     "date": "12-26",
+     "nom": "Deuxième jour de Noël"
+    }
+   ]
+  },
+  "vienne": {
+   "tropical": false,
+   "sport": {
+    "nom": "football et ski",
+    "emoji": "⚽"
+   },
+   "menusRetires": [
+    "mai1",
+    "a15",
+    "hallo"
+   ],
+   "menusRenommes": {
+    "j14": {
+     "nom": "Menu de la fête nationale",
+     "emoji": "🎆"
+    }
+   },
+   "fenetres": {
+    "meres": {
+     "jour": {
+      "nieme": [
+       5,
+       0,
+       2
+      ]
+     },
+     "jours": 3
+    },
+    "peres": {
+     "jour": {
+      "nieme": [
+       6,
+       0,
+       2
+      ]
+     },
+     "jours": 3
+    },
+    "j14": {
+     "jour": "10-26",
+     "jours": 3
+    }
+   },
+   "feteLocale": {
+    "nom": "Saison des bals viennois",
+    "quand": "janvier-février",
+    "fenetre": {
+     "de": "01-24",
+     "a": "01-30"
+    },
+    "plats": [
+     {
+      "id": "f_loc_vienne_0",
+      "nom": "Escalope viennoise du bal",
+      "emoji": "🥩",
+      "cat": "plat",
+      "prixRef": 18.5,
+      "popularite": 1.5,
+      "recette": {
+       "veau": 1,
+       "epicerie": 1,
+       "patate": 1
+      },
+      "allergenes": [
+       "gluten"
+      ],
+      "vegetarien": false,
+      "cuisson": null
+     },
+     {
+      "id": "f_loc_vienne_1",
+      "nom": "Beignets du carnaval (Krapfen)",
+      "emoji": "🍩",
+      "cat": "dessert",
+      "prixRef": 7.5,
+      "popularite": 1.5,
+      "recette": {
+       "epicerie": 1,
+       "fruits": 1,
+       "huile": 1
+      },
+      "allergenes": [
+       "gluten"
+      ],
+      "vegetarien": true,
+      "cuisson": null
+     }
+    ]
+   },
+   "feteNationale": {
+    "nom": "Fête nationale autrichienne",
+    "quand": "26 octobre"
+   },
+   "evenementPrive": "Repas après un bal",
+   "feries": [
+    {
+     "date": "05-01",
+     "nom": "Fête du Travail"
+    },
+    {
+     "date": "10-26",
+     "nom": "Fête nationale"
+    },
+    {
+     "date": "12-26",
+     "nom": "Saint-Étienne"
+    }
+   ]
+  },
+  "athenes": {
+   "tropical": false,
+   "sport": {
+    "nom": "football (Panathinaïkos)",
+    "emoji": "⚽"
+   },
+   "menusRetires": [
+    "mai1",
+    "a15",
+    "hallo",
+    "paques"
+   ],
+   "menusRenommes": {
+    "j14": {
+     "nom": "Menu de la fête nationale",
+     "emoji": "🎆"
+    }
+   },
+   "fenetres": {
+    "meres": {
+     "jour": {
+      "nieme": [
+       5,
+       0,
+       2
+      ]
+     },
+     "jours": 3
+    },
+    "peres": {
+     "jour": {
+      "nieme": [
+       6,
+       0,
+       3
+      ]
+     },
+     "jours": 3
+    },
+    "j14": {
+     "jour": "03-25",
+     "jours": 3
+    }
+   },
+   "feteLocale": {
+    "nom": "Pâques orthodoxe",
+    "quand": "printemps",
+    "fenetre": {
+     "de": {
+      "orthodoxe": -3
+     },
+     "a": {
+      "orthodoxe": 1
+     }
+    },
+    "plats": [
+     {
+      "id": "f_loc_athenes_0",
+      "nom": "Agneau rôti de Pâques",
+      "emoji": "🐑",
+      "cat": "plat",
+      "prixRef": 19,
+      "popularite": 1.5,
+      "recette": {
+       "agneau": 1,
+       "herbes": 1,
+       "patate": 1
+      },
+      "allergenes": [],
+      "vegetarien": false,
+      "cuisson": null
+     },
+     {
+      "id": "f_loc_athenes_1",
+      "nom": "Brioche de Pâques (tsoureki)",
+      "emoji": "🍞",
+      "cat": "dessert",
+      "prixRef": 6.5,
+      "popularite": 1.5,
+      "recette": {
+       "epicerie": 1,
+       "beurre": 1
+      },
+      "allergenes": [
+       "gluten",
+       "lait",
+       "oeufs"
+      ],
+      "vegetarien": true,
+      "cuisson": null
+     }
+    ]
+   },
+   "feteNationale": {
+    "nom": "Fête de l’Indépendance",
+    "quand": "25 mars"
+   },
+   "evenementPrive": "Repas de fête du saint patron (fête du prénom)",
+   "feries": [
+    {
+     "date": "03-25",
+     "nom": "Fête nationale"
+    },
+    {
+     "date": "08-15",
+     "nom": "Assomption"
+    },
+    {
+     "date": "10-28",
+     "nom": "Jour du Non"
+    }
+   ]
+  },
+  "moscou": {
+   "tropical": false,
+   "sport": {
+    "nom": "hockey et football",
+    "emoji": "🏒"
+   },
+   "menusRetires": [
+    "mai1",
+    "a15",
+    "vend",
+    "hallo",
+    "mardi"
+   ],
+   "menusRenommes": {
+    "paques": {
+     "nom": "Menu de Pâques orthodoxe",
+     "emoji": "🐣"
+    },
+    "j14": {
+     "nom": "Menu de la fête nationale",
+     "emoji": "🎆"
+    }
+   },
+   "fenetres": {
+    "paques": {
+     "de": {
+      "orthodoxe": -3
+     },
+     "a": {
+      "orthodoxe": 1
+     }
+    },
+    "meres": {
+     "jour": {
+      "dernier": [
+       11,
+       0
+      ]
+     },
+     "jours": 3
+    },
+    "peres": {
+     "jour": "02-23",
+     "jours": 3
+    },
+    "j14": {
+     "jour": "06-12",
+     "jours": 3
+    }
+   },
+   "feteLocale": {
+    "nom": "Maslenitsa (semaine des crêpes)",
+    "quand": "fin février-mars",
+    "fenetre": {
+     "de": {
+      "orthodoxe": -55
+     },
+     "a": {
+      "orthodoxe": -49
+     }
+    },
+    "plats": [
+     {
+      "id": "f_loc_moscou_0",
+      "nom": "Blinis au saumon de Maslenitsa",
+      "emoji": "🥞",
+      "cat": "plat",
+      "prixRef": 17.5,
+      "popularite": 1.5,
+      "recette": {
+       "epicerie": 1,
+       "poissonl": 1,
+       "creme": 1
+      },
+      "allergenes": [
+       "gluten",
+       "lait",
+       "oeufs",
+       "poissons"
+      ],
+      "vegetarien": true,
+      "cuisson": null
+     },
+     {
+      "id": "f_loc_moscou_1",
+      "nom": "Blinis au miel",
+      "emoji": "🥞",
+      "cat": "dessert",
+      "prixRef": 7.5,
+      "popularite": 1.5,
+      "recette": {
+       "epicerie": 1,
+       "miel": 1
+      },
+      "allergenes": [
+       "gluten"
+      ],
+      "vegetarien": true,
+      "cuisson": null
+     }
+    ]
+   },
+   "feteNationale": {
+    "nom": "Jour de la Russie",
+    "quand": "12 juin"
+   },
+   "evenementPrive": "Repas de fête du Nouvel An entre collègues",
+   "feries": [
+    {
+     "date": "01-07",
+     "nom": "Noël orthodoxe"
+    },
+    {
+     "date": "05-09",
+     "nom": "Jour de la Victoire"
+    },
+    {
+     "date": "06-12",
+     "nom": "Fête nationale"
+    }
+   ]
+  },
+  "new-york": {
+   "tropical": false,
+   "sport": {
+    "nom": "baseball (Yankees) et basket (Knicks)",
+    "emoji": "⚾"
+   },
+   "menusRetires": [
+    "mai1",
+    "a15",
+    "vend"
+   ],
+   "menusRenommes": {
+    "j14": {
+     "nom": "Menu de la fête nationale",
+     "emoji": "🎆"
+    }
+   },
+   "fenetres": {
+    "meres": {
+     "jour": {
+      "nieme": [
+       5,
+       0,
+       2
+      ]
+     },
+     "jours": 3
+    },
+    "peres": {
+     "jour": {
+      "nieme": [
+       6,
+       0,
+       3
+      ]
+     },
+     "jours": 3
+    },
+    "j14": {
+     "jour": "07-04",
+     "jours": 3
+    }
+   },
+   "feteLocale": {
+    "nom": "Thanksgiving",
+    "quand": "4e jeudi de novembre",
+    "fenetre": {
+     "jour": {
+      "nieme": [
+       11,
+       4,
+       4
+      ]
+     },
+     "jours": 4
+    },
+    "plats": [
+     {
+      "id": "f_loc_new-york_0",
+      "nom": "Dinde de Thanksgiving & purée",
+      "emoji": "🦃",
+      "cat": "plat",
+      "prixRef": 16,
+      "popularite": 1.5,
+      "recette": {
+       "volaille": 1,
+       "patate": 1,
+       "fruits": 1
+      },
+      "allergenes": [],
+      "vegetarien": false,
+      "cuisson": null
+     },
+     {
+      "id": "f_loc_new-york_1",
+      "nom": "Tarte à la citrouille de Thanksgiving",
+      "emoji": "🎃",
+      "cat": "dessert",
+      "prixRef": 8.5,
+      "popularite": 1.5,
+      "recette": {
+       "legumes": 1,
+       "epicerie": 1,
+       "creme": 1
+      },
+      "allergenes": [
+       "gluten",
+       "lait",
+       "oeufs"
+      ],
+      "vegetarien": true,
+      "cuisson": null
+     }
+    ]
+   },
+   "feteNationale": {
+    "nom": "Fête de l’Indépendance",
+    "quand": "4 juillet"
+   },
+   "evenementPrive": "Fête de remise de diplôme",
+   "feries": [
+    {
+     "date": "07-04",
+     "nom": "Indépendance"
+    },
+    {
+     "date": "11-11",
+     "nom": "Veterans Day"
+    },
+    {
+     "date": {
+      "nieme": [
+       11,
+       4,
+       4
+      ]
+     },
+     "nom": "Thanksgiving"
+    }
+   ]
+  },
+  "washington": {
+   "tropical": false,
+   "sport": {
+    "nom": "football américain et basket",
+    "emoji": "🏈"
+   },
+   "menusRetires": [
+    "mai1",
+    "a15",
+    "vend",
+    "j14"
+   ],
+   "fenetres": {
+    "meres": {
+     "jour": {
+      "nieme": [
+       5,
+       0,
+       2
+      ]
+     },
+     "jours": 3
+    },
+    "peres": {
+     "jour": {
+      "nieme": [
+       6,
+       0,
+       3
+      ]
+     },
+     "jours": 3
+    }
+   },
+   "feteLocale": {
+    "nom": "Fête nationale américaine",
+    "quand": "4 juillet",
+    "fenetre": {
+     "jour": "07-04",
+     "jours": 4
+    },
+    "plats": [
+     {
+      "id": "f_loc_washington_0",
+      "nom": "Burger du 4 juillet",
+      "emoji": "🍔",
+      "cat": "plat",
+      "prixRef": 21,
+      "popularite": 1.5,
+      "recette": {
+       "boeuf": 1,
+       "pain": 1,
+       "fromage": 1
+      },
+      "allergenes": [
+       "gluten",
+       "lait"
+      ],
+      "vegetarien": false,
+      "cuisson": null
+     },
+     {
+      "id": "f_loc_washington_1",
+      "nom": "Tarte aux cerises",
+      "emoji": "🥧",
+      "cat": "dessert",
+      "prixRef": 7.5,
+      "popularite": 1.5,
+      "recette": {
+       "fruits": 1,
+       "epicerie": 1
+      },
+      "allergenes": [
+       "gluten"
+      ],
+      "vegetarien": true,
+      "cuisson": null
+     }
+    ]
+   },
+   "feteNationale": {
+    "nom": "Fête de l’Indépendance",
+    "quand": "4 juillet"
+   },
+   "evenementPrive": "Fête de remise de diplôme",
+   "feries": [
+    {
+     "date": "07-04",
+     "nom": "Indépendance"
+    },
+    {
+     "date": "11-11",
+     "nom": "Veterans Day"
+    },
+    {
+     "date": {
+      "nieme": [
+       11,
+       4,
+       4
+      ]
+     },
+     "nom": "Thanksgiving"
+    }
+   ]
+  },
+  "ottawa": {
+   "tropical": false,
+   "sport": {
+    "nom": "hockey (Sénateurs)",
+    "emoji": "🏒"
+   },
+   "menusRetires": [
+    "mai1",
+    "a15",
+    "vend",
+    "j14"
+   ],
+   "fenetres": {
+    "meres": {
+     "jour": {
+      "nieme": [
+       5,
+       0,
+       2
+      ]
+     },
+     "jours": 3
+    },
+    "peres": {
+     "jour": {
+      "nieme": [
+       6,
+       0,
+       3
+      ]
+     },
+     "jours": 3
+    }
+   },
+   "feteLocale": {
+    "nom": "Fête du Canada",
+    "quand": "1er juillet",
+    "fenetre": {
+     "jour": "07-01",
+     "jours": 4
+    },
+    "plats": [
+     {
+      "id": "f_loc_ottawa_0",
+      "nom": "Poutine de la fête du Canada",
+      "emoji": "🍟",
+      "cat": "plat",
+      "prixRef": 18,
+      "popularite": 1.5,
+      "recette": {
+       "patate": 1,
+       "fromage": 1,
+       "paleron": 1
+      },
+      "allergenes": [
+       "lait"
+      ],
+      "vegetarien": false,
+      "cuisson": null
+     },
+     {
+      "id": "f_loc_ottawa_1",
+      "nom": "Queue de castor à l’érable",
+      "emoji": "🥞",
+      "cat": "dessert",
+      "prixRef": 7.5,
+      "popularite": 1.5,
+      "recette": {
+       "epicerie": 1,
+       "miel": 1
+      },
+      "allergenes": [
+       "gluten"
+      ],
+      "vegetarien": true,
+      "cuisson": null
+     }
+    ]
+   },
+   "feteNationale": {
+    "nom": "Fête du Canada",
+    "quand": "1er juillet"
+   },
+   "evenementPrive": "Fête de remise de diplôme",
+   "feries": [
+    {
+     "date": "07-01",
+     "nom": "Fête du Canada"
+    },
+    {
+     "date": "11-11",
+     "nom": "Souvenir"
+    },
+    {
+     "date": {
+      "nieme": [
+       10,
+       1,
+       2
+      ]
+     },
+     "nom": "Action de grâce"
+    }
+   ]
+  },
+  "mexico": {
+   "tropical": false,
+   "sport": {
+    "nom": "football et lucha libre",
+    "emoji": "⚽"
+   },
+   "menusRetires": [
+    "mai1",
+    "a15",
+    "vend",
+    "hallo"
+   ],
+   "menusRenommes": {
+    "j14": {
+     "nom": "Menu de la fête nationale",
+     "emoji": "🎆"
+    }
+   },
+   "fenetres": {
+    "meres": {
+     "jour": "05-10",
+     "jours": 3
+    },
+    "peres": {
+     "jour": {
+      "nieme": [
+       6,
+       0,
+       3
+      ]
+     },
+     "jours": 3
+    },
+    "j14": {
+     "jour": "09-16",
+     "jours": 3
+    }
+   },
+   "feteLocale": {
+    "nom": "Jour des Morts",
+    "quand": "1er-2 novembre",
+    "fenetre": {
+     "de": "10-30",
+     "a": "11-02"
+    },
+    "plats": [
+     {
+      "id": "f_loc_mexico_0",
+      "nom": "Mole poblano du Jour des Morts",
+      "emoji": "🍲",
+      "cat": "plat",
+      "prixRef": 15.5,
+      "popularite": 1.5,
+      "recette": {
+       "volaille": 1,
+       "chocolat": 1,
+       "epices": 1
+      },
+      "allergenes": [],
+      "vegetarien": false,
+      "cuisson": null
+     },
+     {
+      "id": "f_loc_mexico_1",
+      "nom": "Pain des morts",
+      "emoji": "🍞",
+      "cat": "dessert",
+      "prixRef": 6.5,
+      "popularite": 1.5,
+      "recette": {
+       "epicerie": 1,
+       "beurre": 1
+      },
+      "allergenes": [
+       "gluten",
+       "lait"
+      ],
+      "vegetarien": true,
+      "cuisson": null
+     }
+    ]
+   },
+   "feteNationale": {
+    "nom": "Fête de l’Indépendance",
+    "quand": "16 septembre"
+   },
+   "evenementPrive": "Fête des 15 ans",
+   "feries": [
+    {
+     "date": "09-16",
+     "nom": "Indépendance"
+    },
+    {
+     "date": "11-02",
+     "nom": "Jour des morts"
+    }
+   ]
+  },
+  "buenos-aires": {
+   "tropical": false,
+   "sport": {
+    "nom": "football (Boca / River)",
+    "emoji": "⚽"
+   },
+   "menusRetires": [
+    "mai1",
+    "a15",
+    "hallo",
+    "j14"
+   ],
+   "fenetres": {
+    "vend": {
+     "de": "03-20",
+     "a": "03-27"
+    },
+    "meres": {
+     "jour": {
+      "nieme": [
+       10,
+       0,
+       3
+      ]
+     },
+     "jours": 3
+    },
+    "peres": {
+     "jour": {
+      "nieme": [
+       6,
+       0,
+       3
+      ]
+     },
+     "jours": 3
+    }
+   },
+   "feteLocale": {
+    "nom": "Fête nationale (Révolution de Mai)",
+    "quand": "25 mai",
+    "fenetre": {
+     "jour": "05-25",
+     "jours": 4
+    },
+    "plats": [
+     {
+      "id": "f_loc_buenos-aires_0",
+      "nom": "Locro de la fête nationale",
+      "emoji": "🍲",
+      "cat": "plat",
+      "prixRef": 13.5,
+      "popularite": 1.5,
+      "recette": {
+       "mais": 1,
+       "saucisse": 1,
+       "legsec": 1
+      },
+      "allergenes": [],
+      "vegetarien": false,
+      "cuisson": null
+     },
+     {
+      "id": "f_loc_buenos-aires_1",
+      "nom": "Pastelitos (feuilletés au coing)",
+      "emoji": "🍩",
+      "cat": "dessert",
+      "prixRef": 7.5,
+      "popularite": 1.5,
+      "recette": {
+       "epicerie": 1,
+       "fruits": 1,
+       "huile": 1
+      },
+      "allergenes": [
+       "gluten"
+      ],
+      "vegetarien": true,
+      "cuisson": null
+     }
+    ]
+   },
+   "feteNationale": {
+    "nom": "Révolution de Mai",
+    "quand": "25 mai"
+   },
+   "evenementPrive": "Fête des 15 ans",
+   "feries": [
+    {
+     "date": "05-25",
+     "nom": "Révolution de Mai"
+    },
+    {
+     "date": "07-09",
+     "nom": "Indépendance"
+    }
+   ]
+  },
+  "brasilia": {
+   "tropical": true,
+   "sport": {
+    "nom": "football (Seleção)",
+    "emoji": "⚽"
+   },
+   "menusRetires": [
+    "mai1",
+    "a15",
+    "vend",
+    "hallo"
+   ],
+   "menusRenommes": {
+    "j14": {
+     "nom": "Menu de la fête nationale",
+     "emoji": "🎆"
+    }
+   },
+   "fenetres": {
+    "meres": {
+     "jour": {
+      "nieme": [
+       5,
+       0,
+       2
+      ]
+     },
+     "jours": 3
+    },
+    "peres": {
+     "jour": {
+      "nieme": [
+       8,
+       0,
+       2
+      ]
+     },
+     "jours": 3
+    },
+    "j14": {
+     "jour": "09-07",
+     "jours": 3
+    }
+   },
+   "feteLocale": {
+    "nom": "Fêtes de la Saint-Jean (juin)",
+    "quand": "juin",
+    "fenetre": {
+     "de": "06-20",
+     "a": "06-24"
+    },
+    "plats": [
+     {
+      "id": "f_loc_brasilia_0",
+      "nom": "Épi de maïs & bouillie de maïs",
+      "emoji": "🌽",
+      "cat": "plat",
+      "prixRef": 12,
+      "popularite": 1.5,
+      "recette": {
+       "mais": 1,
+       "lait": 1
+      },
+      "allergenes": [
+       "lait"
+      ],
+      "vegetarien": true,
+      "cuisson": null
+     },
+     {
+      "id": "f_loc_brasilia_1",
+      "nom": "Paçoca (douceur à la cacahuète)",
+      "emoji": "🥜",
+      "cat": "dessert",
+      "prixRef": 7.5,
+      "popularite": 1.5,
+      "recette": {
+       "epicerie": 1,
+       "miel": 1
+      },
+      "allergenes": [
+       "arachides",
+       "gluten"
+      ],
+      "vegetarien": true,
+      "cuisson": null
+     }
+    ]
+   },
+   "feteNationale": {
+    "nom": "Fête de l’Indépendance",
+    "quand": "7 septembre"
+   },
+   "evenementPrive": "Fête des 15 ans",
+   "feries": [
+    {
+     "date": "04-21",
+     "nom": "Tiradentes"
+    },
+    {
+     "date": "09-07",
+     "nom": "Indépendance"
+    },
+    {
+     "date": {
+      "paques": -48
+     },
+     "nom": "Carnaval"
+    },
+    {
+     "date": {
+      "paques": -47
+     },
+     "nom": "Carnaval"
+    }
+   ]
+  },
+  "caire": {
+   "tropical": false,
+   "sport": {
+    "nom": "football (Al Ahly / Zamalek)",
+    "emoji": "⚽"
+   },
+   "menusRetires": [
+    "mai1",
+    "a15",
+    "vend",
+    "hallo"
+   ],
+   "menusRenommes": {
+    "j14": {
+     "nom": "Menu de la fête nationale",
+     "emoji": "🎆"
+    }
+   },
+   "fenetres": {
+    "meres": {
+     "jour": "03-21",
+     "jours": 3
+    },
+    "peres": {
+     "jour": "06-21",
+     "jours": 3
+    },
+    "j14": {
+     "jour": "07-23",
+     "jours": 3
+    }
+   },
+   "feteLocale": {
+    "nom": "Cham el-Nessim",
+    "quand": "lundi de Pâques copte",
+    "fenetre": {
+     "de": {
+      "orthodoxe": -2
+     },
+     "a": {
+      "orthodoxe": 1
+     }
+    },
+    "plats": [
+     {
+      "id": "f_loc_caire_0",
+      "nom": "Poisson fumé & oignons verts",
+      "emoji": "🐟",
+      "cat": "plat",
+      "prixRef": 16,
+      "popularite": 1.5,
+      "recette": {
+       "poissonl": 1,
+       "oignon": 1
+      },
+      "allergenes": [
+       "poissons"
+      ],
+      "vegetarien": true,
+      "cuisson": null
+     },
+     {
+      "id": "f_loc_caire_1",
+      "nom": "Œufs colorés & pain",
+      "emoji": "🥚",
+      "cat": "entree",
+      "prixRef": 6.5,
+      "popularite": 1.5,
+      "recette": {
+       "creme": 1,
+       "pain": 1
+      },
+      "allergenes": [
+       "gluten",
+       "lait",
+       "oeufs"
+      ],
+      "vegetarien": true,
+      "cuisson": null
+     }
+    ]
+   },
+   "feteNationale": {
+    "nom": "Fête de la Révolution",
+    "quand": "23 juillet"
+   },
+   "evenementPrive": "Repas de fiançailles",
+   "feries": [
+    {
+     "date": "04-25",
+     "nom": "Libération du Sinaï"
+    },
+    {
+     "date": "07-23",
+     "nom": "Révolution"
+    }
+   ]
+  },
+  "dakar": {
+   "tropical": true,
+   "sport": {
+    "nom": "football et lutte sénégalaise",
+    "emoji": "⚽"
+   },
+   "menusRetires": [
+    "mai1",
+    "a15",
+    "vend",
+    "hallo",
+    "j14"
+   ],
+   "fenetres": {
+    "peres": {
+     "jour": {
+      "nieme": [
+       6,
+       0,
+       3
+      ]
+     },
+     "jours": 3
+    }
+   },
+   "feteLocale": {
+    "nom": "Fête de l’indépendance",
+    "quand": "4 avril",
+    "fenetre": {
+     "jour": "04-04",
+     "jours": 4
+    },
+    "plats": [
+     {
+      "id": "f_loc_dakar_0",
+      "nom": "Thiéboudienne de fête",
+      "emoji": "🍛",
+      "cat": "plat",
+      "prixRef": 17.5,
+      "popularite": 1.5,
+      "recette": {
+       "feculents": 1,
+       "poissonl": 1,
+       "legumes": 1
+      },
+      "allergenes": [
+       "poissons"
+      ],
+      "vegetarien": true,
+      "cuisson": null
+     },
+     {
+      "id": "f_loc_dakar_1",
+      "nom": "Thiakry de fête",
+      "emoji": "🥣",
+      "cat": "dessert",
+      "prixRef": 7.5,
+      "popularite": 1.5,
+      "recette": {
+       "yaourt": 1,
+       "epicerie": 1
+      },
+      "allergenes": [
+       "arachides",
+       "gluten",
+       "lait"
+      ],
+      "vegetarien": true,
+      "cuisson": null
+     }
+    ]
+   },
+   "feteNationale": {
+    "nom": "Fête de l’Indépendance",
+    "quand": "4 avril"
+   },
+   "evenementPrive": "Repas de baptême",
+   "feries": [
+    {
+     "date": "04-04",
+     "nom": "Indépendance"
+    },
+    {
+     "date": "05-01",
+     "nom": "Fête du Travail"
+    }
+   ]
+  },
+  "tokyo": {
+   "tropical": false,
+   "sport": {
+    "nom": "baseball (Giants)",
+    "emoji": "⚾"
+   },
+   "menusRetires": [
+    "mai1",
+    "a15",
+    "vend",
+    "hallo",
+    "paques"
+   ],
+   "menusRenommes": {
+    "j14": {
+     "nom": "Menu de la fête nationale",
+     "emoji": "🎆"
+    }
+   },
+   "fenetres": {
+    "meres": {
+     "jour": {
+      "nieme": [
+       5,
+       0,
+       2
+      ]
+     },
+     "jours": 3
+    },
+    "peres": {
+     "jour": {
+      "nieme": [
+       6,
+       0,
+       3
+      ]
+     },
+     "jours": 3
+    },
+    "j14": {
+     "jour": "02-11",
+     "jours": 3
+    }
+   },
+   "feteLocale": {
+    "nom": "Nouvel An japonais",
+    "quand": "1er janvier",
+    "fenetre": {
+     "de": "01-01",
+     "a": "01-03"
+    },
+    "plats": [
+     {
+      "id": "f_loc_tokyo_0",
+      "nom": "Boîte du Nouvel An (osechi)",
+      "emoji": "🍱",
+      "cat": "plat",
+      "prixRef": 17.5,
+      "popularite": 1.5,
+      "recette": {
+       "poissonl": 1,
+       "legumes": 1,
+       "feculents": 1
+      },
+      "allergenes": [
+       "poissons"
+      ],
+      "vegetarien": true,
+      "cuisson": null
+     },
+     {
+      "id": "f_loc_tokyo_1",
+      "nom": "Gâteaux de riz du Nouvel An",
+      "emoji": "🍡",
+      "cat": "dessert",
+      "prixRef": 6.5,
+      "popularite": 1.5,
+      "recette": {
+       "feculents": 1,
+       "legsec": 1
+      },
+      "allergenes": [],
+      "vegetarien": true,
+      "cuisson": null
+     }
+    ]
+   },
+   "feteNationale": {
+    "nom": "Fête de la fondation de l’État",
+    "quand": "11 février"
+   },
+   "evenementPrive": "Repas d’entreprise de fin d’année",
+   "feries": [
+    {
+     "date": "02-11",
+     "nom": "Fondation du Japon"
+    },
+    {
+     "date": "02-23",
+     "nom": "Anniversaire de l’Empereur"
+    },
+    {
+     "date": "04-29",
+     "nom": "Shōwa"
+    },
+    {
+     "date": "05-03",
+     "nom": "Constitution"
+    },
+    {
+     "date": "05-04",
+     "nom": "Nature"
+    },
+    {
+     "date": "05-05",
+     "nom": "Enfants"
+    },
+    {
+     "date": "11-03",
+     "nom": "Culture"
+    }
+   ]
+  },
+  "pekin": {
+   "tropical": false,
+   "sport": {
+    "nom": "basket et football",
+    "emoji": "🏀"
+   },
+   "menusRetires": [
+    "mai1",
+    "a15",
+    "vend",
+    "hallo",
+    "paques"
+   ],
+   "menusRenommes": {
+    "j14": {
+     "nom": "Menu de la fête nationale",
+     "emoji": "🎆"
+    }
+   },
+   "fenetres": {
+    "meres": {
+     "jour": {
+      "nieme": [
+       5,
+       0,
+       2
+      ]
+     },
+     "jours": 3
+    },
+    "peres": {
+     "jour": {
+      "nieme": [
+       6,
+       0,
+       3
+      ]
+     },
+     "jours": 3
+    },
+    "j14": {
+     "jour": "10-01",
+     "jours": 3
+    }
+   },
+   "feteLocale": {
+    "nom": "Nouvel An chinois",
+    "quand": "janvier-février",
+    "fenetre": {
+     "de": {
+      "nouvelAnChinois": -2
+     },
+     "a": {
+      "nouvelAnChinois": 2
+     }
+    },
+    "plats": [
+     {
+      "id": "f_loc_pekin_0",
+      "nom": "Raviolis du Nouvel An",
+      "emoji": "🥟",
+      "cat": "plat",
+      "prixRef": 15.5,
+      "popularite": 1.5,
+      "recette": {
+       "porc": 1,
+       "epicerie": 1,
+       "legumes": 1
+      },
+      "allergenes": [
+       "gluten"
+      ],
+      "vegetarien": false,
+      "cuisson": null
+     },
+     {
+      "id": "f_loc_pekin_1",
+      "nom": "Boulettes de riz gluant (tangyuan)",
+      "emoji": "🍡",
+      "cat": "dessert",
+      "prixRef": 7.5,
+      "popularite": 1.5,
+      "recette": {
+       "feculents": 1,
+       "miel": 1
+      },
+      "allergenes": [],
+      "vegetarien": true,
+      "cuisson": null
+     }
+    ]
+   },
+   "feteNationale": {
+    "nom": "Fête nationale",
+    "quand": "1er octobre"
+   },
+   "evenementPrive": "Banquet du Nouvel An en famille",
+   "feries": [
+    {
+     "date": "05-01",
+     "nom": "Fête du Travail"
+    },
+    {
+     "date": "10-01",
+     "nom": "Fête nationale"
+    },
+    {
+     "date": "10-02",
+     "nom": "Semaine d’or"
+    },
+    {
+     "date": "10-03",
+     "nom": "Semaine d’or"
+    }
+   ]
+  },
+  "seoul": {
+   "tropical": false,
+   "sport": {
+    "nom": "baseball et football",
+    "emoji": "⚾"
+   },
+   "menusRetires": [
+    "mai1",
+    "a15",
+    "vend",
+    "hallo",
+    "paques",
+    "peres"
+   ],
+   "menusRenommes": {
+    "meres": {
+     "nom": "Menu de la fête des parents",
+     "emoji": "💐"
+    },
+    "j14": {
+     "nom": "Menu de la fête nationale",
+     "emoji": "🎆"
+    }
+   },
+   "fenetres": {
+    "meres": {
+     "jour": "05-08",
+     "jours": 3
+    },
+    "j14": {
+     "jour": "08-15",
+     "jours": 3
+    }
+   },
+   "feteLocale": {
+    "nom": "Chuseok (fête des récoltes)",
+    "quand": "septembre-octobre",
+    "fenetre": {
+     "de": {
+      "chuseok": -2
+     },
+     "a": {
+      "chuseok": 1
+     }
+    },
+    "plats": [
+     {
+      "id": "f_loc_seoul_0",
+      "nom": "Galettes de Chuseok",
+      "emoji": "🥞",
+      "cat": "plat",
+      "prixRef": 12,
+      "popularite": 1.5,
+      "recette": {
+       "epicerie": 1,
+       "legumes": 1,
+       "creme": 1
+      },
+      "allergenes": [
+       "gluten",
+       "lait",
+       "oeufs"
+      ],
+      "vegetarien": true,
+      "cuisson": null
+     },
+     {
+      "id": "f_loc_seoul_1",
+      "nom": "Gâteaux de riz de Chuseok",
+      "emoji": "🍰",
+      "cat": "dessert",
+      "prixRef": 7.5,
+      "popularite": 1.5,
+      "recette": {
+       "feculents": 1,
+       "miel": 1
+      },
+      "allergenes": [],
+      "vegetarien": true,
+      "cuisson": null
+     }
+    ]
+   },
+   "feteNationale": {
+    "nom": "Fête de la Libération",
+    "quand": "15 août"
+   },
+   "evenementPrive": "Fête des 1 an de l’enfant",
+   "feries": [
+    {
+     "date": "03-01",
+     "nom": "Mouvement d’Indépendance"
+    },
+    {
+     "date": "05-05",
+     "nom": "Enfants"
+    },
+    {
+     "date": "08-15",
+     "nom": "Libération"
+    },
+    {
+     "date": "10-03",
+     "nom": "Fondation nationale"
+    },
+    {
+     "date": "10-09",
+     "nom": "Hangeul"
+    }
+   ]
+  },
+  "bangkok": {
+   "tropical": true,
+   "sport": {
+    "nom": "football et boxe thaïe",
+    "emoji": "⚽"
+   },
+   "menusRetires": [
+    "mai1",
+    "a15",
+    "vend",
+    "hallo",
+    "paques"
+   ],
+   "menusRenommes": {
+    "j14": {
+     "nom": "Menu de la fête nationale",
+     "emoji": "🎆"
+    }
+   },
+   "fenetres": {
+    "meres": {
+     "jour": "08-12",
+     "jours": 3
+    },
+    "peres": {
+     "jour": "12-05",
+     "jours": 3
+    },
+    "j14": {
+     "jour": "12-05",
+     "jours": 3
+    }
+   },
+   "feteLocale": {
+    "nom": "Songkran (Nouvel An thaï)",
+    "quand": "13-15 avril",
+    "fenetre": {
+     "de": "04-13",
+     "a": "04-15"
+    },
+    "plats": [
+     {
+      "id": "f_loc_bangkok_0",
+      "nom": "Riz au jasmin glacé (khao chae)",
+      "emoji": "🍚",
+      "cat": "plat",
+      "prixRef": 12,
+      "popularite": 1.5,
+      "recette": {
+       "feculents": 1,
+       "herbes": 1
+      },
+      "allergenes": [],
+      "vegetarien": true,
+      "cuisson": null
+     },
+     {
+      "id": "f_loc_bangkok_1",
+      "nom": "Glace coco aux fruits de Songkran",
+      "emoji": "🍧",
+      "cat": "dessert",
+      "prixRef": 9,
+      "popularite": 1.5,
+      "recette": {
+       "coco": 1,
+       "glace": 1,
+       "fruitex": 1
+      },
+      "allergenes": [
+       "lait"
+      ],
+      "vegetarien": true,
+      "cuisson": null
+     }
+    ]
+   },
+   "feteNationale": {
+    "nom": "Fête nationale",
+    "quand": "5 décembre"
+   },
+   "evenementPrive": "Repas de fête de bénédiction (inauguration)",
+   "feries": [
+    {
+     "date": "04-13",
+     "nom": "Songkran"
+    },
+    {
+     "date": "04-14",
+     "nom": "Songkran"
+    },
+    {
+     "date": "04-15",
+     "nom": "Songkran"
+    },
+    {
+     "date": "12-05",
+     "nom": "Fête nationale"
+    }
+   ]
+  },
+  "canberra": {
+   "tropical": false,
+   "sport": {
+    "nom": "rugby, cricket et football australien",
+    "emoji": "🏉"
+   },
+   "menusRetires": [
+    "mai1",
+    "a15",
+    "j14"
+   ],
+   "fenetres": {
+    "vend": {
+     "de": "03-20",
+     "a": "03-27"
+    },
+    "meres": {
+     "jour": {
+      "nieme": [
+       5,
+       0,
+       2
+      ]
+     },
+     "jours": 3
+    },
+    "peres": {
+     "jour": {
+      "nieme": [
+       9,
+       0,
+       1
+      ]
+     },
+     "jours": 3
+    }
+   },
+   "feteLocale": {
+    "nom": "Fête nationale (Australia Day)",
+    "quand": "26 janvier",
+    "fenetre": {
+     "jour": "01-26",
+     "jours": 4
+    },
+    "plats": [
+     {
+      "id": "f_loc_canberra_0",
+      "nom": "Saucisse grillée de la fête nationale",
+      "emoji": "🌭",
+      "cat": "plat",
+      "prixRef": 13,
+      "popularite": 1.5,
+      "recette": {
+       "saucisse": 1,
+       "pain": 1
+      },
+      "allergenes": [
+       "gluten"
+      ],
+      "vegetarien": false,
+      "cuisson": null
+     },
+     {
+      "id": "f_loc_canberra_1",
+      "nom": "Tartelettes au fruit de la passion",
+      "emoji": "🥧",
+      "cat": "dessert",
+      "prixRef": 7.5,
+      "popularite": 1.5,
+      "recette": {
+       "fruitex": 1,
+       "epicerie": 1
+      },
+      "allergenes": [
+       "gluten"
+      ],
+      "vegetarien": true,
+      "cuisson": null
+     }
+    ]
+   },
+   "feteNationale": {
+    "nom": "Australia Day",
+    "quand": "26 janvier"
+   },
+   "evenementPrive": "Barbecue de fin d’année entre collègues",
+   "feries": [
+    {
+     "date": "01-26",
+     "nom": "Australia Day"
+    },
+    {
+     "date": "04-25",
+     "nom": "Anzac Day"
+    },
+    {
+     "date": "12-26",
+     "nom": "Boxing Day"
+    }
+   ]
+  }
+ }
+}

@@ -9,19 +9,30 @@ B.clients.type = function (id) {
 B.clients.affluence = function (S, minute) {
   const tr = B.DATA.clients.affluence.find(function (a) { return minute >= a.de && minute < a.a; });
   if (!tr) return 0;
-  return tr.groupesParHeure * B.lieu(S.lieu).affluence * B.argent.niveau(S).affluence * (S.carte ? B.carte.facteurAffluence(S) : 1);
+  return tr.groupesParHeure * B.lieu(S.lieu).affluence * B.argent.niveau(S).affluence * (S.carte ? B.carte.facteurAffluence(S) : 1) * (S.cal ? B.cal.facteur(S, minute) : 1);
 };
 
-B.clients.tirerType = function (S) {
+/* v0.8 : la part de touristes dépend du lieu, de la saison et des vacances ; les familles viennent plus
+   les jours fériés, pendant les vacances et pour les fêtes des mères et des pères (ancien jeu). */
+B.clients.poidsTypes = function (S) {
   const T = B.DATA.clients.types;
-  let tot = 0; T.forEach(function (t) { tot += t.poids; });
+  if (!S.cal) return T.map(function (t) { return t.poids; });
+  const n = B.cal.serieDuJour(S, 0), pt = B.cal.partTouristes(S, n), ff = B.cal.facteurFamilles(S, n, S.minute);
+  const autres = T.filter(function (t) { return t.id !== 'touristes'; });
+  let tot = 0; autres.forEach(function (t) { tot += t.poids * (t.id === 'famille' ? ff : 1); });
+  return T.map(function (t) { return t.id === 'touristes' ? (pt >= 1 ? 1 : tot * pt / (1 - pt)) : t.poids * (t.id === 'famille' ? ff : 1); });
+};
+B.clients.tirerType = function (S) {
+  const T = B.DATA.clients.types, W = B.clients.poidsTypes(S);
+  let tot = 0; W.forEach(function (w) { tot += w; });
   let r = B.hasard(S) * tot;
-  for (const t of T) { r -= t.poids; if (r < 0) return t; }
+  for (let k = 0; k < T.length; k++) { r -= W[k]; if (r < 0) return T[k]; }
   return T[T.length - 1];
 };
 
-B.clients.arrivee = function (S) {
-  const type = B.clients.tirerType(S);
+B.clients.arrivee = function (S, o) {
+  o = o || {};
+  const type = o.type ? B.clients.type(o.type) : B.clients.tirerType(S);
   const taille = B.entier(S, type.taille[0], type.taille[1]);
   const noms = B.lieu(S.lieu).nomsClients;
   const e = B.DATA.salle.entree;
@@ -29,7 +40,7 @@ B.clients.arrivee = function (S) {
     id: S.prochainId++, type: type.id, taille: taille,
     nom: noms[B.entier(S, 0, noms.length - 1)],
     etat: 'file', depuis: S.minute, arrivee: S.minute,
-    patience: B.duree(S, B.DATA.clients.durees.patienceFile),
+    patience: B.duree(S, B.DATA.clients.durees.patienceFile) * (o.patience || 1),
     tables: null, x: e.x, y: e.y, chemin: [], duree: 0, serveur: null, cuisinier: null, pret: null, aMange: false
   };
   S.groupes.push(g);
@@ -79,7 +90,7 @@ B.clients.placerManuel = function (S, groupeId, tableId) {
   const g = S.groupes.find(function (x) { return x.id === groupeId && x.etat === 'file'; });
   const t = B.salle.tableDe(S, tableId);
   if (!g || !t) return { erreur: 'placement_occupee', vars: { num: tableId } };
-  const libre = function (id) { const x = B.salle.tableDe(S, id); return x && !x.groupe && !x.sale; };
+  const libre = function (id) { const x = B.salle.tableDe(S, id); return x && !x.groupe && !x.sale && !x.reserve; };
   if (!libre(tableId)) return { erreur: 'placement_occupee', vars: { num: tableId } };
   if (t.places >= g.taille) { B.clients.installer(S, g, [tableId]); return { ok: true }; }
   const r = B.DATA.salle.rallonges.find(function (r) { return r.indexOf(tableId) >= 0; });

@@ -4,7 +4,7 @@
 B.argent = {};
 B.argent.D = function () { return B.DATA.argent; };
 B.argent.niveau = function (S) { return B.DATA.argent.niveaux[S.difficulte] || B.DATA.argent.niveaux.facile; };
-B.argent.POSTES = ['achats', 'salaires', 'interim', 'cotisations', 'loyer', 'charges', 'tva', 'pret', 'indemnites', 'formations'];
+B.argent.POSTES = ['achats', 'salaires', 'interim', 'cotisations', 'loyer', 'charges', 'tva', 'pret', 'indemnites', 'formations', 'divers'];
 
 /* ---------- Salaires ---------- */
 /* Salaire d'une journée : 1/30,42 du salaire du mois (39 h) pour un employé (repos compris) ; une journée de 7 h 53 pour un intérimaire. */

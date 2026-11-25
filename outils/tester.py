@@ -32,7 +32,7 @@ MESURES_JS = r"""() => {
   out.partSalleDessinee = (fond.width * fond.height) / (vw * vh);
   out.texteSvgMin = Math.min(...[...svg.querySelectorAll('text')].map(t => parseFloat(getComputedStyle(t).fontSize) * m.a));
   const pb = [];
-  const dessus = ['accueil', 'fin', 'volet'].map(id => document.getElementById(id)).find(el => el && !el.hidden);
+  const dessus = ['evenement', 'accueil', 'fin', 'volet'].map(id => document.getElementById(id)).find(el => el && !el.hidden);
   (dessus || document).querySelectorAll('button').forEach(b => {
     if (!b.offsetParent) return;
     const r = b.getBoundingClientRect();
@@ -44,7 +44,7 @@ MESURES_JS = r"""() => {
     const e = document.elementFromPoint(r.left + r.width / 2, r.top + r.height / 2);
     if (e && e !== b && !b.contains(e)) pb.push('bouton recouvert : ' + b.textContent);
   });
-  document.querySelectorAll('#app *, #accueil *, #volet *, #fin *').forEach(el => {
+  document.querySelectorAll('#app *, #accueil *, #volet *, #fin *, #evenement *').forEach(el => {
     if (!el.offsetParent || el.closest('svg')) return;
     const txt = [...el.childNodes].some(n => n.nodeType === 3 && n.textContent.trim());
     if (txt && parseFloat(getComputedStyle(el).fontSize) < 11.9) pb.push('texte < 12 px : ' + el.textContent.slice(0, 30));
@@ -68,6 +68,8 @@ async def nouveau_contexte(b, w, h, init=None):
     p.on('console', lambda m: p.erreurs.append('console : ' + m.text) if m.type in ('error', 'warning') else None)
     await p.goto(URL, wait_until='load')
     await p.wait_for_timeout(500)
+    # v0.8 : dans les tests des étapes d'avant, les événements du jour (tirés au hasard) prennent tout seuls le choix gratuit
+    await p.evaluate('() => { if (B.ev) B.ev.choixAuto = (S, a) => B.ev.choix(S, a).length - 1; }')
     return c, p
 
 async def lancer_partie(p, captures=None):
@@ -300,7 +302,7 @@ async def main():
             tk = await p.locator('#volet-corps').inner_text()
             if 'Total' not in tk: problemes.append('ticket : pas de total')
             await p.get_by_role('button', name='Fermer').click(); await p.wait_for_timeout(200)
-        await p.evaluate('() => B.avancer(B.UI.S, 30)'); await p.wait_for_timeout(300)
+        await p.evaluate('() => B.avancer(B.UI.S, 60)'); await p.wait_for_timeout(300)
         paye = await p.evaluate("() => B.UI.S.tickets.find(t => t.pourboire > 0) || B.UI.S.tickets[0]")
         argent1 = await p.evaluate('() => B.UI.S.argent')
         rec = await p.evaluate('() => B.UI.S.stats.jour.recettes')
@@ -512,7 +514,7 @@ async def main():
         await p.locator('[data-a="continuer"], button:has-text("Continuer")').first.click(); await p.wait_for_timeout(500)
         etat = await p.evaluate("() => ({v: B.UI.S.version, jeu: B.UI.S.jeu, n: B.UI.S.equipe.length, autre: B.UI.S.equipe.filter(x => x.service === 'autre').length, repos: B.UI.S.equipe.filter(x => !x.patron && !x.repos).length, groupes: B.UI.S.groupes.length, cagnotte: B.UI.S.cagnotte, pb: B.verifier(B.UI.S)})")
         print('  ', etat)
-        if etat['v'] != 7 or etat['autre'] or etat['repos'] or etat['groupes'] < 1 or etat['pb']: problemes.append('sauvegarde 0.5.1 mal relue : ' + str(etat))
+        if etat['v'] != 8 or etat['autre'] or etat['repos'] or etat['groupes'] < 1 or etat['pb']: problemes.append('sauvegarde 0.5.1 mal relue : ' + str(etat))
         await p.screenshot(path=str(CAPTURES / '41c-reprise-0.5.1-equipe-780x360.png'))
         problemes.extend('reprise 0.5.1 : ' + e for e in p.erreurs)
         await c.close()
@@ -602,17 +604,124 @@ async def main():
             problemes.extend(f'argent {w}×{h} : ' + e for e in p.erreurs)
             await c.close()
 
-        print('1i) Sauvegarde 0.6 (format 6, en plein service) relue par la v0.7 :')
+        print('1i) Sauvegarde 0.6 (format 6, en plein service) relue par la v0.8 :')
         v6 = (RACINE / 'tests/sauvegardes-bistrot/v6-bistrot-0.6-en-service.json').read_text()
         c, p = await nouveau_contexte(b, 780, 360, "if(!sessionStorage.getItem('g6')){sessionStorage.setItem('g6','1');localStorage.setItem('bistrotjeu.test.partie'," + json.dumps(v6) + ");}")
         await p.locator('[data-a="continuer"]').click(); await p.wait_for_timeout(500)
         etat = await p.evaluate("() => ({v: B.UI.S.version, jeu: B.UI.S.jeu, d: B.UI.S.difficulte, groupes: B.UI.S.groupes.length, argent: Math.round(B.UI.S.argent), pb: B.verifier(B.UI.S)})")
         print('  ', etat)
-        if etat['v'] != 7 or etat['d'] != 'facile' or etat['groupes'] < 1 or etat['pb']: problemes.append('sauvegarde 0.6 mal relue : ' + str(etat))
+        if etat['v'] != 8 or etat['d'] != 'facile' or etat['groupes'] < 1 or etat['pb']: problemes.append('sauvegarde 0.6 mal relue : ' + str(etat))
         await p.evaluate('() => B.avancer(B.UI.S, 900)'); await p.wait_for_timeout(600)
-        await p.screenshot(path=str(CAPTURES / '51-reprise-0.6-bilan-argent-780x360.png'))
+        await p.screenshot(path=str(CAPTURES / '50b-reprise-0.6-bilan-argent-780x360.png'))
         if 'Salaires' not in await p.locator('#fin').inner_text(): problemes.append('reprise 0.6 : salaires pas payés le soir')
         problemes.extend('reprise 0.6 : ' + e for e in p.erreurs)
+        await c.close()
+
+        print('1j) Étape 6 — calendrier, météo, événements (v0.8) :')
+        for nom, w, h in TAILLES:
+            taille = f'{w}x{h}'
+            c, p = await nouveau_contexte(b, w, h)
+            await lancer_partie(p)
+            await p.evaluate('() => { B.ev.choixAuto = null; }')
+            await au_coeur_du_service(p, 60)
+            # le bouton calendrier (météo, date, fête) en haut à droite
+            await p.screenshot(path=str(CAPTURES / f'51-calendrier-bouton-{taille}.png'))
+            verifier(f'bouton calendrier {w}×{h}', await p.evaluate(MESURES_JS), p)
+            bt = await p.locator('#btn-calendrier').inner_text()
+            if '°' not in bt: problemes.append('bouton calendrier : pas de météo : ' + bt)
+            await p.locator('#btn-calendrier').click(); await p.wait_for_timeout(400)
+            if nom == 's22' or nom == 'barres':
+                await p.screenshot(path=str(CAPTURES / f'52-calendrier-aujourdhui-{taille}.png'))
+            verifier(f'calendrier aujourd’hui {w}×{h}', await p.evaluate(MESURES_JS), p)
+            if 'Clients attendus' not in await p.locator('#volet').inner_text(): problemes.append('calendrier : affluence du jour absente')
+            await p.locator('[data-cal-onglet="semaine"]').click(); await p.wait_for_timeout(300)
+            if nom == 's22': await p.screenshot(path=str(CAPTURES / '53-calendrier-7-jours-780x360.png'))
+            verifier(f'calendrier 7 jours {w}×{h}', await p.evaluate(MESURES_JS), p)
+            await p.locator('[data-cal-onglet="mois"]').click(); await p.wait_for_timeout(300)
+            await p.locator('[data-cal-mois="1"]').click(); await p.wait_for_timeout(300)
+            if nom == 's22': await p.screenshot(path=str(CAPTURES / '54-calendrier-mois-decembre-780x360.png'))
+            verifier(f'calendrier mois {w}×{h}', await p.evaluate(MESURES_JS), p)
+            if 'Noël' not in await p.locator('#volet').inner_text(): problemes.append('calendrier : Noël absent du mois de décembre')
+            await p.locator('#volet-fermer').click(); await p.wait_for_timeout(300)
+            # événement du jour : grand match ce soir (fenêtre avec 2 choix, jeu en pause)
+            await p.evaluate("() => { const S = B.UI.S; S.cal.prochain = { id: 'match', minute: S.minute }; B.avancer(S, 0.5); }")
+            await p.wait_for_timeout(500)
+            await p.screenshot(path=str(CAPTURES / f'55-evenement-match-{taille}.png'))
+            verifier(f'événement match {w}×{h}', await p.evaluate(MESURES_JS), p)
+            pause = await p.evaluate("() => !document.getElementById('evenement').hidden && !!B.UI.pauses.evenement")
+            if not pause: problemes.append('événement : la fenêtre ne s’affiche pas ou le jeu ne se met pas en pause')
+            a0 = await p.evaluate('() => B.UI.S.argent')
+            await p.locator('[data-ev-choix="0"]').click(); await p.wait_for_timeout(400)
+            a1 = await p.evaluate('() => B.UI.S.argent')
+            if abs(a0 - a1 - 150) > 0.01: problemes.append(f'écran du match : {a0 - a1} € payés au lieu de 150 €')
+            if await p.evaluate("() => !document.getElementById('evenement').hidden || !!B.UI.pauses.evenement"): problemes.append('événement : la fenêtre ne se ferme pas')
+            if nom == 's22':
+                # menu de fête proposé par le chef (on se place 7 jours avant Noël)
+                await p.evaluate("() => { const S = B.UI.S; S.calendrier.debut = '2026-12-12'; S.jour = 1; B.ev.matinFetes(S); B.UI.majCalendrier(); }")
+                await p.wait_for_timeout(400)
+                await p.locator('#btn-calendrier').click(); await p.wait_for_timeout(300)
+                await p.locator('[data-cal-onglet="evenements"]').click(); await p.wait_for_timeout(300)
+                await p.screenshot(path=str(CAPTURES / '56-menu-de-fete-propose-780x360.png'))
+                verifier('menu de fête proposé', await p.evaluate(MESURES_JS), p)
+                oui = p.get_by_role('button', name='Oui, à la carte')
+                if not await oui.count(): problemes.append('menu de fête : pas de proposition le 12 décembre à Paris')
+                else:
+                    await oui.first.click(); await p.wait_for_timeout(300)
+                # un client appelle pour un événement privé
+                await p.evaluate("() => { const S = B.UI.S, P = B.DATA.calendrier.evenementsPrives, a = P.aPartirDuJour, q = P.probaParJour; P.aPartirDuJour = 1; P.probaParJour = 1; for (let k = 0; k < 20 && !B.ev.ouverts(S).length; k++) B.ev.genererPrive(S); P.aPartirDuJour = a; P.probaParJour = q; B.UI.rafraichirVolet && B.UI.rafraichirVolet(); }")
+                await p.locator('[data-cal-onglet="evenements"]').click(); await p.wait_for_timeout(300)
+                await p.locator('.ligne-prive.a-faire').first.click(); await p.wait_for_timeout(300)
+                await p.locator('#volet-corps').evaluate('e => e.scrollTop = e.scrollHeight'); await p.wait_for_timeout(150)
+                await p.screenshot(path=str(CAPTURES / '57-evenement-prive-prix-780x360.png'))
+                verifier('événement privé : prix', await p.evaluate(MESURES_JS), p)
+                a0 = await p.evaluate('() => B.UI.S.argent')
+                await p.get_by_role('button', name='Proposer ce prix').click(); await p.wait_for_timeout(300)
+                etat = await p.evaluate('() => B.UI.S.cal.prives.map(e => e.etat)')
+                if 'contre' in etat: await p.locator('[data-cal-action="contre"]').first.click(); await p.wait_for_timeout(300)
+                print('   événement privé après la proposition :', await p.evaluate('() => B.UI.S.cal.prives.map(e => e.etat + " " + e.n + " pers. à " + e.prix + " €")'))
+                await p.locator('#volet-fermer').click(); await p.wait_for_timeout(300)
+                # l'événement privé a lieu tout à l'heure : tables gardées puis invités à table
+                await p.evaluate("""() => { const S = B.UI.S; let e = S.cal.prives.find(x => x.etat === 'reserve') || S.cal.prives[0];
+                  if (e.etat !== 'reserve') B.ev.accepter(S, e, e.prix); e.jour = S.jour; e.debut = Math.floor(S.minute) + 20; e.fin = e.debut + 150; B.avancer(S, 1); }""")
+                await p.wait_for_timeout(500)
+                await p.screenshot(path=str(CAPTURES / '58-tables-reservees-780x360.png'))
+                verifier('tables réservées', await p.evaluate(MESURES_JS), p)
+                n = await p.evaluate('() => B.UI.S.tables.filter(t => t.reserve).length')
+                if not n: problemes.append('événement privé : aucune table gardée une heure avant')
+                await p.evaluate('() => B.avancer(B.UI.S, 21)'); await p.wait_for_timeout(500)
+                await p.screenshot(path=str(CAPTURES / '58b-invites-a-table-780x360.png'))
+                # carte : les plats de Noël à la carte pendant la fête
+                await p.evaluate("() => { const S = B.UI.S; B.avancer(S, 175); S.jour += 7; B.ev.appliquerFetes(S, true); }")
+                await p.get_by_role('button', name='Carte', exact=True).click(); await p.wait_for_timeout(400)
+                if await p.locator('.badge.fete').count():
+                    await p.locator('.badge.fete').first.scroll_into_view_if_needed()
+                else: problemes.append('carte : aucun plat de fête affiché pendant Noël')
+                await p.screenshot(path=str(CAPTURES / '60-carte-plats-de-fete-780x360.png'))
+                verifier('carte plats de fête', await p.evaluate(MESURES_JS), p)
+                await p.locator('#volet-fermer').click(); await p.wait_for_timeout(300)
+            # fin de journée : la météo de demain
+            await p.evaluate('() => { const S = B.UI.S; let n = 0; while (!S.finJour && n++ < 4000) B.avancer(S, 0.5); }')
+            await p.wait_for_timeout(600)
+            if nom == 's22':
+                await p.locator('#fin .carte-fin').evaluate('e => e.scrollTop = e.scrollHeight'); await p.wait_for_timeout(150)
+                await p.screenshot(path=str(CAPTURES / '59-fin-demain-780x360.png'))
+            verifier(f'fin de journée {w}×{h}', await p.evaluate(MESURES_JS), p)
+            if 'Demain' not in await p.locator('#fin').inner_text(): problemes.append('fin de journée : pas de météo de demain')
+            pb = await p.evaluate('() => B.verifier(B.UI.S)')
+            if pb: problemes.append(f'calendrier {w}×{h} : ' + str(pb))
+            problemes.extend(f'calendrier {w}×{h} : ' + e for e in p.erreurs)
+            await c.close()
+
+        print('1k) Sauvegarde 0.7 (format 7, en plein service) relue par la v0.8 :')
+        v7 = (RACINE / 'tests/sauvegardes-bistrot/v7-bistrot-0.7-en-service.json').read_text()
+        c, p = await nouveau_contexte(b, 780, 360, "if(!sessionStorage.getItem('g7')){sessionStorage.setItem('g7','1');localStorage.setItem('bistrotjeu.test.partie'," + json.dumps(v7) + ");}")
+        await p.locator('[data-a="continuer"]').click(); await p.wait_for_timeout(600)
+        etat = await p.evaluate("() => ({v: B.UI.S.version, lieu: B.UI.S.lieu, groupes: B.UI.S.groupes.length, cal: !!B.UI.S.cal, argent: Math.round(B.UI.S.argent), pb: B.verifier(B.UI.S)})")
+        print('  ', etat)
+        if etat['v'] != 8 or not etat['cal'] or etat['groupes'] < 1 or etat['pb']: problemes.append('sauvegarde 0.7 mal relue : ' + str(etat))
+        await p.screenshot(path=str(CAPTURES / '61-reprise-0.7-780x360.png'))
+        verifier('reprise 0.7', await p.evaluate(MESURES_JS), p)
+        problemes.extend('reprise 0.7 : ' + e for e in p.erreurs)
         await c.close()
 
         print('2) Téléphone tenu en portrait :')
@@ -658,7 +767,7 @@ async def main():
         await p.get_by_role('button', name='Continuer : Chez YaYa · Bretagne · jour 1 · Facile').click(); await p.wait_for_timeout(400)
         etat = await p.evaluate("() => ({v: B.UI.S.version, equipe: B.UI.S.equipe.map(x => x.nom), volet: B.UI.voletOuvert})")
         print('  partie 0.1 relue :', etat)
-        if etat['v'] != 7 or etat['equipe'] != ['Patron'] or etat['volet'] != 'equipe': problemes.append('la sauvegarde 0.1 est mal relue')
+        if etat['v'] != 8 or etat['equipe'] != ['Patron'] or etat['volet'] != 'equipe': problemes.append('la sauvegarde 0.1 est mal relue')
         problemes.extend('sauvegarde 0.1 : ' + e for e in p.erreurs)
         await c.close()
 

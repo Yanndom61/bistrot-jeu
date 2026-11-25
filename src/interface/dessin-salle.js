@@ -73,7 +73,7 @@ UI.dessin.etiquette = function (x, y, texte, couleur) {
     '<text x="' + x + '" y="' + (y + 8) + '" class="etiq">' + UI.esc(texte) + '</text>';
 };
 
-UI.dessin.couleurs = { vert: '#2f8f55', orange: '#d9811c', rouge: '#c73a3a', neutre: '#5a463b', sale: '#8a8a8a' };
+UI.dessin.couleurs = { vert: '#2f8f55', orange: '#d9811c', rouge: '#c73a3a', neutre: '#5a463b', sale: '#8a8a8a', reserve: '#7b55c9' };
 
 UI.dessin.dynamique = function () {
   const S = UI.S, P = B.DATA.salle;
@@ -132,6 +132,11 @@ UI.dessin.dynamique = function () {
     }
   });
   S.tables.forEach(function (t) {
+    if (t.reserve && !t.groupe) {
+      const g0 = B.salle.geo(t.id), y0 = g0.y < P.allee ? g0.y - 85 : g0.y + 89, e = S.cal && S.cal.prives.find(function (x) { return x.id === t.reserve; });
+      if (e && e.installe) B.salle.places(t.id).forEach(function (p) { bas += UI.dessin.client(p.x, p.y, UI.dessin.couleurs.reserve); });
+      etiq += UI.dessin.etiquette(g0.x, y0, B.t(e && e.installe ? 'etat_court_prive' : 'etat_court_reserve'), UI.dessin.couleurs.reserve);
+    }
     if (!t.sale) return;
     const geo = B.salle.geo(t.id), y = geo.y < P.allee ? geo.y - 85 : geo.y + 89;
     etiq += UI.dessin.etiquette(geo.x, y, B.t('etat_court_sale'), UI.dessin.couleurs.sale);

@@ -1,7 +1,7 @@
 # Règles du jeu Bistrot
 
 Ce document est **la référence unique** des règles. Il est tenu à jour à chaque version.
-Version décrite : **0.7 (étape 5 « Argent » : niveaux Facile, Normal et Difficile, loyer, charges, salaires payés, indemnités, faillite, bilans du jour et de la semaine)**.
+Version décrite : **0.8 (étape 6 « Lieux, météo et calendrier » : les 44 lieux avec leur climat, leur saison touristique et leur calendrier ; météo qui change l'affluence et les commandes ; jours de la semaine, saisons, fériés, vacances ; menus de fête, événements du jour et événements privés de l'ancien jeu)**.
 
 ---
 
@@ -19,6 +19,7 @@ Version décrite : **0.7 (étape 5 « Argent » : niveaux Facile, Normal et Diff
 - **Téléphone en portrait** : un écran demande de tourner le téléphone, et la partie est en pause.
 - **Appli en arrière-plan** (on change d'appli, l'écran s'éteint) : pause et sauvegarde.
 - **Écran d'accueil** et **fin de journée** : pause.
+- **Événement du jour** (bus, match, canicule…, *v0.8*) : pause jusqu'à ta réponse.
 
 ## 2. La salle
 
@@ -46,7 +47,8 @@ Version décrite : **0.7 (étape 5 « Argent » : niveaux Facile, Normal et Diff
 
 - **Affluence** (groupes par heure, avant le coefficient du lieu) :
   11:45-12:00 : 3 · 12:00-13:30 : 5 · 13:30-14:15 : 4 · 14:15-18:30 : 1 · 18:30-19:15 : 3 · 19:15-21:00 : 5 · 21:00-21:45 : 3.
-- Ce nombre est multiplié par **l'affluence du lieu** (Paris × 1,3 ; Tokyo × 1,45 ; Mayotte × 0,75…).
+- Ce nombre est multiplié par **l'affluence du lieu** (Paris × 1,3 ; Tokyo × 1,45 ; Mayotte × 0,75…), puis par celle **du jour** : jour de la semaine, météo, vacances, fériés, fêtes, touristes et événements (voir § 5b, *v0.8*).
+- La part de **touristes** et de **familles** change selon le lieu et le jour (§ 5b) ; les autres groupes gardent leurs proportions.
 - **Placement automatique** (par défaut) : le groupe prend la plus petite table libre et propre qui suffit. Pour 5 ou 6 personnes, il faut deux tables rapprochées libres.
 - **Placement par le joueur** : le bouton « Placement : auto / moi » (en bas à droite, aussi dans Menu › Réglages) bascule le mode. En mode « moi », personne ne s'assoit tout seul : tu touches un groupe à la porte (il s'entoure en bleu), puis une table libre.
   - Si la table est trop petite, un message le dit (« Table 1 : 2 places, trop petite pour 4 pers. ») et le groupe reste choisi.
@@ -312,7 +314,60 @@ Données : `donnees/stocks.json` (réserve, fournisseurs, règles), `donnees/pri
 ## 5. Les lieux
 
 - Les **44 lieux** de l'ancien jeu sont repris tels quels : 14 en France, 7 en Outre-mer et 23 capitales du monde. Fichier : `donnees/lieux.json`.
-- À cette étape, le lieu change seulement **l'affluence** et **les noms des clients**. Il change aussi les prix conseillés, les spécialités à la carte et les pourboires (v0.4). Les salaires suivent son coefficient. La météo et le calendrier viendront à l'étape 6.
+- Chaque lieu a ses vraies particularités, reprises de l'ancien jeu :
+  - **affluence** (Paris × 1,3 ; Tokyo × 1,45 ; Mayotte × 0,75…), **noms des clients**, **prix conseillés**, **spécialités**, **pourboires**, **salaires**, **loyer** et **charges** (v0.4 à v0.7) ;
+  - **climat** (lu dans la description du lieu, comme l'ancien jeu : tropical, continental, méditerranéen…, saisons inversées dans l'hémisphère sud) ;
+  - **saison touristique** (« pic en été », « toute l'année », « faible »…) qui change la part de touristes et l'affluence ;
+  - **calendrier** : jours fériés de France, de l'Outre-mer (abolition de l'esclavage, etc.) ou du pays, **vacances scolaires** (zones A, B, C en métropole, calendriers locaux ailleurs), **fête locale** et **fête nationale** avec leurs plats, nouvel an chinois et Chuseok en Asie.
+
+## 5b. Météo, calendrier et événements *(v0.8, étape 6)*
+
+### Le bouton Calendrier (en haut à droite)
+- Il montre la **météo du jour** (☀️ ⛅ 🌧️ ❄️ et la température), la **date** et ce qui se passe (férié, fête, vacances, menu de fête, événement privé). Une pastille rouge dit combien de choses attendent ta réponse.
+- Il ouvre le volet **Calendrier et météo** (le jeu se met en pause) avec 4 onglets :
+  - **Aujourd'hui** : clients attendus par rapport à un jour ordinaire (« +12 % ») et **pourquoi** (jour de la semaine, météo, touristes, vacances, férié, fête, match…), ce que les clients vont commander, la part de touristes.
+  - **7 jours** : météo prévue, clients attendus et ce qu'il faut noter, pour la semaine.
+  - **Le mois** : grille du mois (◀ ▶ pour changer), fériés en rouge, vacances en vert, météo des 15 prochains jours.
+  - **Fêtes et événements** : menus de fête et événements privés à traiter.
+- À la fin de la journée, une ligne « Demain » donne la météo et l'affluence prévues.
+
+### Affluence : ce qui la change (repris de l'ancien jeu)
+- **Jour de la semaine** : lundi et mardi × 0,95 · mercredi × 1 · jeudi × 1,08 · vendredi × 1,18 · samedi × 1,28 · dimanche × 1,05.
+- **Météo** : soleil × 1,05 · nuages × 1 · pluie ou neige × 0,92.
+- **Vacances scolaires** : + 3,5 % par zone en vacances (une seule zone hors métropole).
+- **Jour férié** : midi × 1,2, soir × 0,9 (et × 0,8 en plus le 1er janvier et à Noël). **Fête des mères et des pères** : midi × 1,15, soir × 1,1. **Saint-Valentin** × 1,1.
+- **Touristes** : selon la saison touristique du lieu, × 1,35 en pleine saison, × 1,15 toute l'année, × 1,05 sinon, × 1 si le tourisme est faible (comparé à Paris).
+- La **part de touristes** parmi les groupes suit la formule de l'ancien jeu (plus en vacances et en pleine saison, au plus 35 %). Les **familles** sont plus nombreuses en vacances, les jours fériés à midi et pour la fête des mères et des pères.
+- La **commande automatique** tient compte de l'affluence prévue pour le lendemain (moins de commandes avant un lundi pluvieux, plus avant un samedi de vacances).
+
+### Météo et commandes des clients *(choix de Bistrot, voir PRIORITES)*
+- La météo est tirée pour chaque jour et chaque lieu à l'avance : la prévision est donc toujours juste.
+- **Il fait chaud** (22° ou plus, ou soleil à 19° ou plus) : les plats frais (salade, tartare, gaspacho…) sont choisis 1,5 fois plus, les plats chauds (soupe, gratin, pot-au-feu…) 0,7 fois ; boissons fraîches × 1,3, chaudes × 0,6.
+- **Il fait froid ou il pleut** (11° ou moins, ou pluie) : l'inverse (boissons chaudes × 1,3, fraîches × 0,8).
+- Le genre d'un plat (frais, chaud ou rien) est lu dans son nom, comme l'ancien jeu le faisait pour le menu du jour.
+
+### Menus de fête (repris de l'ancien jeu)
+- **7 jours avant** chaque fête (Noël, Saint-Valentin, Pâques, fête des mères, 14 juillet, fête locale, nouvel an chinois…), le chef propose un menu de 2 ou 3 plats. Tu réponds **Oui** ou **Non** dans le volet (onglet Fêtes et événements).
+- Si tu dis oui, ces plats sont à la carte **pendant la fête**, **en plus** de ta carte (ils ne comptent pas dans les limites 6/9/6), au prix conseillé, que tu peux changer dans Carte. Ils portent un badge « Fête ». Sans réponse, rien n'est ajouté.
+
+### Événements du jour (repris de l'ancien jeu)
+- Chaque matin à partir du jour 4, il y a **42 % de chances** qu'un événement soit tiré parmi les 13 de l'ancien jeu. Ceux qui jouent un rôle dans cette étape :
+  - 🚌 **Bus de touristes** : accueillir le groupe (5 groupes pressés arrivent d'un coup) ou refuser.
+  - ⚽ **Grand match ce soir** (le sport du lieu : rugby à Toulouse, baseball à Tokyo…) : installer un écran (150 €, + 60 % de clients le soir) ou ne rien faire (+ 20 % quand même).
+  - 🌧️ **Pluie battante** (seulement un jour de pluie) : − 20 % de clients pour la journée.
+  - 🥵 **Canicule** (seulement à 25° ou plus) : louer un climatiseur (180 €, − 8 % de clients pendant 3 jours) ou ouvrir les fenêtres (− 15 %).
+- Une fenêtre s'ouvre au milieu de l'écran, avec de gros boutons, et le jeu se met en pause jusqu'à ta réponse. Les dépenses vont dans le poste « Événements (écran, clim…) » du bilan.
+- Les 9 autres événements de l'ancien jeu (inspection, critique, panne, grève, influenceuse, augmentation, promo, flambée des prix, employé malade) sont tirés mais ne font encore rien : ils viendront avec leurs étapes.
+
+### Événements privés (repris de l'ancien jeu, en plus simple)
+- À partir du jour 4, environ **1 jour sur 9** (1,5 fois plus de mai à septembre), un client appelle pour un **anniversaire**, une **réunion de famille**, un **séminaire**, un **repas de mariage** ou le repas de fête du lieu, 1 à 4 semaines plus tard, à midi ou le soir.
+- Le chef propose un menu pris **dans ta carte**. Tu vois le coût par personne et un prix conseillé, tu règles le prix (− / +) et tu proposes :
+  - prix dans le budget du client : **réservé** ;
+  - un peu trop cher (jusqu'à 20 % de plus) : le client fait une **contre-offre** (accepter ou refuser) ;
+  - beaucoup trop cher : il demande de revoir le prix, puis abandonne au 2e refus.
+- Tu as 3 jours pour répondre. À l'accord, le client verse **30 % d'acompte** ; le reste est payé à la fin de l'événement.
+- Le jour J, des tables sont **gardées une heure avant** (étiquette « réservé ») : plus personne ne s'y assoit. À l'heure dite, les invités s'installent (étiquette « événement »), puis partent à la fin en payant le reste. Les produits du menu sont pris dans la réserve (la commande automatique les prévoit la veille).
+- Avec 32 places, au plus 19 invités : les mariages (30 personnes et plus) deviennent des réunions de famille.
 
 ## 6. L'argent et les niveaux *(v0.7, étape 5)*
 
@@ -369,7 +424,8 @@ Fichier : `donnees/argent.json`. Tout ce qui coûte chaque mois est **payé chaq
 
 - La partie est **enregistrée toute seule** : toutes les 5 minutes de jeu, quand on ouvre un volet, en fin de journée, et quand on quitte l'appli.
 - L'avant-dernière sauvegarde est gardée en secours. Si la dernière est abîmée, le jeu reprend la précédente.
-- Chaque sauvegarde porte un **numéro de version** (actuellement 7). Quand une version change le format, elle sait convertir les anciennes sauvegardes.
+- Chaque sauvegarde porte un **numéro de version** (actuellement 8). Quand une version change le format, elle sait convertir les anciennes sauvegardes.
+- **Format 7 → 8 (Bistrot 0.8)** : la partie reprend exactement où elle était (même en plein service). Elle reçoit le calendrier (météo, fériés, vacances selon son lieu, à partir de sa date) ; aucune table n'est réservée ; les menus de fête des 7 prochains jours sont proposés le jour même. Rien d'autre ne change (argent, équipe, carte, stocks gardés).
 - **Format 6 → 7 (Bistrot 0.7)** : la partie reprend exactement où elle était (même en plein service), **en Facile** (propriétaire, pas de prêt). Les salaires et les charges sont payés à partir du soir même. L'ancienneté des employés compte à partir de la mise à jour (période d'essai de 30 jours). Les comptes de la semaine démarrent le jour de la reprise.
 - **Format 5 → 6 (Bistrot 0.6)** : la partie reprend exactement où elle était (même en plein service). Les barmans, plongeurs et agents de nettoyage « en attente de rôle » prennent leur poste ; chaque employé reçoit 2 jours de repos qui se suivent (personne n'est absent le jour de la reprise : les repos commencent le lendemain) ; la cagnotte garde son montant ; propreté 80 ; un candidat est ajouté pour chaque nouveau poste (barman, plongeur, nettoyage, apprenti) s'il reste une place.
 - **Format 4 → 5 (Bistrot 0.5)** : une partie de la v0.4 reçoit les boissons de base à sa carte, un calendrier (jour 1 = date de création), et ses premières courses (payées). La commande automatique suit la règle Facile.
@@ -404,36 +460,38 @@ Tailles de référence testées (en pixels « CSS », téléphone en paysage) :
 - Ces chiffres sont mesurés automatiquement par `outils/tester.py` à chaque version.
 - Installé sur l'écran d'accueil, le jeu s'ouvre **en plein écran et en paysage**.
 
-## 10. Équilibre mesuré (simulateur, 30 jours, v0.7)
+## 10. Équilibre mesuré (simulateur, 30 jours, v0.8)
 
-Joueur moyen : patron en salle + 1 serveur + 1 commis de cuisine, prix conseillés, **commande automatique** et **intérim automatique** activés (ils le sont d'office en Facile ; en Normal et Difficile, il faut activer ces options ou s'en occuper soi-même), partie commencée le 25 novembre. Les jours de repos du commis, un commis intérimaire est appelé ; ceux du serveur, le patron sert seul. Pas d'agent de nettoyage.
+Joueur moyen : patron en salle + 1 serveur + 1 commis de cuisine, prix conseillés, **commande automatique** et **intérim automatique** activés (ils le sont d'office en Facile ; en Normal et Difficile, il faut activer ces options ou s'en occuper soi-même), partie commencée le 25 novembre (météo, calendrier et événements compris depuis la v0.8 : il dit oui aux menus de fête, propose le prix conseillé aux événements privés et répond un événement du jour sur deux). Les jours de repos du commis, un commis intérimaire est appelé ; ceux du serveur, le patron sert seul. Pas d'agent de nettoyage.
 
 **Bénéfice réel par jour** (celui du bilan du soir, après tout ce qui est payé) :
 
 | Lieu | Facile | Normal | Difficile | Caisse au jour 30 (Facile / Normal / Difficile) |
 |---|---|---|---|---|
-| Mayotte | **596 €** | **422 €** | **231 €** | 617 383 € / 52 153 € / 21 426 € |
-| La Réunion | **1 242 €** | **982 €** | **732 €** | 636 512 € / 68 699 € / 36 219 € |
-| Bretagne | **1 135 €** | **884 €** | **591 €** | 633 421 € / 65 874 € / 32 096 € |
-| Île-de-France | **1 343 €** | **1 002 €** | **743 €** | 639 428 € / 69 193 € / 36 432 € |
-| Paris | **2 092 €** | **1 561 €** | **1 122 €** | 661 527 € / 85 598 € / 47 422 € |
-| Tokyo | **2 345 €** | **1 731 €** | **1 466 €** | 669 078 € / 90 653 € / 57 697 € |
-| New York | **2 538 €** | **1 809 €** | **1 624 €** | 674 442 € / 92 563 € / 62 041 € |
+| Mayotte | **554 €** | **383 €** | **207 €** | 616 139 € / 51 007 € / 20 726 € |
+| La Réunion | **1 594 €** | **1 293 €** | **923 €** | 647 052 € / 78 015 € / 41 938 € |
+| Bretagne | **1 094 €** | **848 €** | **592 €** | 632 228 € / 64 839 € / 32 168 € |
+| Île-de-France | **1 310 €** | **973 €** | **651 €** | 638 488 € / 68 389 € / 33 716 € |
+| Paris | **2 203 €** | **1 660 €** | **1 330 €** | 664 745 € / 88 444 € / 53 558 € |
+| Tokyo | **2 309 €** | **1 698 €** | **1 332 €** | 668 009 € / 89 671 € / 53 681 € |
+| New York | **2 790 €** | **2 034 €** | **1 702 €** | 681 814 € / 99 118 € / 64 169 € |
 
-- **Facile : un joueur moyen reste bénéficiaire partout** (contrôle automatique). Paris, par jour : recettes 3 126 €, produits 704 €, salaires 198 € + intérim 45 €, charges 87 €.
-- **Normal : plus serré** (≈ 25 à 30 % de moins), mais encore bénéficiaire partout. Paris, en plus : loyer 197 €, cotisations 50 €, TVA 284 € par jour.
+**Facile, les 44 lieux** (bénéfice réel par jour, 30 jours, v0.8) : tous bénéficiaires. Les plus serrés : Mayotte 554 €, Guyane 596 €, Brasilia 651 €, Dakar 725 €, Canberra 860 €, Centre 861 € ; les plus forts : New York 2 790 €, Londres 2 498 €, Tokyo 2 309 €, Paris 2 203 €. Détail lieu par lieu dans `tests/resultat-simulation-30-jours.txt`.
+
+- **Facile : un joueur moyen reste bénéficiaire partout** (contrôle automatique). Paris, par jour : recettes 3 263 €, produits 729 €, salaires 198 € + intérim 45 €, charges 87 €.
+- **Normal : plus serré** (≈ 25 à 30 % de moins), mais encore bénéficiaire partout. Paris, en plus : loyer 197 €, cotisations 50 €, TVA 297 € par jour.
 - **Difficile : encore plus serré** (≈ 35 à 60 % de moins que Facile) : 20 % de clients en moins, prêt (≈ 50 € par jour) et seulement 15 000 € en caisse au départ. **Les erreurs coûtent cher** (Difficile, 30 jours, par jour) :
 
 | Erreur | Paris | Mayotte |
 |---|---|---|
-| Aucune (joueur moyen) | 1 122 € | 231 € |
-| Prix de toute la carte 50 % trop hauts | 312 € | **−116 €** |
-| Oublier de commander les produits | **−459 €** | **−326 €** |
-| Embaucher tout le monde (16 employés) | **−217 €** | **−1 045 €**, faillite le jour 20 |
+| Aucune (joueur moyen) | 1 330 € | 207 € |
+| Prix de toute la carte 50 % trop hauts | 501 € | **−81 €** |
+| Oublier de commander les produits | **−403 €** | **−330 €** |
+| Embaucher tout le monde (16 employés) | **−166 €** | **−1 044 €**, faillite le jour 21 |
 
 - Ce que le simulateur ne sait pas faire : un « très bon joueur ». Avec le moteur actuel, un 2e serveur ne fait pas gagner plus (la cuisine limite) ; la marge vient surtout d'une équipe à la bonne taille, de bons prix et de commandes régulières.
 - **Équipe complète en Facile** (Paris, on embauche chaque candidat qui a une place) : 16/16 au bout de 20 jours ; 93 servis par jour, salaires ≈ 1 460 € par jour, **bénéfice réel ≈ 987 € par jour** (moins que le joueur moyen : une grosse équipe coûte cher).
-- **Autres contrôles automatiques** : les salaires, l'intérim, le loyer et le prêt du soir sont exacts ; indemnités (0 € en période d'essai, 3 jours de salaire après, loi après 8 mois) ; faillite seulement après 7 soirs sous zéro avec une alerte chaque soir, partie relue avec la faillite ; le compteur repart à zéro quand la caisse remonte ; achats refusés au-delà du découvert ; bilan de la semaine = somme des 7 bilans du jour ; sauvegarde 0.6 reprise en plein service, en Facile.
+- **Autres contrôles automatiques** : les salaires, l'intérim, le loyer et le prêt du soir sont exacts ; indemnités (0 € en période d'essai, 3 jours de salaire après, loi après 8 mois) ; faillite seulement après 7 soirs sous zéro avec une alerte chaque soir, partie relue avec la faillite ; le compteur repart à zéro quand la caisse remonte ; achats refusés au-delà du découvert ; bilan de la semaine = somme des 7 bilans du jour ; sauvegarde 0.6 reprise en plein service, en Facile ; *(v0.8)* 44 lieux contrôlés sur 2 ans (météo, fériés, vacances, touristes, affluence sans valeur absurde), samedi plus fort que lundi, saisons inversées au sud, 14 juillet férié à Paris et 22 mai en Martinique, plus de plats frais vendus les jours chauds (Provence : 35 % contre 13 % les jours froids), menus de fête et événements privés menés jusqu'au bout, sauvegarde 0.7 reprise en plein service.
 - **Effets mesurés** (Paris, 8 jours) : serveur aimable (9) ≈ 102 € de pourboires par jour contre ≈ 32 € (2) ; sommelier : 862 → 948 boissons ; propreté après 20 jours sans agent 36/100, avec un agent 100/100 ; chef ou second : +1 en qualité ; plongeur : cuisine × 1,15 → × 1,07 ; barman : 9 s → 2 s par boisson.
 - Les recettes ont augmenté depuis la v0.4 (boissons et menu du jour) ; les achats font 20 à 29 % des recettes.
 - **Menu du jour modifié** (contrôle automatique) : un plat faisable est accepté, un plat sans ingrédients est refusé avec la liste de ce qui manque, « pas de dessert » donne la formule entrée + plat, le plat est obligatoire, le choix tient dans la sauvegarde, et le lendemain un nouveau menu est proposé automatiquement.

@@ -9,8 +9,8 @@ On ne travaille que sur la colonne **Indispensable**, dans l'ordre. Toute nouvel
 | ✅ 2. Carte des plats, prix et paiement des clients *(v0.4)* | Contrôle d'hygiène surprise (type Alim'confiance) | |
 | ✅ 3. Stocks, fournisseurs et vrais prix de gros (Rungis), **avec menu du jour, boissons et plats de saison** (décision de Yann) *(v0.5 ; menu du jour modifiable en v0.5.1, validé par Yann)* | Fiches techniques des plats (grammages, coût matière) | Mise à jour des prix Rungis (nouveau relevé) |
 | ✅ 4. Équipe : **les 16 postes tous recrutables** (décision de Yann), plannings avec 2 jours de repos qui se suivent, formations (dont sommellerie), cagnotte des pourboires partagée chaque mois, intérim pour les absences, effets des qualités, propreté *(v0.6, validé par Yann)* | Écran « Crédits et sources » | |
-| ✅ 5. Argent : loyer et charges selon les lieux, salaires payés (grille HCR) et intérim, indemnités de renvoi, niveaux Facile / Normal / Difficile, faillite claire (sauvegarde gardée), bilans du jour et de la semaine *(v0.7, en test)* | | |
-| 6. Lieux (effets complets), météo et calendrier | | |
+| ✅ 5. Argent : loyer et charges selon les lieux, salaires payés (grille HCR) et intérim, indemnités de renvoi, niveaux Facile / Normal / Difficile, faillite claire (sauvegarde gardée), bilans du jour et de la semaine *(v0.7, validé par Yann : TVA et Difficile gardés tels quels)* | | |
+| ✅ 6. Lieux (effets complets), météo et calendrier : climat et saison touristique de chaque lieu, météo qui change l'affluence et les commandes, jours de la semaine, saisons, fériés et vacances selon le lieu, menus de fête, événements du jour (bus, match, pluie, canicule) et événements privés de l'ancien jeu *(v0.8, en test)* | Événements des autres étapes : inspection, critique, panne, grève, influenceuse… | |
 | 7. Tutoriel progressif, mode d'emploi « ? », objectifs | | |
 | 8. Avis clients, réputation | | |
 
@@ -26,6 +26,7 @@ On ne travaille que sur la colonne **Indispensable**, dans l'ordre. Toute nouvel
 - **Menu du jour, boissons (carte et bar) et plats de saison** : arrivent avec l'étape 3 « Stocks » *(fait en v0.5)*. Le barman est recrutable depuis la v0.6.
 - **Commande automatique** : une option, activée par défaut en Facile seulement *(fait en v0.5)*.
 - **Menu du jour modifiable** : le jeu propose chaque matin, Yann peut changer chaque plat parmi ceux faisables, changer les prix et revenir à la proposition *(fait en v0.5.1)*.
+- **TVA et Difficile** : gardés tels quels (v0.7 validée).
 - **Renvoyer** : possible dès maintenant *(fait en v0.3)*. Pas le patron, jamais la salle ou la cuisine vide en service, et en plein service la personne finit sa tâche puis part.
 
 ## Questions en attente pour Yann
@@ -73,3 +74,14 @@ On ne travaille que sur la colonne **Indispensable**, dans l'ordre. Toute nouvel
   - Bilan de la semaine tous les 7 jours de jeu (jours 1 à 7, 8 à 14…).
   - Volet **Argent** qu'on ouvre en touchant la caisse en haut à gauche (pas de nouveau bouton dans la barre, déjà pleine). Dans la barre, « en pause » devient « pause » pour laisser la place.
   - Les parties d'avant restent en Facile ; la période d'essai des employés repart à la mise à jour.
+  - ✅ Validé par Yann : la v0.7 est gardée telle quelle (TVA et Difficile compris).
+- **Choix de la v0.8 à valider** (tous expliqués dans REGLES §5 et §5b) :
+  - **Météo et commandes** : l'ancien jeu ne changeait que le menu du jour avec la météo. Bistrot fait aussi changer les commandes : par temps chaud, plats frais × 1,5 et plats chauds × 0,7, boissons fraîches × 1,3 et chaudes × 0,6 ; par temps froid ou pluie, l'inverse. Quelques mots ont été ajoutés à la liste des plats « frais » et « chauds » de l'ancien jeu.
+  - Météo tirée à l'avance pour chaque jour et chaque lieu : la prévision de 7 jours est toujours juste.
+  - La commande automatique tient compte de l'affluence prévue le lendemain.
+  - **Événements du jour** : même tirage que l'ancien jeu (42 % des matins à partir du jour 4, parmi les 13 événements) ; seuls bus, match, pluie et canicule font quelque chose ; les 9 autres ne font rien pour l'instant. La pluie battante n'arrive qu'un jour de pluie, la canicule qu'à 25° ou plus. Pas d'effet de la canicule sur les produits. Sans réponse avant la fin du service, l'événement tombe (canicule = fenêtres ouvertes).
+  - **Menus de fête** : proposés 7 jours avant, Oui / Non dans le volet ; sans réponse, rien n'est ajouté ; plats au prix conseillé, en plus de la carte.
+  - **Événements privés, en plus simple que l'ancien jeu** : pas de choix de gamme ni d'échange de plats (le menu est pris dans ta carte) ; prix réglé de 1 € en 1 € ; le reste est payé même s'il manque des produits ; la charge de travail de l'équipe n'est pas comptée (les invités sont servis d'office) ; avec 32 places, 19 invités au plus et pas de mariage ; fin du soir à 22:15 au lieu de 23:00 (le restaurant ferme à 22:30) ; pas de réponse possible après le bilan du soir.
+  - **Vacances** : après l'été 2028 (fin des dates officielles connues), les vacances de 2027-2028 se répètent. Outre-mer et étranger : le calendrier simplifié de l'ancien jeu.
+  - **Touristes** : la formule de l'ancien jeu (à Mayotte, presque aucun touriste hors vacances).
+  - **Ajouts à l'écran** (pas dans la demande mot pour mot, nécessaires pour jouer) : le **bouton Calendrier** en haut du panneau de droite (sur l'écran de 300 px de haut, il se met en bas à côté de « Placement ») ; la **fenêtre d'événement** au milieu de l'écran ; la ligne **« Demain »** dans le bilan du soir ; le poste **« Événements (écran, clim…) »** dans l'argent ; les invités d'un événement privé dessinés en violet.

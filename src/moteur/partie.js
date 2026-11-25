@@ -3,7 +3,7 @@ B.statsVides = function () {
   return { groupes: 0, arrives: 0, servis: 0, repartis: 0, fileMax: 0, attenteCommande: 0, nbCommandes: 0,
     recettes: 0, pourboires: 0, couverts: 0, tickets: 0, coutMatiere: 0, platsRenvoyes: 0, platsVendus: {},
     achats: 0, gaspillage: 0, gaspillagePortions: 0, jetes: [], ruptures: 0, partisRupture: 0, mdjVendus: 0, emporter: 0, boissons: 0,
-    formations: 0, partisSale: 0, salaires: 0, interim: 0, cotisations: 0, loyer: 0, charges: 0, tva: 0, pret: 0, indemnites: 0 };
+    formations: 0, partisSale: 0, salaires: 0, interim: 0, cotisations: 0, loyer: 0, charges: 0, tva: 0, pret: 0, indemnites: 0, divers: 0, prives: 0 };
 };
 
 B.nouvellePartie = function (o) {
@@ -54,7 +54,8 @@ B.nouvellePartie = function (o) {
     historique: [],
     semaine: null,
     semaines: [],
-    reporte: {}
+    reporte: {},
+    cal: B.ev.etatVide()
   };
 };
 
@@ -67,6 +68,7 @@ B.creerPartie = function (o) {
   B.equipe.genererDepart(S);
   B.carte.creer(S);
   B.stock.creer(S);
+  B.ev.matin(S);
   return S;
 };
 
@@ -95,6 +97,7 @@ B.pas = function (S, h) {
   });
   const parMinute = B.clients.affluence(S, S.minute) / 60;
   if (parMinute > 0 && B.hasard(S) < parMinute * h) B.clients.arrivee(S);
+  B.ev.pas(S);
   B.stock.livrer(S);
   B.menuJour.emporter(S, h);
   B.clients.placer(S);
@@ -112,7 +115,7 @@ B.finDeJournee = function (S) {
       if (g.aMange && g.etat !== 'depart') { S.stats.jour.servis += g.taille; B.carte.payer(S, g); }
     });
     S.groupes = [];
-    S.tables.forEach(function (t) { t.groupe = null; t.sale = false; t.serveur = null; });
+    S.tables.forEach(function (t) { t.groupe = null; t.sale = false; t.serveur = null; t.reserve = null; });
     S.equipe.forEach(function (w) { w.tache = null; w.chemin = []; });
     B.message(S, 'msg_fin_forcee');
   }
@@ -133,6 +136,7 @@ B.finDeJournee = function (S) {
       meilleurPlat: B.carte.meilleurPlat(S),
       achats: B.r2(st.achats), gaspillage: st.gaspillage, gaspillagePortions: st.gaspillagePortions, jetes: st.jetes,
       ruptures: Object.keys(S.stocks.ruptures).map(function (id) { const r = S.stocks.ruptures[id]; return { nom: r.nom, cause: r.cause, vars: r.vars, refus: r.refus, debut: r.debut, fin: r.fin, manque: r.manque }; }),
+      prives: st.prives || 0,
       partisRupture: st.partisRupture, mdjVendus: st.mdjVendus, emporter: st.emporter, boissons: st.boissons,
       resultat: compte.resultat, depenses: compte.depenses, totalDepenses: compte.totalDepenses, caisse: S.argent,
       formations: B.r2(st.formations || 0), partisSale: st.partisSale || 0,
@@ -163,7 +167,8 @@ B.jourSuivant = function (S) {
   S.bilan = null;
   S.groupes = [];
   B.equipe.matin(S);
-  S.tables.forEach(function (t) { t.groupe = null; t.sale = false; t.serveur = null; });
+  S.tables.forEach(function (t) { t.groupe = null; t.sale = false; t.serveur = null; t.reserve = null; });
+  B.ev.matin(S);
   S.equipe.forEach(function (w) { const b = B.equipe.base(S, w); w.x = b.x; w.y = b.y; w.chemin = []; w.tache = null; });
   B.equipe.nouveauxCandidats(S);
   S.ouvert = B.equipe.peutOuvrir(S);
@@ -195,6 +200,7 @@ B.verifier = function (S) {
       else if (!g.tables || g.tables.indexOf(t.id) < 0) pb.push('table ' + t.id + ' et groupe ' + g.id + ' ne se correspondent pas');
     }
     if (t.groupe && t.sale) pb.push('table ' + t.id + ' occupée et sale à la fois');
+    if (t.groupe && t.reserve) pb.push('table ' + t.id + ' réservée et occupée à la fois');
   });
   S.groupes.forEach(function (g) {
     const assis = ['marche', 'carte', 'commande', 'cuisine', 'pret', 'mange', 'addition'].indexOf(g.etat) >= 0;
@@ -226,5 +232,10 @@ B.verifier = function (S) {
   if (S.argent < -B.DATA.argent.decouvertAutorise - 50000) pb.push('argent bien trop négatif sans faillite');
   if ((S.decouvert || 0) >= B.DATA.argent.faillite.soirsDeSuite && !S.faillite) pb.push('faillite oubliée');
   S.equipe.forEach(function (p) { if (!p.patron && !p.interim && !(p.embauche >= 1)) pb.push(p.nom + ' sans jour d’embauche'); });
+  if (!S.cal) pb.push('calendrier absent');
+  else {
+    S.cal.prives.forEach(function (e) { if (e.etat === 'reserve' && !(e.prix > 0 && e.n > 0)) pb.push('événement privé sans prix'); });
+    if (S.cal.attente && !B.ev.defEvenement(S.cal.attente.id)) pb.push('événement du jour inconnu');
+  }
   return pb;
 };

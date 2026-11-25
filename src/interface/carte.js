@@ -9,6 +9,7 @@ UI.badgesPlat = function (S, d) {
   let h = '';
   if (S.stocks && S.carte.plats[d.id] && S.carte.plats[d.id].on && !B.carte.disponible(S, d.id)) h += '<span class="badge rouge">' + UI.esc(B.t('carte_badge_rupture')) + '</span>';
   if (d.saison) h += '<span class="badge ' + (B.carte.enSaison(S, d) ? 'veg' : 'gris') + '">' + UI.esc(B.t(B.carte.enSaison(S, d) ? 'carte_badge_saison' : 'carte_badge_hors_saison')) + '</span>';
+  if (d.fete) h += '<span class="badge fete">' + UI.esc(B.t('carte_badge_fete')) + '</span>';
   if (d.local) h += '<span class="badge local">' + UI.esc(B.t('carte_badge_local')) + '</span>';
   if (d.cat === 'boisson') { if (d.alcool) h += '<span class="badge">' + UI.esc(B.t('carte_badge_alcool')) + '</span>'; return h; }
   if (B.DATA.carte.faitMaison) h += '<span class="badge fm">' + UI.esc(B.t('carte_badge_fm')) + '</span>';

@@ -1,7 +1,7 @@
 /* sauvegarde.js — enregistrer et relire une partie. Chaque sauvegarde porte un numéro de version.
    Quand le format change, on ajoute une étape dans B.MIGRATIONS (de la version n à n+1) :
    ainsi chaque nouvelle version du jeu sait relire toutes les anciennes. */
-B.VERSION_SAUVEGARDE = 7;
+B.VERSION_SAUVEGARDE = 8;
 
 B.MIGRATIONS = {
   /* v1 → v2 (Bistrot 0.2) : l'équipe arrive. Le patron démarre seul (Léa n'est plus là), avec des candidats.
@@ -106,6 +106,19 @@ B.MIGRATIONS = {
     for (const k in v) if (S.stats.jour[k] == null) S.stats.jour[k] = v[k];
     if (S.bilan && S.bilan.resultat != null && !S.bilan.depenses) S.bilan.ancienFormat = true;
     S.version = 7;
+    return S;
+  },
+  /* v7 → v8 (Bistrot 0.8) : lieux, météo et calendrier. La météo et le calendrier se calculent à partir de la date :
+     rien à convertir. On ajoute l'état des fêtes et des événements (vide) ; le chef propose dès maintenant
+     les menus de fête des 7 prochains jours ; les événements du jour et privés commencent demain matin. */
+  7: function (S) {
+    S.cal = B.ev.etatVide();
+    S.tables.forEach(function (t) { t.reserve = null; });
+    const v = B.statsVides();
+    for (const k in v) if (S.stats.jour[k] == null) S.stats.jour[k] = v[k];
+    if (S.carte) B.carte.catalogue(S).forEach(function (d) { if (!S.carte.plats[d.id]) S.carte.plats[d.id] = { on: false, prix: B.carte.prixConseille(S, d) }; });
+    if (S.carte && S.stocks) B.ev.matinFetes(S);
+    S.version = 8;
     return S;
   }
 };

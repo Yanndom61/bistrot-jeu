@@ -33,8 +33,9 @@ UI.majFin = function () {
       b.proprete ? B.t('fin_d_proprete', { avant: b.proprete.avant, apres: b.proprete.apres }) : '',
       b.partisSale ? B.t('fin_d_partis_sale', { n: b.partisSale }) : '',
       (b.absents || []).length ? B.t('fin_d_absents', { n: b.absents.map(function (x) { return x.nom.split(' ')[0]; }).join(', ') }) : '',
-      b.partage ? B.t('fin_d_partage', { total: B.prix(b.partage.total), n: b.partage.n, part: B.prix(b.partage.part) }) : ''
-    ].filter(Boolean).map(function (x) { return '<span>' + UI.esc(x) + '</span>'; }).join('') + '</div>' + UI.htmlFinRuptures(b) + UI.htmlFinSemaine(b) +
+      b.partage ? B.t('fin_d_partage', { total: B.prix(b.partage.total), n: b.partage.n, part: B.prix(b.partage.part) }) : '',
+      b.prives ? B.t('fin_d_prives', { n: b.prives }) : ''
+    ].filter(Boolean).map(function (x) { return '<span>' + UI.esc(x) + '</span>'; }).join('') + '</div>' + UI.htmlFinRuptures(b) + UI.htmlFinSemaine(b) + '<p class="fin-demain">' + UI.esc(UI.texteDemain(S)) + '</p>' +
     '<button type="button" class="gros principal" id="fin-suivant">' + UI.esc(B.t('fin_suivant', { jour: b.jour + 1 })) + '</button></div>';
   el.hidden = false;
   UI.sauver();
@@ -43,6 +44,7 @@ UI.majFin = function () {
     el.hidden = true;
     UI.sauver();
     UI.majBarre();
+    UI.majCalendrier();
     if (!UI.S.ouvert) UI.ouvrirVolet('equipe');
   });
 };
@@ -66,8 +68,9 @@ UI.boucle = function (ts) {
       if (UI.derniereSauvegarde == null || S.minute - UI.derniereSauvegarde >= B.DATA.regles.sauvegarde.toutesLesMinutesDeJeu || S.minute < UI.derniereSauvegarde) UI.sauver();
     }
     if (S.finJour) UI.majFin();
+    UI.majEvenement();
     UI.dessin.dynamique();
-    if (!UI._tDetail || ts - UI._tDetail > 250) { UI._tDetail = ts; UI.majDetail(); UI.majBarre(); }
+    if (!UI._tDetail || ts - UI._tDetail > 250) { UI._tDetail = ts; UI.majDetail(); UI.majBarre(); UI.majCalendrier(); }
   }
   UI.majMessages(Date.now());
   requestAnimationFrame(UI.boucle);
@@ -85,6 +88,7 @@ UI.init = function () {
   UI.initCarte();
   UI.initStocks();
   UI.initArgent();
+  UI.initCalendrier();
   UI.initPlacement();
   UI.initPortrait();
   const r = UI.chargerPartie();

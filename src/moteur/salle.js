@@ -48,7 +48,7 @@ B.salle.bouger = function (p, dist) {
 B.salle.chercher = function (S, taille) {
   const libre = function (id) {
     const t = S.tables.find(function (x) { return x.id === id; });
-    return t && !t.groupe && !t.sale;
+    return t && !t.groupe && !t.sale && !t.reserve;
   };
   const seules = S.tables.filter(function (t) { return libre(t.id) && t.places >= taille; })
     .sort(function (a, b) { return a.places - b.places || a.id - b.id; });

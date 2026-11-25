@@ -1,5 +1,5 @@
 // simuler.mjs — joue des journées entières sans écran et sort un bilan.
-// Utilisation : node outils/simuler.mjs [jours=5] [lieux=paris,tokyo,...]
+// Utilisation : node outils/simuler.mjs [jours=5] [lieux=paris,tokyo,... ou tous]
 import vm from 'node:vm';
 import fs from 'node:fs';
 import path from 'node:path';
@@ -8,12 +8,25 @@ import { moteur } from './assembler.mjs';
 
 const RACINE = path.resolve(path.dirname(fileURLToPath(import.meta.url)), '..');
 const jours = +(process.argv[2] || 5);
-const lieux = (process.argv[3] || 'paris,idf,bretagne,corse,reunion,polynesie,londres,new-york,tokyo,dakar,canberra,mayotte').split(',');
+const LISTE = process.argv[3] || 'paris,idf,bretagne,corse,reunion,polynesie,londres,new-york,tokyo,dakar,canberra,mayotte';
+const NIVEAUX7 = ['paris', 'idf', 'bretagne', 'reunion', 'new-york', 'tokyo', 'mayotte'];   /* lieux joués aussi en Normal et Difficile */
 
 const ctx = {};
 vm.createContext(ctx);
 vm.runInContext(moteur() + '\nthis.B = B;', ctx);
 const B = ctx.B;
+const lieux = LISTE === 'tous' ? B.DATA.lieux.lieux.map((l) => l.id) : LISTE.split(',');
+/* Joueur moyen face aux événements (v0.8) : un choix sur deux pour les événements du jour, oui aux menus de fête,
+   prix conseillé pour les événements privés, puis 2,4 × le coût si le client discute, contre-offre acceptée. */
+B.ev.choixAuto = (S, a) => (S.jour + a.minute) % 2;
+function gererEvenements(S) {
+  for (const f of B.ev.fetesEnAttente(S)) B.ev.repondreFete(S, f.id, true);
+  for (const e of B.ev.ouverts(S)) {
+    if (e.etat === 'contre') B.ev.accepterContre(S, e.id);
+    else if (e.etat === 'appel') B.ev.proposer(S, e.id);
+    else if (e.etat === 'nego') { e.prix = Math.ceil(B.ev.coutParPersonne(S, e) * 2.4); B.ev.proposer(S, e.id); }
+  }
+}
 
 let erreurs = 0;
 const probleme = (msg) => { erreurs++; console.log('  ✗ ' + msg); };
@@ -37,7 +50,7 @@ function jouer(S, etiquette, jours, afficher, avantNuit) {
   cumul.resultat = 0; cumul.dep = {}; cumul.faillite = null;
   let argentAvant = S.argent;
   for (let j = 1; j <= jours; j++) {
-    if (!S.ouvert) B.ouvrir(S);
+    if (!S.ouvert) { gererEvenements(S); B.ouvrir(S); }
     if (!S.ouvert) { probleme(etiquette + ' : impossible d’ouvrir'); return cumul; }
     let pas = 0;
     const interims = S.equipe.filter((p) => p.interim);
@@ -46,6 +59,7 @@ function jouer(S, etiquette, jours, afficher, avantNuit) {
     while (!S.finJour && pas < 4000) {
       B.avancer(S, 0.5);
       pas++;
+      if (pas % 60 === 0) gererEvenements(S);
       if (pas === 120 || pas === 1100) {
         const r = B.relire(B.serialiser(S));
         if (!r.partie) probleme('sauvegarde illisible : ' + r.erreur);
@@ -640,8 +654,8 @@ console.log('\nÉtape 5 — Argent :');
     return jouer(S, lieu + ' ' + niveau, nj, false);
   };
   const tableau = {};
-  for (const [lieu, c] of resumeLieux) tableau[lieu] = { facile: c };
-  for (const niveau of ['normal', 'difficile']) for (const [lieu] of resumeLieux) tableau[lieu][niveau] = moyen(lieu, niveau, jours);
+  for (const [lieu, c] of resumeLieux) if (NIVEAUX7.includes(lieu) || resumeLieux.length <= 12) tableau[lieu] = { facile: c };
+  for (const niveau of ['normal', 'difficile']) for (const lieu in tableau) tableau[lieu][niveau] = moyen(lieu, niveau, jours);
   console.log(`  Gains d'un joueur moyen par jour (${jours} jours, bénéfice réel du bilan du soir, après tout ce qui est payé) :`);
   console.log('  lieu           Facile     Normal  Difficile   caisse finale Facile / Normal / Difficile');
   let ok = true;
@@ -785,6 +799,122 @@ console.log('\nÉtape 5 — Argent :');
       if (!S.bilan || !(S.bilan.depenses.salaires > 0)) probleme('sauvegarde 0.6 : salaires pas payés le soir');
       if (txt !== fs.readFileSync(path.join(RACINE, f), 'utf8')) probleme('sauvegarde 0.6 : le fichier d’origine a changé');
       console.log(`  Sauvegarde 0.6 (Bretagne, jour ${S.jour}, ${g0} groupes en salle, ${B.euros(a0)}) : reprise en Facile, service fini, soir payé (salaires ${B.euros(S.bilan.depenses.salaires)}, charges ${B.euros(S.bilan.depenses.charges)}), caisse ${B.euros(S.argent)}.`);
+    }
+  }
+}
+
+// ===== Étape 6 : lieux, météo, calendrier, événements =====
+console.log('\nÉtape 6 — Lieux, météo et calendrier :');
+{
+  if (B.VERSION_SAUVEGARDE !== 8 || B.VERSION_JEU !== '0.8.0') probleme('versions attendues : sauvegarde 8, jeu 0.8.0');
+  // 1) Les 44 lieux : météo, calendrier, touristes sur 2 ans, sans valeur absurde.
+  const L = B.DATA.lieux.lieux;
+  if (L.length !== 44) probleme('il faut 44 lieux, il y en a ' + L.length);
+  const lignes = [];
+  for (const l of L) {
+    const S = B.creerPartie({ nom: 'T', lieu: l.id, graine: 3, debut: '2026-11-25' });
+    let fer = 0, vac = 0, pluie = 0, chaud = 0, froid = 0, fmin = 9, fmax = 0, tmin = 99, tmax = -99, tour = 0;
+    for (let d = 0; d < 730; d++) {
+      const i = B.cal.infos(S, d), m = i.meteo, tp = B.cal.partTouristes(S, i.serie);
+      if (!['soleil', 'nuages', 'pluie', 'neige'].includes(m.ciel) || !Number.isFinite(m.temp) || !Number.isFinite(i.facteur)) { probleme(l.id + ' : météo ou affluence invalide le ' + i.texte); break; }
+      if (i.ferie) fer++; if (i.vacances) vac++; if (m.ciel === 'pluie' || m.ciel === 'neige') pluie++;
+      if (m.ressenti === 'chaud') chaud++; if (m.ressenti === 'froid') froid++;
+      fmin = Math.min(fmin, i.facteur); fmax = Math.max(fmax, i.facteur); tmin = Math.min(tmin, m.temp); tmax = Math.max(tmax, m.temp); tour += tp;
+      if (!(tp >= 0 && tp <= 0.5)) { probleme(l.id + ' : part de touristes hors limites ' + tp); break; }
+    }
+    if (fer < 5) probleme(l.id + ' : trop peu de jours fériés (' + fer + ' en 2 ans)');
+    if (!vac) probleme(l.id + ' : aucune vacance scolaire');
+    if (!(fmin > 0.5 && fmax < 2)) probleme(l.id + ` : affluence du jour hors limites (${fmin.toFixed(2)}–${fmax.toFixed(2)})`);
+    if (tmin < -30 || tmax > 45) probleme(l.id + ' : températures absurdes');
+    lignes.push(`${l.id} ${tmin}…${tmax}° pluie ${Math.round(pluie / 7.3)} % fériés ${fer / 2}/an vacances ${Math.round(vac / 7.3)} % touristes ${Math.round(tour / 7.3)} % affluence ×${fmin.toFixed(2)}…×${fmax.toFixed(2)}`);
+  }
+  console.log('  44 lieux sur 2 ans (température, jours de pluie, fériés, vacances, touristes moyens, affluence du jour) :');
+  for (let k = 0; k < lignes.length; k += 2) console.log('   ' + lignes.slice(k, k + 2).join('  |  '));
+  // 2) Jours de la semaine, fériés, saisons inversées, vacances par zone.
+  {
+    const S = B.creerPartie({ nom: 'T', lieu: 'bretagne', graine: 3, debut: '2027-03-01' });   /* lundi */
+    const lun = B.cal.facteurCalendrier(S, B.cal.serieDuJour(S, 0), 720), sam = B.cal.facteurCalendrier(S, B.cal.serieDuJour(S, 5), 720);
+    if (!(sam > lun)) probleme('le samedi devrait attirer plus que le lundi');
+    const SR = B.creerPartie({ nom: 'T', lieu: 'reunion', graine: 3, debut: '2027-01-15' });
+    if (B.cal.saison(SR, 0) !== 'ete' || B.cal.saison(B.creerPartie({ nom: 'T', lieu: 'bretagne', graine: 3, debut: '2027-01-15' }), 0) !== 'hiver') probleme('saisons : hémisphère sud pas inversé');
+    const S14 = B.creerPartie({ nom: 'T', lieu: 'paris', graine: 3, debut: '2027-07-14' });
+    const i14 = B.cal.infos(S14, 0);
+    if (!i14.ferie) probleme('le 14 juillet devrait être férié à Paris');
+    const SM = B.creerPartie({ nom: 'T', lieu: 'martinique', graine: 3, debut: '2027-05-22' });
+    if (!B.cal.infos(SM, 0).ferie) probleme('le 22 mai devrait être férié en Martinique (abolition)');
+    console.log(`  Bretagne : lundi ×${lun.toFixed(2)}, samedi ×${sam.toFixed(2)} ; Paris le 14 juillet : « ${i14.ferie && i14.ferie.nom} » ; La Réunion en janvier : ${B.t('saison_' + B.cal.saison(SR, 0))}.`);
+  }
+  // 3) Météo : la pluie fait baisser l'affluence ; le chaud fait commander plus de plats frais et de boissons fraîches.
+  {
+    const M = B.DATA.meteo.ciels;
+    if (!(M.pluie.affluence < M.nuages.affluence && M.soleil.affluence > M.nuages.affluence)) probleme('météo : pluie et soleil devraient changer l’affluence');
+    let S = B.creerPartie({ nom: 'T', lieu: 'provence', graine: 77, debut: '2027-04-20' });
+    S.interimAuto = true; S.stocks.auto = true; recruter(S, ['serv', 'commis']);
+    const part = { chaud: [0, 0], froid: [0, 0], doux: [0, 0] };
+    const c = jouer(S, 'météo', 40, false, (T) => {
+      const r = B.meteo.aujourdhui(T).ressenti, pv = T.stats.jour.platsVendus;
+      for (const id in pv) { const d = B.carte.plat(T, id); const g = d && B.meteo.genrePlat(d); if (g === 'frais') part[r][0] += pv[id]; if (g) part[r][1] += pv[id]; }
+    });
+    const pc = (k) => part[k][1] ? Math.round(part[k][0] / part[k][1] * 100) : null;
+    console.log(`  Provence, 40 jours d’avril à mai : plats « frais » = ${pc('chaud')} % des plats typés les jours chauds, ${pc('doux')} % les jours doux, ${pc('froid')} % les jours froids ou de pluie.`);
+    if (pc('chaud') != null && pc('froid') != null && !(pc('chaud') > pc('froid'))) probleme('météo : il devrait se vendre plus de plats frais quand il fait chaud');
+    if (c.faillite) probleme('météo : faillite');
+  }
+  // 4) Événements du jour, menus de fête, événements privés (Paris, 75 jours depuis le 25 novembre).
+  {
+    let S = B.creerPartie({ nom: 'T', lieu: 'paris', graine: 9, debut: '2026-11-25' });
+    S.interimAuto = true; S.stocks.auto = true; recruter(S, ['serv', 'commis']);
+    let fetePlats = 0, joursFete = 0, horsFete = 0;
+    const c = jouer(S, 'événements', 75, false, (T) => {
+      const fe = B.carte.surCarte(T).filter((id) => B.carte.plat(T, id).fete);
+      if (fe.length) { joursFete++; fetePlats += fe.length; }
+      for (const id of fe) { const f = Object.values(T.cal.fetes).find((x) => x.etat === 'oui' && T.jour >= x.debut && T.jour <= x.fin); if (!f) horsFete++; }
+    });
+    const T = c.S, j = T.journal.map((m) => m.texte).join('\n');
+    const nb = (re) => (j.match(re) || []).length;
+    const fetes = Object.values(T.cal.fetes), oui = fetes.filter((f) => f.etat === 'oui');
+    const fin = T.cal.prives.filter((e) => e.etat === 'fini'), resa = T.cal.prives.filter((e) => e.etat === 'reserve');
+    console.log(`  Paris 75 jours : ${fetes.length} menus de fête proposés (${oui.length} acceptés, plats de fête à la carte ${joursFete} jours) ; événements privés : ${fin.length} faits, ${resa.length} réservés, ${T.cal.prives.filter((e) => e.etat === 'perdu').length} perdus (sur les 12 derniers gardés) ; dépenses « événements » ${B.euros(c.dep.divers || 0)}.`);
+    if (!fetes.length || !oui.length || !joursFete) probleme('menus de fête : aucun proposé ou mis à la carte à Paris entre novembre et février');
+    if (horsFete) probleme('un plat de fête est resté à la carte en dehors de sa fête');
+    if (!fin.length) probleme('aucun événement privé fait en 75 jours à Paris');
+    for (const e of fin) if (!(e.prix > 0 && e.n > 0)) probleme('événement privé fini sans prix');
+    if (T.tables.some((t) => t.reserve)) probleme('une table est restée réservée la nuit');
+  }
+  {
+    // bus, match, pluie, canicule : déclenchés un par un, avec chaque choix.
+    const S = B.creerPartie({ nom: 'T', lieu: 'tokyo', graine: 5, debut: '2027-08-02' });
+    recruter(S, ['serv', 'commis']); B.ouvrir(S);
+    const res = [];
+    for (const id of ['bus', 'match', 'canicule']) for (const k of [0, 1]) {
+      const a0 = S.argent, g0 = S.cal.arrivees.length, f0 = B.ev.facteur(S, 1300);
+      S.cal.prochain = { id, minute: S.minute }; const auto = B.ev.choixAuto; B.ev.choixAuto = null;
+      B.ev.declencher(S); B.ev.choixAuto = auto;
+      if (!S.cal.attente || S.cal.attente.id !== id) probleme('événement ' + id + ' : pas de choix proposé');
+      B.ev.choisir(S, k);
+      res.push(`${id}/${k} : ${B.euros(a0 - S.argent)}, affluence soir ×${(B.ev.facteur(S, 1300) / f0).toFixed(2)}${id === 'bus' ? ', ' + (S.cal.arrivees.length - g0) + ' groupes' : ''}`);
+      if (id === 'bus' && k === 0 && S.cal.arrivees.length - g0 !== 5) probleme('bus accepté : 5 groupes attendus');
+      if (id === 'match' && k === 0 && Math.abs(a0 - S.argent - 150) > 0.01) probleme('écran du match : 150 € attendus');
+    }
+    console.log('  Événements du jour (Tokyo) : ' + res.join(' ; '));
+    S.cal.effets = [];
+  }
+  // 5) Sauvegarde Bistrot 0.7 (format 7) en plein service : convertie, calendrier ajouté, service fini.
+  {
+    const f = 'tests/sauvegardes-bistrot/v7-bistrot-0.7-en-service.json';
+    const txt = fs.readFileSync(path.join(RACINE, f), 'utf8');
+    const o = JSON.parse(txt), r = B.relire(txt);
+    if (!r.partie) probleme('sauvegarde 0.7 : ' + r.erreur);
+    else {
+      const S = r.partie;
+      if (S.version !== 8 || !S.cal || S.argent !== o.argent || S.groupes.length !== o.groupes.length || S.equipe.length !== o.equipe.length || S.tables.some((t) => t.reserve)) probleme('sauvegarde 0.7 mal convertie');
+      B.verifier(S).forEach((pb) => probleme('sauvegarde 0.7 : ' + pb));
+      let pas = 0; while (!S.finJour && pas++ < 4000) B.avancer(S, 0.5);
+      B.verifier(S).forEach((pb) => probleme('sauvegarde 0.7 après le service : ' + pb));
+      B.jourSuivant(S);
+      B.verifier(S).forEach((pb) => probleme('sauvegarde 0.7 le lendemain : ' + pb));
+      if (txt !== fs.readFileSync(path.join(RACINE, f), 'utf8')) probleme('sauvegarde 0.7 : le fichier d’origine a changé');
+      console.log(`  Sauvegarde 0.7 (${o.lieu}, jour ${o.jour}, ${o.groupes.length} groupes en salle, ${B.euros(o.argent)}) : convertie en format 8, service fini, lendemain ${B.texteDate(S)} (${B.meteo.aujourdhui(S).emoji} ${B.meteo.aujourdhui(S).temp}°).`);
     }
   }
 }

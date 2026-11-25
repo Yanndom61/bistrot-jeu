@@ -1,0 +1,39 @@
+{
+ "_explication": "Météo (étape 6, v0.8), reprise de l'ancien jeu Chez YaYa (v7 et v9.6). Le temps de chaque jour dépend de la date et du lieu (toujours le même pour un jour donné, donc prévisible). Mois de 0 (janvier) à 11 (décembre) ; dans l'hémisphère sud, les mois sont décalés de 6.",
+ "ciels": {
+  "soleil": { "emoji": "☀️", "affluence": 1.05 },
+  "nuages": { "emoji": "⛅", "affluence": 1.0 },
+  "pluie": { "emoji": "🌧️", "affluence": 0.92 },
+  "neige": { "emoji": "🌨️", "affluence": 0.92 }
+ },
+ "base": {
+  "_explication": "Climat de Paris (ancien jeu) : température moyenne, chance de pluie et de soleil par mois.",
+  "temperature": [5, 6, 10, 13, 17, 21, 24, 24, 20, 15, 9, 6],
+  "pluie": [0.36, 0.32, 0.3, 0.3, 0.28, 0.2, 0.12, 0.14, 0.24, 0.33, 0.38, 0.38],
+  "soleil": [0.15, 0.2, 0.3, 0.38, 0.45, 0.6, 0.72, 0.7, 0.5, 0.3, 0.18, 0.15],
+  "soleilPlus": 3, "pluieMoins": 2, "ecart": 3,
+  "lieux": ["paris", "idf"]
+ },
+ "climats": [
+  { "motif": "tropical|équatorial", "temperature": [28, 28, 28, 27, 26, 25, 24, 24, 25, 26, 27, 28], "pluie": [0.5, 0.5, 0.4, 0.3, 0.2, 0.15, 0.15, 0.15, 0.2, 0.3, 0.4, 0.5], "soleil": 0.3 },
+  { "motif": "désert", "temperature": [14, 16, 20, 25, 29, 32, 34, 34, 30, 26, 20, 15], "pluie": 0.02, "soleil": 0.85 },
+  { "motif": "méditerranéen|chaud et sec|ensoleillé", "plusChaud": 4, "pluieEte": 0.08, "pluieAutre": 0.25, "soleil": 0.65 },
+  { "motif": "continental|très froid|hiver très", "temperature": [-3, -1, 4, 10, 16, 21, 24, 23, 18, 11, 4, 0], "tresFroid": 5, "pluie": 0.22, "soleil": 0.4 },
+  { "motif": "pluvieux|gris|humide|frais", "plusChaud": -2, "pluie": 0.42, "soleil": 0.22 }
+ ],
+ "parDefaut": { "pluie": 0.28, "soleil": 0.4 },
+ "temperatureFixe": { "mexico": 19 },
+ "neigeSous": 1,
+ "ressenti": {
+  "_explication": "Comme le menu du jour de l'ancien jeu : « chaud » à 22° et plus (ou soleil et 19° et plus) ; « froid » à 11° et moins, ou s'il pleut.",
+  "chaudDes": 22, "chaudSoleilDes": 19, "froidJusqua": 11
+ },
+ "commandes": {
+  "_explication": "Ce que les clients commandent selon le temps (choix de la v0.8). Plats frais (salades, tartares…) et plats chauds et réconfortants (soupes, gratins…) reconnus à leur nom, comme dans l'ancien jeu.",
+  "platAdapte": 1.5, "platContraire": 0.7,
+  "boissonsChaud": { "froid": 1.3, "chaud": 0.6 },
+  "boissonsFroid": { "froid": 0.8, "chaud": 1.3 },
+  "motifFrais": "salade|gazpacho|gaspacho|salmorejo|tartare|carpaccio|sorbet|melon|glac|verrine|ceviche|taboul|tomate|froid|poke|concombre|tzatziki|burrata|panna|vierge|houmous|mimosa|sushi",
+  "motifChaud": "velouté|soupe|gratin|pot-au-feu|braisé|tartif|blanquette|hachis|bourguignon|cassoulet|choucroute|confit|potée|fondant|crumble|cassolette|risotto|chili|curry|cari|tajine|ramen|goulash|carbonnade|aligot|coq au vin|osso|lasagne|couscous|chaud|tiède|raclette|fondue|civet|daube|ragoût|bouillon"
+ }
+}

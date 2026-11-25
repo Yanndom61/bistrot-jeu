@@ -263,3 +263,70 @@ table.planning.comptes td { font-size: 15px; }
 .carte-fin.faillite h2 { color: #b8322a; font-size: 26px; text-align: center; }
 .carte-fin.faillite .rassure { background: #e7f4ea; border-radius: 8px; padding: 6px 10px; font-size: 15px; }
 .confirmation .indemnite { font-size: 16px; font-weight: 700; }
+
+/* v0.8 : calendrier, météo, événements */
+#btn-calendrier { position: relative; flex: none; display: flex; flex-direction: column; align-items: stretch; gap: 1px; min-height: 64px; padding: 4px 6px; border: 2px solid #8a6a50; border-radius: 10px; background: #fff; color: #3a2a22; text-align: left; font: inherit; }
+#btn-calendrier .cal-l1 { font-size: 17px; font-weight: 800; line-height: 1.15; }
+#btn-calendrier .cal-l1 small { font-size: 12px; font-weight: 600; color: #6d5546; margin-left: 4px; }
+#btn-calendrier .cal-l2 { font-size: 13px; font-weight: 700; line-height: 1.2; }
+#btn-calendrier .cal-l3 { font-size: 12px; font-weight: 700; line-height: 1.2; border-radius: 6px; padding: 0 4px; background: #eadfcd; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+.pastille { position: absolute; top: -6px; right: -4px; min-width: 24px; height: 24px; border-radius: 12px; background: #b8322a; color: #fff; font-style: normal; font-size: 14px; font-weight: 800; display: flex; align-items: center; justify-content: center; padding: 0 5px; box-shadow: 0 0 0 2px #f3eadb; }
+.marque, .cal-l3 { display: inline-block; }
+.marque { font-size: 14px; font-weight: 700; border-radius: 7px; padding: 1px 7px; margin: 1px 2px 1px 0; background: #eadfcd; color: #3a2a22; }
+.marque.ferie, .cal-l3.ferie { background: #fbe6e3; color: #8e2a22; }
+.marque.fete, .cal-l3.fete { background: #fff1c9; color: #6b4a00; }
+.marque.menu, .cal-l3.menu { background: #f6e0f0; color: #7a2468; }
+.marque.vac, .cal-l3.vac { background: #e7f4ea; color: #1f6b3d; }
+.marque.prive, .cal-l3.prive { background: #ece4f8; color: #5a3a9a; }
+.marque.ev, .cal-l3.ev { background: #e3eefb; color: #1d4f8f; }
+.cal-tete { display: flex; flex-wrap: wrap; align-items: baseline; gap: 4px 12px; margin: 2px 0 6px; }
+.cal-tete b { font-size: 22px; }
+.cal-tete span { font-size: 15px; color: #6d5546; }
+table.cal-7 td { font-size: 15px; }
+table.cal-7 td.gauche { text-align: left; font-weight: 400; padding-left: 4px; }
+table.cal-7 .marque { font-size: 13px; }
+.cal-nav { display: flex; align-items: center; justify-content: space-between; gap: 8px; margin: 0 0 6px; }
+.cal-nav b { font-size: 18px; }
+.cal-grille { display: grid; grid-template-columns: repeat(7, 1fr); gap: 3px; }
+.cal-entete { text-align: center; font-size: 13px; font-weight: 700; color: #6d5546; }
+.cal-case { min-height: 52px; background: #fff; border: 1px solid #eadfcd; border-radius: 6px; padding: 2px 3px; overflow: hidden; display: flex; flex-direction: column; gap: 1px; }
+.cal-case.vide { background: transparent; border: 0; }
+.cal-case .num { font-size: 15px; font-weight: 800; }
+.cal-case .num small { font-size: 13px; }
+.cal-case.passe { opacity: .55; }
+.cal-case.vac { background: #e7f4ea; }
+.cal-case.ferie .num { color: #b8322a; }
+.cal-case.auj { border: 3px solid #e08a1e; }
+.cal-case .ev { font-size: 12px; line-height: 1.15; border-radius: 4px; padding: 0 2px; background: #eadfcd; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+.cal-case .ev.ferie { background: #fbe6e3; color: #8e2a22; } .cal-case .ev.fete { background: #fff1c9; } .cal-case .ev.menu { background: #f6e0f0; } .cal-case .ev.prive { background: #ece4f8; }
+.carte-ev { background: #fff; border: 2px solid #eadfcd; border-radius: 10px; padding: 6px 10px; margin: 6px 0; display: flex; flex-direction: column; gap: 4px; }
+.carte-ev b { font-size: 17px; }
+.carte-ev .rang .petit-btn { flex: 1; }
+.ligne-prive { width: 100%; display: flex; flex-direction: column; align-items: flex-start; gap: 1px; min-height: 52px; margin: 4px 0; padding: 6px 10px; border: 2px solid #eadfcd; border-radius: 10px; background: #fff; color: #3a2a22; text-align: left; font: inherit; }
+.ligne-prive.a-faire { border-color: #b8322a; background: #fff6f4; }
+.ligne-prive b { font-size: 16px; }
+.ligne-prive .etat { font-size: 14px; font-weight: 700; color: #6d5546; }
+.ligne-prive.a-faire .etat { color: #b8322a; }
+.menu-prive { margin: 2px 0 6px 18px; padding: 0; font-size: 15px; }
+.prix-prive { display: flex; align-items: center; justify-content: center; gap: 10px; margin: 6px 0; flex-wrap: wrap; }
+.badge.fete { background: #b03a8e; color: #fff; }
+#evenement { position: fixed; inset: 0; z-index: 26; background: rgba(20, 12, 8, .55); display: flex; align-items: center; justify-content: center; padding: 10px; }
+#evenement[hidden] { display: none; }
+.carte-evenement { text-align: center; }
+.carte-evenement .gros-emoji { font-size: 40px; line-height: 1; }
+.carte-evenement p { font-size: 16px; line-height: 1.35; margin: 4px 0 8px; }
+.carte-evenement .gros { display: flex; flex-direction: column; align-items: center; justify-content: center; line-height: 1.2; }
+.carte-evenement .gros small { font-size: 13px; font-weight: 600; opacity: .85; }
+.fin-demain { background: #eef4fb; border-radius: 8px; padding: 4px 10px; font-size: 15px; font-weight: 700; margin: 4px 0; }
+@media (max-height: 330px) {
+  /* petit écran : le calendrier et le placement côte à côte, en bas du panneau */
+  #cote { display: grid; grid-template-columns: 1fr 1fr; grid-template-rows: minmax(0, 1fr) auto auto; grid-template-areas: "msg msg" "det det" "cal pla"; }
+  #messages { grid-area: msg; } #detail { grid-area: det; } #btn-placement { grid-area: pla; padding: 0 2px; line-height: 1.15; }
+  #btn-calendrier { grid-area: cal; min-height: 44px; padding: 2px 4px; align-items: center; text-align: center; }
+  #btn-calendrier .cal-l1 { font-size: 15px; }
+  #btn-calendrier .cal-l2 { font-size: 13px; white-space: nowrap; }
+  #btn-calendrier .jsem { display: none; }
+  #btn-calendrier .cal-l1 small, #btn-calendrier .cal-l3 { display: none; }
+  .carte-evenement .gros-emoji { font-size: 30px; }
+  .carte-evenement p { font-size: 15px; margin: 2px 0 4px; }
+}

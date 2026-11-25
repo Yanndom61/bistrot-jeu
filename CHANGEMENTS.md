@@ -1,5 +1,16 @@
 # Changements
 
+## v0.8 — étape 6 : lieux, météo et calendrier (lien TEST)
+- **Les 44 lieux** ont maintenant toutes leurs particularités de l'ancien jeu : climat, saison touristique, jours fériés, vacances scolaires, fête locale et fête nationale (avec leurs plats), sport du coin.
+- **Météo** chaque jour (soleil, nuages, pluie, neige, température) : elle change le nombre de clients et ce qu'ils commandent (plats frais et boissons fraîches quand il fait chaud, plats chauds et boissons chaudes quand il fait froid).
+- **Calendrier** : jours de la semaine (samedi plein, lundi calme), saisons, jours fériés, vacances selon le lieu, fête des mères, Saint-Valentin… Plus de touristes en pleine saison, plus de familles en vacances et les jours fériés.
+- Nouveau **bouton Calendrier** en haut à droite (météo, date, ce qui se passe) et son volet : Aujourd'hui (pourquoi il y a plus ou moins de monde), 7 jours, Le mois, Fêtes et événements.
+- **Menus de fête** proposés par le chef 7 jours avant (Noël, Pâques, 14 juillet, fête locale…).
+- **Événements du jour** de l'ancien jeu : bus de touristes, grand match (écran ou pas), pluie battante, canicule (clim ou fenêtres), dans une grande fenêtre avec gros boutons.
+- **Événements privés** : anniversaires, réunions de famille, séminaires… Tu fixes le prix, le client accepte, négocie ou refuse ; acompte de 30 %, tables gardées le jour J.
+- Bilan du soir : la météo de demain. Commande automatique qui prévoit l'affluence du lendemain.
+- Sauvegarde format 8 : les parties 0.7 continuent, même en plein service.
+
 ## v0.7 — étape 5 : l'argent (lien TEST)
 - **3 niveaux** au lancement : **Facile** (par défaut, propriétaire, 600 000 €), **Normal** (locataire, 40 000 €) et **Difficile** (15 000 €, un prêt à rembourser, des concurrents).
 - **Loyer** selon le lieu (Normal et Difficile) et **charges** courantes (électricité, gaz, eau, assurances, entretien, banque).

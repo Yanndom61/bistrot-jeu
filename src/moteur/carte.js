@@ -21,6 +21,8 @@ B.carte.catalogue = function (S) {
   (C.saisonniers && C.saisonniers[S.lieu] || []).forEach(function (d) { out.push(Object.assign({}, d, { local: true })); });
   (C.boissonsLocales && C.boissonsLocales[S.lieu] || []).forEach(function (d) { out.push(Object.assign({}, d, { local: true })); });
   (C.boissons || []).forEach(function (d) { out.push(Object.assign({}, d, { local: false })); });
+  /* v0.8 : plats des menus de fête (à la carte seulement pendant la fête, si tu as dit oui) */
+  if (B.ev) B.ev.platsDeFete(S).forEach(function (d) { if (!vus[d.id]) { vus[d.id] = true; out.push(Object.assign({}, d, { local: false })); } });
   out.forEach(function (d, i) { d.ordre = i; });
   B.carte._cache[S.lieu] = out;
   return out;
@@ -41,7 +43,9 @@ B.carte.cout = function (S, d) {
   for (const k in d.recette) c += B.stock.prixAchat(S, k, B.stock.habituel(S, k)) * d.recette[k];
   return Math.round(c * 100) / 100;
 };
-B.carte.enSaison = function (S, d) { return !d.saison || d.saison.indexOf(B.mois(S)) >= 0; };
+B.carte.enSaison = function (S, d) { if (d.fete) return B.ev.feteActive(S, d.fete); return !d.saison || d.saison.indexOf(B.mois(S)) >= 0; };
+/* Les plats de fête viennent en plus de la carte : ils ne comptent pas dans le maximum. */
+B.carte.horsFete = function (S, cat) { return B.carte.surCarte(S, cat).filter(function (id) { return !B.carte.plat(S, id).fete; }); };
 B.carte.disponible = function (S, id) { const d = B.carte.plat(S, id); return !!d && (!S.stocks || B.stock.peutFaire(S, d.recette)); };
 B.carte.marge = function (S, id) {
   const d = B.carte.plat(S, id), prix = S.carte.plats[id].prix, cout = B.carte.cout(S, d);
@@ -78,7 +82,8 @@ B.carte.completer = function (S) {
   B.carte.TOUTES.forEach(function (c) {
     let on = B.carte.surCarte(S, c);
     for (const d of cat) { if (on.length >= Lmin[c]) break; if (d.cat === c && !S.carte.plats[d.id].on && B.carte.enSaison(S, d)) { S.carte.plats[d.id].on = true; on = B.carte.surCarte(S, c); } }
-    while (on.length > Lmax[c]) { S.carte.plats[on[on.length - 1]].on = false; on = B.carte.surCarte(S, c); }
+    on = B.carte.horsFete(S, c);
+    while (on.length > Lmax[c]) { S.carte.plats[on[on.length - 1]].on = false; on = B.carte.horsFete(S, c); }
   });
 };
 B.carte.surCarte = function (S, cat) {
@@ -90,8 +95,8 @@ B.carte.basculer = function (S, id) {
   if (!d || !p) return 'carte_inconnu';
   const n = B.carte.surCarte(S, d.cat).length;
   if (p.on && n <= L.min[d.cat]) return 'carte_min_' + d.cat;
-  if (!p.on && !B.carte.enSaison(S, d)) return 'carte_hors_saison';
-  if (!p.on && n >= L.max[d.cat]) return 'carte_max_' + d.cat;
+  if (!p.on && !B.carte.enSaison(S, d)) return d.fete ? 'carte_hors_fete' : 'carte_hors_saison';
+  if (!p.on && !d.fete && B.carte.horsFete(S, d.cat).length >= L.max[d.cat]) return 'carte_max_' + d.cat;
   p.on = !p.on;
   return null;
 };
@@ -127,6 +132,7 @@ B.carte.choisirPlat = function (S, g, cat, type) {
     let w = d.popularite * Math.pow(rapport, R.elasticiteChoix);
     if (d.local && g.type === 'touristes') w *= R.bonusSpecialiteTouristes;
     if (d.saison) w *= R.bonusSaison || 1.25;
+    if (S.cal && cat !== 'boisson') w *= B.meteo.coefPlat(S, d);
     return { v: id, w: w };
   });
   const v = B.carte.tirer(S, poids);
@@ -168,7 +174,7 @@ B.carte.probaBoisson = function (S, base, type) {
   const idx = B.carte.indiceType(S, 'boisson', type);
   if (idx == null) return 0;
   const R = B.DATA.carte.commande;
-  return base * Math.max(R.bornesEntreeDessert[0], Math.min(R.bornesEntreeDessert[1], Math.pow(idx, -R.elasticiteEntreeDessert)));
+  return base * (S.cal ? B.meteo.coefBoisson(S, type) : 1) * Math.max(R.bornesEntreeDessert[0], Math.min(R.bornesEntreeDessert[1], Math.pow(idx, -R.elasticiteEntreeDessert)));
 };
 B.carte.boissons = function (S, g) {
   const Bo = B.DATA.stocks.boissons, out = [];

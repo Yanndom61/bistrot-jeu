@@ -177,7 +177,13 @@ B.stock.parClient = function (S) {
   });
   return out;
 };
-B.stock.clientsPrevus = function (S) { return B.DATA.stocks.auto.clientsParAffluence * (B.lieu(S.lieu).affluence || 1); };
+B.stock.clientsPrevus = function (S) { return B.DATA.stocks.auto.clientsParAffluence * (B.lieu(S.lieu).affluence || 1) * (S.cal ? B.cal.facteurJour(S, 1) : 1); };
+/* v0.8 : demain sera-t-il plus ou moins chargé que les 3 derniers jours (jour de la semaine, météo, fêtes, vacances) ? */
+B.stock.ratioDemain = function (S) {
+  if (!S.cal) return 1;
+  const passe = (B.cal.facteurJour(S, 0) + B.cal.facteurJour(S, -1) + B.cal.facteurJour(S, -2)) / 3;
+  return Math.max(0.7, Math.min(1.4, B.cal.facteurJour(S, 1) / (passe || 1)));
+};
 B.stock.estimation = function (S) {
   const pc = B.stock.parClient(S), n = B.stock.clientsPrevus(S), out = {};
   for (const id in pc) {
@@ -189,13 +195,13 @@ B.stock.estimation = function (S) {
 /* Besoin d'une journée pour chaque ingrédient : moyenne des 3 derniers jours (ventes + demandes en rupture),
    jamais moins de 70 % de l'estimation faite à partir de la carte (si la carte change). */
 B.stock.prevision = function (S) {
-  const est = B.stock.estimation(S), h = S.stocks.historique || {}, out = {};
+  const est = B.stock.estimation(S), h = S.stocks.historique || {}, out = {}, ratio = B.stock.ratioDemain(S);
   const ids = Object.keys(est).concat(Object.keys(h));
   ids.forEach(function (i) {
     const e = est[i] || 0;
     if (!e) return;   /* plus utilisé par la carte */
     const H = h[i] || [];
-    out[i] = H.length ? Math.max(H.reduce(function (s, x) { return s + x; }, 0) / H.length, e * 0.7) : e;
+    out[i] = H.length ? Math.max(H.reduce(function (s, x) { return s + x; }, 0) / H.length * ratio, e * 0.7) : e;
   });
   return out;
 };
@@ -369,7 +375,12 @@ B.stock.besoinPlan = function (S, plan) {
   });
   return out;
 };
-B.stock.besoinPlanMdj = function (S) { return S.stocks.mdjOn === false ? {} : B.stock.besoinPlan(S, S.stocks.planMdj); };
+B.stock.besoinPlanMdj = function (S) {
+  const out = S.stocks.mdjOn === false ? {} : B.stock.besoinPlan(S, S.stocks.planMdj);
+  /* v0.8 : les événements privés de demain */
+  if (S.cal) { const ev = B.ev.besoinPrives(S, S.jour + 1); for (const i in ev) out[i] = (out[i] || 0) + Math.ceil(ev[i]); }
+  return out;
+};
 
 /* ================= Menu du jour ================= */
 B.menuJour = {};
