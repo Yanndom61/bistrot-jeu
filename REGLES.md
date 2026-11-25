@@ -1,7 +1,7 @@
 # Règles du jeu Bistrot
 
 Ce document est **la référence unique** des règles. Il est tenu à jour à chaque version.
-Version décrite : **0.9 (étape 7 « Tutoriel, aide et objectifs » : guide pas à pas d'une nouvelle partie, écran d'aide de chaque volet, 12 objectifs progressifs ; base : 0.8.1, les 13 événements du jour avec un vrai effet ; 0.8, lieux, météo et calendrier)**.
+Version décrite : **1.0-test (étape 8 « Avis et réputation » : avis des clients, réputation qui change le nombre de clients, étoile Michelin, sons ; base : 0.9, guide, aide et objectifs ; 0.8.1, les 13 événements du jour ; 0.8, lieux, météo et calendrier)**.
 
 ---
 
@@ -358,11 +358,11 @@ Données : `donnees/stocks.json` (réserve, fournisseurs, règles), `donnees/pri
   - ⚽ **Grand match ce soir** (le sport du lieu) : installer un écran (150 €, + 60 % de clients le soir) ou ne rien faire (+ 20 % quand même).
   - 🌧️ **Pluie battante** (seulement un jour de pluie) : − 20 % de clients pour la journée.
   - 🥵 **Canicule** (seulement à 25° ou plus) : louer un climatiseur (180 €, − 8 % de clients pendant 3 jours) ou ouvrir les fenêtres (− 15 %).
-  - 🧑‍⚕️ **Inspection sanitaire** *(v0.8.1)* : nettoyage express (80 €, propreté + 25) ou le recevoir tel quel. Puis le résultat selon la propreté de la salle : **75 ou plus** = félicitations, + 5 % de clients pendant 5 jours ; **50 à 74** = rien ; **30 à 49** = amende de 250 € ; **sous 30** = amende de 800 € et − 5 % de clients pendant 5 jours.
-  - 🧐 **Critique gastronomique** *(v0.8.1)* : il arrive seul ; tu peux lui offrir l'apéritif (20 €). Sa note = la note habituelle du repas − 0,35 (il est exigeant), + 0,4 avec l'apéritif. **4 ★ ou plus** : + 10 % de clients pendant 7 jours ; **moins de 3 ★** (ou s'il repart sans manger) : − 10 % pendant 7 jours ; entre les deux, rien.
+  - 🧑‍⚕️ **Inspection sanitaire** *(v0.8.1, réputation en v1.0)* : nettoyage express (80 €, propreté + 25) ou le recevoir tel quel. Puis le résultat selon la propreté de la salle : **75 ou plus** = félicitations, la réputation monte (vers 5 ★, poids 0,05) ; **50 à 74** = rien ; **30 à 49** = amende de 250 € et la réputation baisse un peu (vers 1 ★, poids 0,03) ; **sous 30** = amende de 800 € et la réputation baisse (vers 1 ★, poids 0,08). *(Avant la v1.0 : ± 5 % de clients pendant 5 jours, en attendant la réputation.)*
+  - 🧐 **Critique gastronomique** *(v0.8.1, réputation en v1.0)* : il arrive seul ; tu peux lui offrir l'apéritif (20 €). Sa note = la note habituelle du repas − 0,35 (il est exigeant), + 0,4 avec l'apéritif. Comme dans l'ancien jeu, **son repas pèse 12 fois plus qu'un client** (poids 0,18) et il publie toujours son article dans les avis (poids 0,15 de plus). **4,5 ★ ou plus** : en plus, + 15 % de clients pendant 5 jours (bouche-à-oreille). **S'il repart sans manger** : article à 1 ★ (poids 0,15). *(Avant la v1.0 : ± 10 % de clients pendant 7 jours.)*
   - 🔧 **Panne** *(v0.8.1)* : le **four** (la cuisine va presque 2 fois moins vite, × 1,82) ou le **réfrigérateur** (les produits frais perdent 1 jour de fraîcheur de plus chaque matin). Réparer tout de suite (180 à 420 €) ou bricoler (gratuit, panne aujourd'hui et demain).
   - ✊ **Grève chez un fournisseur** *(v0.8.1)* : pendant 2 ou 3 jours, impossible de lui commander, et ses livraisons en route arrivent à la fin de la grève. La commande automatique passe par le fournisseur le moins cher qui reste.
-  - 📸 **Influenceuse** *(v0.8.1)* : lui offrir le repas (40 €, + 25 % de clients pendant 4 jours) ou rien (+ 8 % pendant 4 jours, elle parle quand même de toi).
+  - 📸 **Influenceuse** *(v0.8.1, réputation en v1.0)* : lui offrir le repas (40 €, + 25 % de clients pendant 4 jours, et la réputation monte vers 5 ★, poids 0,04, comme dans l'ancien jeu) ou rien (+ 8 % pendant 4 jours, elle parle quand même de toi). Comme dans l'ancien jeu, elle ne vient que si ta réputation est d'au moins 2,5 ★.
   - 💬 **Demande d'augmentation** *(v0.8.1)* : un employé demande 8 € de plus par jour. Accepter = + 1,44 € de l'heure sur son salaire ; refuser = 1 chance sur 5 qu'il démissionne (il part le soir, après le service).
   - 🏷️ **Promo grossiste** *(v0.8.1)* : un lot de 30 portions (bœuf, paleron, poisson, jambon ou fromage) à − 40 %, livré tout de suite. Le lot est réduit s'il n'y a pas assez de place dans la réserve.
   - 📈 **Flambée des prix** *(v0.8.1)* : un produit (bœuf, poisson, fromage, jambon, vin, café ou crème) coûte 30 % plus cher à l'achat pendant 5 jours.
@@ -427,7 +427,35 @@ Fichier : `donnees/argent.json`. Tout ce qui coûte chaque mois est **payé chaq
 
 - Les messages s'affichent dans **leur propre zone, en haut à droite**. Elle ne recouvre jamais un bouton ni la salle.
 - On voit au plus **3 messages** à la fois. S'il y en a plus, une ligne indique « +4 messages ». Chaque message disparaît seul après 6 secondes.
-- Tous les messages restent lisibles dans le **Journal** (bouton en haut), du plus récent au plus ancien. Les 300 derniers sont gardés.
+- Tous les messages restent lisibles dans le **Journal** (bouton en haut), du plus récent au plus ancien. Les 300 derniers sont gardés. Depuis la v1.0, le Journal a deux onglets : **📜 Journal** et **⭐ Avis** (voir 7a).
+
+## 7a. Réputation, avis des clients et étoile Michelin *(v1.0, étape 8)*
+
+Tout est repris de l'ancien jeu (même calcul, mêmes poids), sauf ce qui est marqué « choix ».
+
+### La réputation
+- Une note de **0,5 à 5 ★**, qui démarre à **3 ★** (une partie de l'ancien jeu garde sa note).
+- Elle **change le nombre de clients** : × (0,5 + 0,2 × note) / 1,1. À 3 ★ : comme avant ; à 4 ★ : + 18 % ; à 5 ★ : + 36 % ; à 2 ★ : − 18 %. La ligne « Réputation » de Calendrier → Aujourd'hui le montre, et l'affluence du jour en tient compte.
+- **Chaque table qui paie** tire la note vers ses étoiles (la note du repas : plats, cuissons, attente, prix, propreté, amabilité des serveurs… calculée comme avant), avec un petit poids (0,015). Exemple : réputation 3, une table à 5 ★ → 3,03.
+- **Un avis publié** compte un peu plus (poids 0,02 de plus).
+- **Clients partis sans manger** : partis de la file d'attente → la note baisse un tout petit peu (vers 2,5, poids 0,0004 par groupe) ; partis parce que la salle est sale → vers 2,5, poids 0,004 ; plus rien à manger (rupture) → vers 1, poids 0,03, et ils écrivent un avis à 1 ★.
+- **Événements** : inspection, critique et influenceuse font bouger la réputation (voir 5b).
+- On la voit : dans le panneau de droite (« ⭐ Réputation 3,4 / 5 », la toucher ouvre les avis), dans le **Journal → onglet « ⭐ Avis »**, dans Calendrier → Aujourd'hui, et dans le **bilan du soir** (réputation, évolution du jour, nombre d'avis, meilleur et moins bon avis du jour).
+
+### Les avis des clients
+- Après avoir payé, une table écrit parfois un avis : **12 %** des tables, et jusqu'à **32 %** quand elles sont très contentes (5 ★) ou très déçues (1 ★), comme dans l'ancien jeu.
+- Un avis = des étoiles, un prénom, le jour et l'heure, et **une phrase courte** en français simple, selon les étoiles (phrases de l'ancien jeu, raccourcies), parfois avec le nom du plat mangé, et parfois un point fort (« Service rapide. ») ou un point faible (« Beaucoup trop d'attente. »), choisi d'après ce qui a été le mieux ou le moins bien pour cette table : plats, attente, prix, propreté ou amabilité. *(Choix : l'ancien jeu avait des phrases plus longues ; on garde une phrase + un point au plus.)*
+- Le Journal → « ⭐ Avis » montre les **30 derniers** en gros caractères (17 px), avec la moyenne. Les 80 derniers sont gardés dans la sauvegarde.
+
+### L'étoile Michelin
+- Comme dans l'ancien jeu : au moins **30 jours** de jeu et une brigade **au sommet**. *(Choix, adapté au nouveau jeu : au moins **8 employés** fixes, et chacun au **niveau 10** dans toutes les formations de son service.)*
+- Un matin, une fenêtre s'ouvre : « Un inspecteur du guide Michelin veut te rencontrer » : **Recevoir l'inspecteur** ou **Plus tard** (il repasse le lendemain matin). *(Choix : l'ancien jeu redemandait dans l'heure.)*
+- En le recevant : **étoile Michelin** (pour toujours), **réputation + 0,4**, et une **réception privée** à payer ce soir (1 800 €, dans « Événements »).
+- *Pas repris* (ils dépendent de choses qui n'existent pas encore dans le nouveau jeu) : le niveau maximum 20 du patron, l'agrandissement gratuit, les abonnés.
+
+### Les sons
+- Des sons **simples et doux**, fabriqués par le navigateur (comme l'ancien jeu, mêmes notes) : la caisse quand une table paie, une petite mélodie pour un événement, un « bravo » pour un objectif ou l'étoile, un « ding » en fin de journée, un son grave et doux quand des clients repartent sans manger, un petit clic sur les boutons.
+- **Coupés au départ** *(choix, par prudence : téléphone dans un lieu public, et les navigateurs bloquent le son avant un premier toucher ; l'ancien jeu avait le son allumé)*. Menu → Réglages → **Son : Oui / Non** et **Volume** (− / +, de 1 à 10, 5 au départ). Gardé sur le téléphone, comme la pause automatique.
 
 ## 7b. Guide, aide et objectifs *(v0.9, étape 7)*
 
@@ -454,7 +482,8 @@ Fichier : `donnees/argent.json`. Tout ce qui coûte chaque mois est **payé chaq
 
 - La partie est **enregistrée toute seule** : toutes les 5 minutes de jeu, quand on ouvre un volet, en fin de journée, et quand on quitte l'appli.
 - L'avant-dernière sauvegarde est gardée en secours. Si la dernière est abîmée, le jeu reprend la précédente.
-- Chaque sauvegarde porte un **numéro de version** (actuellement 8). Quand une version change le format, elle sait convertir les anciennes sauvegardes.
+- Chaque sauvegarde porte un **numéro de version** (actuellement 9). Quand une version change le format, elle sait convertir les anciennes sauvegardes.
+- **Format 8 → 9 (Bistrot 1.0-test)** : la partie reprend exactement où elle était (même en plein service). Sa note (3 ★, ou celle reprise de l'ancien jeu) devient la **réputation** ; la liste d'avis démarre vide ; pas d'étoile Michelin. Les bonus de clients que la v0.8.1 donnait **à la place** de la réputation (inspection, critique) encore en cours sont **remplacés par leur effet sur la réputation** (félicitations : vers 5 ★, poids 0,05 ; sanction : vers 1 ★, poids 0,08 ; bon article : vers 4,5 ★, mauvais : vers 1,5 ★, poids 0,18). Le bonus de l'influenceuse est gardé (il existe aussi dans l'ancien jeu). Rien d'autre ne change (argent, équipe, carte, stocks, objectifs gardés).
 - **Bistrot 0.8.1 et 0.9 gardent le format 8** : les nouveautés (effets des événements en 0.8.1 ; guide et objectifs en 0.9) sont des champs en plus, facultatifs. Une partie 0.8 ou 0.8.1 se relit telle quelle, même en plein service, sans passer par le guide.
 - **Format 7 → 8 (Bistrot 0.8)** : la partie reprend exactement où elle était (même en plein service). Elle reçoit le calendrier (météo, fériés, vacances selon son lieu, à partir de sa date) ; aucune table n'est réservée ; les menus de fête des 7 prochains jours sont proposés le jour même. Rien d'autre ne change (argent, équipe, carte, stocks gardés).
 - **Format 6 → 7 (Bistrot 0.7)** : la partie reprend exactement où elle était (même en plein service), **en Facile** (propriétaire, pas de prêt). Les salaires et les charges sont payés à partir du soir même. L'ancienneté des employés compte à partir de la mise à jour (période d'essai de 30 jours). Les comptes de la semaine démarrent le jour de la reprise.

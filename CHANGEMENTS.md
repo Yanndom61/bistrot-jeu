@@ -1,5 +1,13 @@
 # Changements
 
+## v1.0-test — étape 8 : avis des clients et réputation (lien TEST)
+- **Réputation** sur 5 étoiles (départ 3 ★), comme dans l'ancien jeu : elle monte quand les clients sont contents (bons plats, peu d'attente, prix justes, salle propre, serveurs aimables) et baisse quand ils attendent trop, repartent sans manger ou trouvent la salle sale. **Plus elle est haute, plus il vient de clients.**
+- **Avis des clients** : courts, en français simple, avec les étoiles et un prénom. À lire dans **Journal → ⭐ Avis** (ou en touchant « ⭐ Réputation » à droite). Le bilan du soir montre la réputation du jour et le meilleur avis.
+- **Événements branchés sur la réputation** : l'inspection, le critique et l'influenceuse font maintenant monter ou baisser la vraie réputation (avant : quelques jours de clients en plus ou en moins). Un critique enthousiaste amène en plus des clients pendant 5 jours.
+- **Étoile Michelin** (ancien jeu) : après 30 jours, avec 8 employés tous au niveau 10, un inspecteur demande à venir. Étoile, réputation + 0,4, réception de 1 800 €.
+- **Sons** simples et doux (caisse, événement, bravo, fin de journée…), **coupés au départ** : Menu → Son (Oui / Non) et Volume (− / +).
+- Sauvegarde format 9 : les parties 0.9 continuent sans rien perdre, même en plein service.
+
 ## v0.9 — étape 7 : guide, aide et objectifs (lien TEST)
 - **Guide pas à pas** pour une nouvelle partie : 10 étapes en gros textes, le bouton dont on parle entouré en jaune. On peut le passer, revenir en arrière, et le revoir quand on veut (Menu → Aide et objectifs).
 - **Écran d'aide** (Menu → Aide et objectifs) : un gros bouton par sujet (salle et temps, carte, stocks, équipe, argent, calendrier, événements, propreté), avec une explication courte en grands caractères.
