@@ -521,35 +521,37 @@ Tailles de référence testées (en pixels « CSS », téléphone en paysage) :
 - Ces chiffres sont mesurés automatiquement par `outils/tester.py` à chaque version.
 - Installé sur l'écran d'accueil, le jeu s'ouvre **en plein écran et en paysage**.
 
-## 10. Équilibre mesuré (simulateur, 30 jours, v0.9 : mêmes chiffres qu'en v0.8.1, le guide et les objectifs ne changent pas le jeu)
+## 10. Équilibre mesuré (simulateur, 30 jours, v1.0-test : avec la réputation)
 
-Joueur moyen : patron en salle + 1 serveur + 1 commis de cuisine, prix conseillés, **commande automatique** et **intérim automatique** activés (ils le sont d'office en Facile ; en Normal et Difficile, il faut activer ces options ou s'en occuper soi-même), partie commencée le 25 novembre (météo, calendrier et événements compris depuis la v0.8 : il dit oui aux menus de fête, propose le prix conseillé aux événements privés et répond un événement du jour sur deux ; depuis la v0.8.1, les 13 événements ont leur effet). Les jours de repos du commis, un commis intérimaire est appelé ; ceux du serveur, le patron sert seul. Pas d'agent de nettoyage.
+Joueur moyen : patron en salle + 1 serveur + 1 commis de cuisine, prix conseillés, **commande automatique** et **intérim automatique** activés (ils le sont d'office en Facile ; en Normal et Difficile, il faut activer ces options ou s'en occuper soi-même), partie commencée le 25 novembre (météo, calendrier et événements compris depuis la v0.8 : il dit oui aux menus de fête, propose le prix conseillé aux événements privés et répond un événement du jour sur deux ; depuis la v0.8.1, les 13 événements ont leur effet ; depuis la v1.0, la réputation change le nombre de clients). Les jours de repos du commis, un commis intérimaire est appelé ; ceux du serveur, le patron sert seul. Pas d'agent de nettoyage.
 
 **Bénéfice réel par jour** (celui du bilan du soir, après tout ce qui est payé) :
 
 | Lieu | Facile | Normal | Difficile | Caisse au jour 30 (Facile / Normal / Difficile) |
 |---|---|---|---|---|
-| Mayotte | **516 €** | **343 €** | **218 €** | 615 000 € / 49 812 € / 21 053 € |
-| La Réunion | **1 658 €** | **1 351 €** | **1 006 €** | 648 960 € / 79 772 € / 44 410 € |
-| Bretagne | **1 069 €** | **824 €** | **551 €** | 631 465 € / 64 131 € / 30 934 € |
-| Île-de-France | **1 397 €** | **1 049 €** | **683 €** | 641 090 € / 70 649 € / 34 694 € |
-| Paris | **2 148 €** | **1 610 €** | **1 251 €** | 663 071 € / 86 947 € / 51 181 € |
-| Tokyo | **2 267 €** | **1 659 €** | **1 348 €** | 666 743 € / 88 500 € / 54 170 € |
-| New York | **2 853 €** | **2 081 €** | **1 610 €** | 683 695 € / 100 548 € / 61 403 € |
+| Mayotte | **741 €** | **549 €** | **235 €** | 621 751 € / 55 968 € / 21 555 € |
+| La Réunion | **1 819 €** | **1 490 €** | **1 028 €** | 653 817 € / 83 926 € / 45 068 € |
+| Bretagne | **1 297 €** | **1 021 €** | **693 €** | 638 325 € / 70 046 € / 35 195 € |
+| Île-de-France | **1 519 €** | **1 155 €** | **796 €** | 644 767 € / 73 827 € / 38 079 € |
+| Paris | **2 320 €** | **1 758 €** | **1 346 €** | 668 252 € / 91 388 € / 54 028 € |
+| Tokyo | **2 416 €** | **1 788 €** | **1 458 €** | 671 203 € / 92 375 € / 57 470 € |
+| New York | **3 032 €** | **2 249 €** | **1 694 €** | 689 066 € / 105 583 € / 63 926 € |
 
-**Facile, les 44 lieux** (bénéfice réel par jour, 30 jours, v0.8.1) : tous bénéficiaires. Les plus serrés : Mayotte 516 €, Brasilia 635 €, Guyane 685 €, Dakar 751 €, Hauts-de-France 919 €, Canberra 924 € ; les plus forts : New York 2 853 €, Londres 2 558 €, Tokyo 2 267 €, Paris 2 148 €. Détail lieu par lieu dans `tests/resultat-simulation-30-jours.txt`.
+**Facile, les 44 lieux** (bénéfice réel par jour, 30 jours, v1.0-test) : tous bénéficiaires. Les plus serrés : Mayotte 741 €, Brasilia 758 €, Guyane 786 €, Dakar 842 €, Centre-Val de Loire 1 017 €, Le Caire 1 035 € ; les plus forts : New York 3 032 €, Londres 2 614 €, Tokyo 2 416 €, Paris 2 320 €. Détail lieu par lieu dans `tests/resultat-simulation-30-jours.txt`.
 
-- **Objectifs** *(v0.9)* : en 30 jours, le joueur moyen en réussit 11,5 sur 12 en moyenne (Facile, 44 lieux). Les 7 premiers et « semaine en bénéfice » partout (servir 300 clients vers le jour 5, 1 000 clients vers le jour 15) ; salle propre dans 77 % des lieux (il n'embauche pas d'agent de nettoyage) ; événement privé dans 68 % des lieux (vers le jour 23).
-- **Facile : un joueur moyen reste bénéficiaire partout** (contrôle automatique). Paris, par jour : recettes 3 198 €, produits 704 €, salaires 198 € + intérim 45 €, charges 87 €.
-- **Normal : plus serré** (≈ 25 à 30 % de moins), mais encore bénéficiaire partout. Paris, en plus : loyer 197 €, cotisations 50 €, TVA 291 €, événements (écran, amendes, réparations…) 16 € par jour.
-- **Difficile : encore plus serré** (≈ 35 à 60 % de moins que Facile) : 20 % de clients en moins, prêt (≈ 50 € par jour) et seulement 15 000 € en caisse au départ. **Les erreurs coûtent cher** (Difficile, 30 jours, par jour) :
+- **Réputation** *(v1.0)* : après 30 jours, le joueur moyen est à **3,83 ★** en moyenne en Facile (de 3,38 à 4,14 selon le lieu, départ 3), avec environ 7 avis par jour (moyenne des avis 4 ★). C'est pourquoi tous les bénéfices sont un peu plus hauts qu'en v0.9 (+ 5 à 45 %).
+
+- **Objectifs** *(v0.9, mesuré en v1.0)* : en 30 jours, le joueur moyen en réussit 11,3 sur 12 en moyenne (Facile, 44 lieux). Les 7 premiers et « semaine en bénéfice » partout (servir 300 clients vers le jour 5, 1 000 clients vers le jour 14) ; salle propre dans 68 % des lieux (il n’embauche pas d’agent de nettoyage, et il y a plus de clients) ; événement privé dans 59 % des lieux (vers le jour 22).
+- **Facile : un joueur moyen reste bénéficiaire partout** (contrôle automatique). Paris, par jour : recettes 3 469 €, produits 790 €, salaires 198 € + intérim 55 €, charges 87 €.
+- **Normal : plus serré** (≈ 25 à 30 % de moins), mais encore bénéficiaire partout. Paris, en plus : loyer 197 €, cotisations 50 €, TVA 315 €, événements (écran, amendes, réparations…) 16 € par jour.
+- **Difficile : encore plus serré** (≈ 40 à 70 % de moins que Facile) : 20 % de clients en moins, des clients plus exigeants pour la réputation (v1.0), prêt (≈ 50 € par jour) et seulement 15 000 € en caisse au départ. **Les erreurs coûtent cher** (Difficile, 30 jours, par jour) :
 
 | Erreur | Paris | Mayotte |
 |---|---|---|
-| Aucune (joueur moyen) | 1 251 € | 218 € |
-| Prix de toute la carte 50 % trop hauts | 398 € | **−51 €** |
-| Oublier de commander les produits | **−384 €** | **−328 €** |
-| Embaucher tout le monde (16 employés) | **−183 €** | **−1 036 €**, faillite le jour 20 |
+| Aucune (joueur moyen) | 1 346 € | 235 € |
+| Prix de toute la carte 50 % trop hauts | 362 € | **−86 €** |
+| Oublier de commander les produits | **−413 €** | **−352 €** |
+| Embaucher tout le monde (16 employés) | 160 € (− 88 %) | **−957 €**, faillite le jour 22 |
 
 - Ce que le simulateur ne sait pas faire : un « très bon joueur ». Avec le moteur actuel, un 2e serveur ne fait pas gagner plus (la cuisine limite) ; la marge vient surtout d'une équipe à la bonne taille, de bons prix et de commandes régulières.
 - **Équipe complète en Facile** (Paris, on embauche chaque candidat qui a une place) : 16/16 au bout de 20 jours ; 95 servis par jour, salaires ≈ 1 440 € par jour, **bénéfice réel ≈ 1 104 € par jour** (moins que le joueur moyen : une grosse équipe coûte cher).
