@@ -70,6 +70,7 @@ UI.majDetail = function () {
   if (!gFile) UI.groupeChoisi = null;
   if (!S.ouvert) {
     html += '<div class="ferme">' + UI.esc(B.t(S.faillite ? 'msg_faillite' : 'fin_salle_vide')) + '</div>';
+    if (!S.faillite && S.objectifs) html += '<button type="button" class="obj-ligne" data-objectif="1">' + UI.esc(UI.texteObjectif(S)) + '</button>';
   } else if (gFile) {
     const taille = gFile.taille === 1 ? B.t('pers_1') : B.t('pers_n', { n: gFile.taille });
     html += '<div class="choisi">' + UI.esc(B.t('placement_groupe_choisi', { taille: taille, groupe: B.t('groupe_' + gFile.type, { nom: gFile.nom }) })) + '</div>';
@@ -101,7 +102,8 @@ UI.majDetail = function () {
       else if (g.etat !== 'repart' && g.etat !== 'depart') enSalle += g.taille;
     });
     const aide = S.placement === 'manuel' && S.groupes.some(function (g) { return g.etat === 'file'; }) ? 'placement_aide' : 'detail_aucune';
-    html += '<div class="aide">' + UI.esc(B.t(aide)) + '</div>';
+    if (aide === 'detail_aucune' && S.objectifs) html += '<button type="button" class="obj-ligne" data-objectif="1">' + UI.esc(UI.texteObjectif(S)) + '</button>';
+    else html += '<div class="aide">' + UI.esc(B.t(aide)) + '</div>';
     html += '<div>' + UI.esc(B.t('detail_en_salle', { n: enSalle })) + '</div>';
     html += '<div>' + UI.esc(B.t('detail_file', { n: file })) + '</div>';
     html += '<div>' + UI.esc(B.t('detail_servis', { n: S.stats.jour.servis })) + '</div>';

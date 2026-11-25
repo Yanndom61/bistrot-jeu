@@ -70,6 +70,8 @@ async def nouveau_contexte(b, w, h, init=None):
     await p.wait_for_timeout(500)
     # v0.8 : dans les tests des étapes d'avant, les événements du jour (tirés au hasard) prennent tout seuls le choix gratuit
     await p.evaluate('() => { if (B.ev) B.ev.choixAuto = (S, a) => B.ev.choix(S, a).length - 1; }')
+    # v0.9 : dans les tests des étapes d'avant, le guide pas à pas d'une nouvelle partie est passé d'office (il est testé en 1m)
+    await p.evaluate('() => { window.__sansTuto = true; const d = B.UI.demarrer; B.UI.demarrer = function (S, c, v) { if (window.__sansTuto && S.tuto) S.tuto.fini = true; return d(S, c, v); }; }')
     return c, p
 
 async def lancer_partie(p, captures=None):

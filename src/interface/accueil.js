@@ -1,6 +1,7 @@
 /* accueil.js — écran d'accueil : continuer, nouvelle partie, reprendre une partie de l'ancien jeu. */
 UI.montrerAccueil = function (vue) {
   UI.pause('accueil', true);
+  if (UI.fermerTuto && !UI.$('tuto').hidden) UI.fermerTuto();   /* le guide reprendra à la même étape */
   const el = UI.$('accueil');
   el.hidden = false;
   vue = vue || 'menu';
@@ -79,7 +80,8 @@ UI.demarrer = function (S, cle, vars) {
   UI.majDetail();
   UI.majPlacement();
   UI.majFin();
-  if (!S.ouvert) UI.ouvrirVolet('equipe');
+  if (UI.tutoActif()) UI.montrerTuto();
+  else if (!S.ouvert) UI.ouvrirVolet('equipe');
 };
 
 UI.initAccueil = function () {
@@ -87,7 +89,7 @@ UI.initAccueil = function () {
     const b = e.target.closest('[data-a]');
     if (!b) return;
     const a = b.dataset.a;
-    if (a === 'continuer') { UI.cacherAccueil(); UI.majPlacement(); UI.$('fin').hidden = true; UI.majFin(); if (!UI.S.ouvert && !UI.S.faillite) UI.ouvrirVolet('equipe'); }
+    if (a === 'continuer') { UI.cacherAccueil(); UI.majPlacement(); UI.$('fin').hidden = true; UI.majFin(); if (UI.tutoActif()) UI.montrerTuto(); else if (!UI.S.ouvert && !UI.S.faillite) UI.ouvrirVolet('equipe'); }
     else if (a === 'niveau') {
       UI.niveauChoisi = b.dataset.n;
       UI.$('accueil').querySelectorAll('.niveau').forEach(function (x) { x.classList.toggle('actif', x.dataset.n === UI.niveauChoisi); });
@@ -97,6 +99,7 @@ UI.initAccueil = function () {
     else if (a === 'ouvrir') {
       if (!UI.remplacerOk()) return;
       const S = B.creerPartie({ nom: UI.$('n-nom').value || B.t('nouvelle_nom_defaut'), lieu: UI.$('n-lieu').value, difficulte: UI.niveauChoisi, date: new Date().toISOString() });
+      S.tuto = { etape: 0 };   /* v0.9 : le guide pas à pas, seulement pour une partie nouvelle */
       UI.erreurChargement = null;
       UI.demarrer(S, 'msg_bienvenue', { chez: B.chezNom(S.nom), heure: B.heure(B.DATA.clients.affluence[0].de) });
     } else if (a === 'importer') {

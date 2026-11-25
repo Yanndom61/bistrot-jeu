@@ -5,12 +5,13 @@ UI.voletOuvert = null;
 UI.ouvrirVolet = function (quoi) {
   UI.voletOuvert = quoi;
   const v = UI.$('volet');
-  v.classList.toggle('large', quoi === 'equipe' || quoi === 'carte' || quoi === 'stocks' || quoi === 'argent' || quoi === 'calendrier');
+  v.classList.toggle('large', quoi === 'equipe' || quoi === 'carte' || quoi === 'stocks' || quoi === 'argent' || quoi === 'calendrier' || quoi === 'aide');
   if (quoi === 'equipe') { UI.candidatCourant = null; UI.renvoiCourant = null; UI.renvoiRefus = null; UI.ficheCourante = null; UI.eqMsg = null; UI.eqOnglet = UI.S && UI.S.dejaOuvert ? 'equipe' : 'embauche'; UI.rafraichirEquipe(true); }
   else if (quoi === 'carte') { UI.platCourant = null; UI.carteRefus = null; UI.rafraichirCarte(true); }
   else if (quoi === 'stocks') { UI.stMsg = null; UI.rafraichirStocks(true); }
   else if (quoi === 'argent') { UI.agOnglet = 'jour'; UI.rafraichirArgent(true); }
   else if (quoi === 'calendrier') { UI.rafraichirCalendrier(true); }
+  else if (quoi === 'aide') { UI.rafraichirAide(true); }
   else if (quoi === 'ticket') {
     const g = UI.S.groupes.find(function (x) { return x.id === UI.ticketGroupe; });
     UI.$('volet-titre').textContent = B.t('ticket_titre');
@@ -53,7 +54,8 @@ UI.fermerVolet = function () {
 
 UI.htmlMenu = function () {
   const S = UI.S;
-  let h = '<h3>' + UI.esc(B.t('menu_reglages')) + '</h3>';
+  let h = S ? '<button type="button" class="gros principal" data-action="aide">' + UI.esc(B.t('menu_aide')) + '</button>' : '';
+  h += '<h3>' + UI.esc(B.t('menu_reglages')) + '</h3>';
   h += '<div class="ligne-reglage"><span>' + UI.esc(B.t('menu_pause_auto')) + '</span>' +
     '<button type="button" class="bascule' + (UI.reglages.pauseAuto ? ' on' : '') + '" data-action="pause-auto">' +
     UI.esc(B.t(UI.reglages.pauseAuto ? 'menu_oui' : 'menu_non')) + '</button></div>';
@@ -85,6 +87,8 @@ UI.initVolets = function () {
       UI.groupeChoisi = null;
       UI.majPlacement(); UI.sauver();
       UI.$('volet-corps').innerHTML = UI.htmlMenu();
+    } else if (b.dataset.action === 'aide') {
+      UI.ouvrirAide('objectifs');
     } else if (b.dataset.action === 'accueil') {
       UI.fermerVolet();
       UI.sauver();

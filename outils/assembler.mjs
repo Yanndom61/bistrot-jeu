@@ -10,7 +10,7 @@ const RACINE = path.resolve(path.dirname(fileURLToPath(import.meta.url)), '..');
 const lire = (f) => fs.readFileSync(path.join(RACINE, f), 'utf8');
 
 export const FICHIERS_MOTEUR = ['outils', 'salle', 'clients', 'equipe', 'planning', 'argent', 'carte', 'stocks', 'meteo', 'calendrier', 'evenements', 'cuisine', 'service', 'partie', 'objectifs', 'sauvegarde', 'ancien'].map((n) => `src/moteur/${n}.js`);
-export const FICHIERS_INTERFACE = ['ecran', 'dessin-salle', 'messages', 'volets', 'equipe', 'argent', 'calendrier', 'carte', 'stocks', 'stockage', 'accueil', 'boucle'].map((n) => `src/interface/${n}.js`);
+export const FICHIERS_INTERFACE = ['ecran', 'dessin-salle', 'messages', 'volets', 'equipe', 'argent', 'calendrier', 'carte', 'stocks', 'aide', 'stockage', 'accueil', 'boucle'].map((n) => `src/interface/${n}.js`);
 export const DONNEES = ['lieux', 'salle', 'clients', 'equipe', 'carte', 'catalogue', 'stocks', 'prix-gros', 'regles', 'argent', 'calendrier', 'meteo', 'objectifs', 'textes'];
 
 export function donnees() {

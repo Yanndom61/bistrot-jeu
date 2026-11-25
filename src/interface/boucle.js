@@ -70,7 +70,7 @@ UI.boucle = function (ts) {
     if (S.finJour) UI.majFin();
     UI.majEvenement();
     UI.dessin.dynamique();
-    if (!UI._tDetail || ts - UI._tDetail > 250) { UI._tDetail = ts; UI.majDetail(); UI.majBarre(); UI.majCalendrier(); }
+    if (!UI._tDetail || ts - UI._tDetail > 250) { UI._tDetail = ts; if (S.objectifs && B.objectifs.verifier(S).length) UI.sauver(); UI.majDetail(); UI.majBarre(); UI.majCalendrier(); }
   }
   UI.majMessages(Date.now());
   requestAnimationFrame(UI.boucle);
@@ -89,6 +89,7 @@ UI.init = function () {
   UI.initStocks();
   UI.initArgent();
   UI.initCalendrier();
+  UI.initAide();
   UI.initPlacement();
   UI.initPortrait();
   const r = UI.chargerPartie();
