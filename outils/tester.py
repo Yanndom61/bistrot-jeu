@@ -1,6 +1,6 @@
 """tester.py — vérifie le jeu dans un vrai navigateur, aux tailles des téléphones de Yann, et prend des captures.
 Utilisation : python3 outils/tester.py   (le jeu doit avoir été assemblé avant : node outils/assembler.mjs test)"""
-import asyncio, json, os, sys, threading, functools, http.server, socketserver, tempfile, pathlib
+import asyncio, re, json, os, sys, threading, functools, http.server, socketserver, tempfile, pathlib
 from playwright.async_api import async_playwright
 
 RACINE = pathlib.Path(__file__).resolve().parent.parent
@@ -516,7 +516,7 @@ async def main():
         await p.locator('[data-a="continuer"], button:has-text("Continuer")').first.click(); await p.wait_for_timeout(500)
         etat = await p.evaluate("() => ({v: B.UI.S.version, jeu: B.UI.S.jeu, n: B.UI.S.equipe.length, autre: B.UI.S.equipe.filter(x => x.service === 'autre').length, repos: B.UI.S.equipe.filter(x => !x.patron && !x.repos).length, groupes: B.UI.S.groupes.length, cagnotte: B.UI.S.cagnotte, pb: B.verifier(B.UI.S)})")
         print('  ', etat)
-        if etat['v'] != 8 or etat['autre'] or etat['repos'] or etat['groupes'] < 1 or etat['pb']: problemes.append('sauvegarde 0.5.1 mal relue : ' + str(etat))
+        if etat['v'] != 9 or etat['autre'] or etat['repos'] or etat['groupes'] < 1 or etat['pb']: problemes.append('sauvegarde 0.5.1 mal relue : ' + str(etat))
         await p.screenshot(path=str(CAPTURES / '41c-reprise-0.5.1-equipe-780x360.png'))
         problemes.extend('reprise 0.5.1 : ' + e for e in p.erreurs)
         await c.close()
@@ -612,7 +612,7 @@ async def main():
         await p.locator('[data-a="continuer"]').click(); await p.wait_for_timeout(500)
         etat = await p.evaluate("() => ({v: B.UI.S.version, jeu: B.UI.S.jeu, d: B.UI.S.difficulte, groupes: B.UI.S.groupes.length, argent: Math.round(B.UI.S.argent), pb: B.verifier(B.UI.S)})")
         print('  ', etat)
-        if etat['v'] != 8 or etat['d'] != 'facile' or etat['groupes'] < 1 or etat['pb']: problemes.append('sauvegarde 0.6 mal relue : ' + str(etat))
+        if etat['v'] != 9 or etat['d'] != 'facile' or etat['groupes'] < 1 or etat['pb']: problemes.append('sauvegarde 0.6 mal relue : ' + str(etat))
         await p.evaluate('() => B.avancer(B.UI.S, 900)'); await p.wait_for_timeout(600)
         await p.screenshot(path=str(CAPTURES / '50b-reprise-0.6-bilan-argent-780x360.png'))
         if 'Salaires' not in await p.locator('#fin').inner_text(): problemes.append('reprise 0.6 : salaires pas payés le soir')
@@ -720,7 +720,7 @@ async def main():
         await p.locator('[data-a="continuer"]').click(); await p.wait_for_timeout(600)
         etat = await p.evaluate("() => ({v: B.UI.S.version, lieu: B.UI.S.lieu, groupes: B.UI.S.groupes.length, cal: !!B.UI.S.cal, argent: Math.round(B.UI.S.argent), pb: B.verifier(B.UI.S)})")
         print('  ', etat)
-        if etat['v'] != 8 or not etat['cal'] or etat['groupes'] < 1 or etat['pb']: problemes.append('sauvegarde 0.7 mal relue : ' + str(etat))
+        if etat['v'] != 9 or not etat['cal'] or etat['groupes'] < 1 or etat['pb']: problemes.append('sauvegarde 0.7 mal relue : ' + str(etat))
         await p.screenshot(path=str(CAPTURES / '61-reprise-0.7-780x360.png'))
         verifier('reprise 0.7', await p.evaluate(MESURES_JS), p)
         problemes.extend('reprise 0.7 : ' + e for e in p.erreurs)
@@ -857,12 +857,93 @@ async def main():
         await p.locator('[data-a="continuer"]').click(); await p.wait_for_timeout(600)
         etat = await p.evaluate("() => ({v: B.UI.S.version, tuto: document.getElementById('tuto').hidden, faits: Object.keys(B.UI.S.objectifs.faits), groupes: B.UI.S.groupes.length, msgs: B.UI.S.journal.filter(m => /Objectif/.test(m.texte)).length, pb: B.verifier(B.UI.S)})")
         print('  partie 0.8.1 reprise :', etat)
-        if etat['v'] != 8 or not etat['tuto'] or etat['groupes'] < 1 or etat['pb'] or etat['msgs']: problemes.append('partie 0.8.1 : ' + str(etat))
+        if etat['v'] != 9 or not etat['tuto'] or etat['groupes'] < 1 or etat['pb'] or etat['msgs']: problemes.append('partie 0.8.1 : ' + str(etat))
         for o in ('cuisinier', 'ouvrir', 'servis20', 'serveur'):
             if o not in etat['faits']: problemes.append(f'partie 0.8.1 : objectif {o} déjà acquis mais pas coché')
         await p.screenshot(path=str(CAPTURES / '81-reprise-0.8.1-sans-guide-780x360.png'))
         verifier('reprise 0.8.1', await p.evaluate(MESURES_JS), p)
         problemes.extend('reprise 0.8.1 : ' + e for e in p.erreurs)
+        await c.close()
+
+        print('1n) v1.0 — réputation, avis des clients, étoile Michelin et son :')
+        TMIN_JS = """(sel) => { const L = [...document.querySelectorAll(sel)].filter(e => e.offsetParent && [...e.childNodes].some(n => n.nodeType === 3 && n.textContent.trim())).map(e => parseFloat(getComputedStyle(e).fontSize)); return L.length ? Math.min(...L) : 99; }"""
+        for nom, w, h in TAILLES:
+            taille = f'{w}x{h}'
+            c, p = await nouveau_contexte(b, w, h)
+            await lancer_partie(p)
+            await au_coeur_du_service(p, 200)
+            await p.evaluate('() => { B.UI.selection = null; B.UI.majDetail(); }'); await p.wait_for_timeout(300)
+            r = await p.evaluate('() => ({note: B.rep.note(B.UI.S), avis: B.UI.S.avis.length, son: B.UI.reglages.son, vol: B.UI.reglages.volume})')
+            print(f'  {taille} : réputation {r["note"]:.2f}, {r["avis"]} avis après 200 min, son {r["son"]}, volume {r["vol"]}')
+            if r['son'] is not False: problemes.append(f'son {taille} : il doit être coupé au départ')
+            if r['avis'] < 1: problemes.append(f'avis {taille} : aucun avis après 200 minutes de service')
+            ligne = await p.locator('#detail [data-avis]').inner_text()
+            if 'Réputation' not in ligne: problemes.append(f'ligne réputation {taille} : « {ligne} »')
+            await p.screenshot(path=str(CAPTURES / f'82-salle-reputation-{taille}.png'))
+            verifier(f'ligne réputation {w}×{h}', await p.evaluate(MESURES_JS), p)
+            await p.locator('#detail [data-avis]').click(); await p.wait_for_timeout(400)
+            if await p.evaluate("() => B.UI.voletOuvert !== 'journal' || B.UI.jrOnglet !== 'avis'"): problemes.append(f'avis {taille} : la ligne réputation n’ouvre pas les avis')
+            if await p.locator('.avis').count() < 1: problemes.append(f'avis {taille} : aucun avis affiché')
+            tmin = await p.evaluate(TMIN_JS, '.avis p, .rep-explique, .rep-ligne')
+            if tmin < 15.9: problemes.append(f'avis {taille} : texte trop petit ({tmin} px)')
+            await p.screenshot(path=str(CAPTURES / f'83-avis-{taille}.png'))
+            verifier(f'avis {w}×{h}', await p.evaluate(MESURES_JS), p)
+            await p.locator('[data-jr-onglet="journal"]').click(); await p.wait_for_timeout(200)
+            if await p.locator('.journal').count() < 1: problemes.append(f'journal {taille} : onglet Journal vide')
+            await p.locator('#volet-fermer').click(); await p.wait_for_timeout(300)
+            await p.locator('#btn-journal').click(); await p.wait_for_timeout(300)
+            if await p.evaluate("() => B.UI.jrOnglet !== 'journal'"): problemes.append(f'journal {taille} : le bouton Journal doit ouvrir le journal')
+            await p.locator('#volet-fermer').click(); await p.wait_for_timeout(300)
+            # Menu : son et volume
+            await p.locator('#btn-menu').click(); await p.wait_for_timeout(300)
+            await p.locator('[data-action="son"]').click(); await p.wait_for_timeout(150)
+            await p.locator('[data-action="volume"][data-pas="1"]').click(); await p.wait_for_timeout(150)
+            await p.locator('[data-action="volume"][data-pas="1"]').click(); await p.wait_for_timeout(150)
+            await p.locator('[data-action="volume"][data-pas="-1"]').click(); await p.wait_for_timeout(150)
+            rg = await p.evaluate("() => JSON.parse(localStorage.getItem(B.UI.cles().reglages))")
+            if not rg.get('son') or rg.get('volume') != 6: problemes.append(f'son {taille} : réglages non gardés {rg}')
+            if nom != 's23fe': await p.screenshot(path=str(CAPTURES / f'84-menu-son-{taille}.png'))
+            verifier(f'menu son {w}×{h}', await p.evaluate(MESURES_JS), p)
+            await p.locator('[data-action="son"]').click(); await p.wait_for_timeout(150)
+            await p.locator('#volet-fermer').click(); await p.wait_for_timeout(300)
+            # Calendrier : la réputation compte dans l'affluence du jour
+            cal = await p.evaluate("() => { B.UI.ouvrirVolet('calendrier'); return document.getElementById('volet-corps').innerText; }")
+            if 'Réputation' not in cal: problemes.append(f'calendrier {taille} : ligne réputation absente')
+            await p.locator('#volet-fermer').click(); await p.wait_for_timeout(300)
+            if nom == 's22':
+                # Étoile Michelin : la fenêtre, puis « Recevoir l’inspecteur »
+                n0 = await p.evaluate("() => { const S = B.UI.S; B.ev.choixAuto = null; S.cal.attente = null; S.stats.joursJoues = 40; for (const cnd of S.candidats.slice()) { if (S.equipe.filter(x => !x.patron && !x.interim).length >= 8) break; if (B.equipe.placeLibre(S, cnd.poste)) { B.equipe.repondre(S, cnd, 'salaire'); B.equipe.proposer(S, cnd, cnd.demande); } } S.equipe.forEach(x => { for (const f of B.DATA.equipe.formations.liste) if (f.stat) x[f.stat] = 10; }); const pret = B.rep.michelinPret(S); B.rep.michelinMatin(S); return {pret, note: B.rep.note(S), argent: S.argent, n: S.equipe.filter(x => !x.patron && !x.interim).length}; }")
+                await p.wait_for_timeout(500)
+                if not n0['pret']: problemes.append('Michelin : la brigade au sommet devrait être prête ' + str(n0))
+                await p.screenshot(path=str(CAPTURES / '85-michelin-780x360.png'))
+                verifier('fenêtre Michelin', await p.evaluate(MESURES_JS), p)
+                await p.get_by_role('button', name=re.compile('Recevoir l’inspecteur')).click(); await p.wait_for_timeout(400)
+                m1 = await p.evaluate("() => ({etoile: B.UI.S.michelin && B.UI.S.michelin.etoile, note: B.rep.note(B.UI.S), argent: B.UI.S.argent, pret: B.rep.michelinPret(B.UI.S)})")
+                print('  Michelin :', n0, '→', m1)
+                if not m1['etoile'] or abs(m1['note'] - min(5, n0['note'] + 0.4)) > 0.001 or abs(n0['argent'] - m1['argent'] - 1800) > 0.01 or m1['pret']: problemes.append('Michelin mal donnée : ' + str(m1))
+                # Bilan du soir avec la réputation et les avis du jour
+                await p.evaluate('() => { const S = B.UI.S; let k = 0; while (!S.finJour && k++ < 4000) B.avancer(S, 0.5); }'); await p.wait_for_timeout(700)
+                if await p.locator('.fin-avis').count() != 1: problemes.append('bilan : pas de ligne réputation et avis')
+                await p.evaluate("() => { const e = document.querySelector('.fin-avis'); if (e) e.scrollIntoView({block: 'center'}); }"); await p.wait_for_timeout(200)
+                await p.screenshot(path=str(CAPTURES / '86-bilan-avis-780x360.png'))
+                verifier('bilan avec avis', await p.evaluate(MESURES_JS), p)
+            pb = await p.evaluate('() => B.verifier(B.UI.S)')
+            if pb: problemes.append(f'réputation {taille} : ' + str(pb))
+            problemes.extend(f'réputation {taille} : ' + e for e in p.erreurs)
+            await c.close()
+        # Partie 0.8.1 (format 8) : passe au format 9 sans rien perdre, la note devient la réputation
+        v8d = json.loads(v8)
+        c, p = await nouveau_contexte(b, 780, 360, "if(!sessionStorage.getItem('g9')){sessionStorage.setItem('g9','1');localStorage.setItem('bistrotjeu.test.partie'," + json.dumps(v8) + ");}")
+        await p.locator('[data-a="continuer"]').click(); await p.wait_for_timeout(600)
+        etat = await p.evaluate("() => ({v: B.UI.S.version, note: B.UI.S.note, avis: B.UI.S.avis, argent: B.UI.S.argent, groupes: B.UI.S.groupes.length, equipe: B.UI.S.equipe.length, jour: B.UI.S.jour, pb: B.verifier(B.UI.S)})")
+        print('  partie 0.8.1 →', {k: etat[k] for k in ('v', 'note', 'argent', 'groupes', 'equipe', 'jour')})
+        if etat['v'] != 9 or etat['note'] != v8d['note'] or etat['avis'] != [] or abs(etat['argent'] - v8d['argent']) > 0.01 or etat['groupes'] != len(v8d['groupes']) or etat['equipe'] != len(v8d['equipe']) or etat['jour'] != v8d['jour'] or etat['pb']:
+            problemes.append('partie 0.8.1 mal passée au format 9 : ' + str(etat))
+        await au_coeur_du_service(p, 60)
+        await p.evaluate("() => B.UI.ouvrirAvis()"); await p.wait_for_timeout(400)
+        await p.screenshot(path=str(CAPTURES / '87-reprise-0.8.1-avis-780x360.png'))
+        verifier('reprise 0.8.1 avis', await p.evaluate(MESURES_JS), p)
+        problemes.extend('reprise 0.8.1 (format 9) : ' + e for e in p.erreurs)
         await c.close()
 
         print('2) Téléphone tenu en portrait :')
@@ -908,7 +989,7 @@ async def main():
         await p.get_by_role('button', name='Continuer : Chez YaYa · Bretagne · jour 1 · Facile').click(); await p.wait_for_timeout(400)
         etat = await p.evaluate("() => ({v: B.UI.S.version, equipe: B.UI.S.equipe.map(x => x.nom), volet: B.UI.voletOuvert})")
         print('  partie 0.1 relue :', etat)
-        if etat['v'] != 8 or etat['equipe'] != ['Patron'] or etat['volet'] != 'equipe': problemes.append('la sauvegarde 0.1 est mal relue')
+        if etat['v'] != 9 or etat['equipe'] != ['Patron'] or etat['volet'] != 'equipe': problemes.append('la sauvegarde 0.1 est mal relue')
         problemes.extend('sauvegarde 0.1 : ' + e for e in p.erreurs)
         await c.close()
 

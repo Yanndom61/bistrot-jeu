@@ -145,6 +145,47 @@ if (!pertes) console.log('  ✓ joueur moyen bénéficiaire partout en Facile.')
     L.map((o) => `${o.id} ${Math.round(100 * (par[o.id] || []).length / n)} %${par[o.id] ? ' (jour ' + Math.round(par[o.id].reduce((a, b) => a + b, 0) / par[o.id].length) + ')' : ''}`).join(' · '));
   if (jours >= 7 && resumeLieux.some(([, c]) => !(c.S.objectifs.faits.ouvrir && c.S.objectifs.faits.servis20))) probleme('objectifs : les premiers objectifs devraient être réussis partout en Facile');
 }
+// v1.0 : réputation et avis du joueur moyen (Facile)
+{
+  const notes = resumeLieux.map(([, c]) => B.rep.note(c.S)), n = notes.length || 1;
+  const nbAvis = resumeLieux.reduce((t, [, c]) => t + (c.S.totalAvis || 0), 0);
+  const moy = resumeLieux.map(([, c]) => B.rep.moyenneAvis(c.S)).filter((m) => m != null);
+  console.log(`  réputation après ${jours} jours (Facile, joueur moyen) : ${(notes.reduce((a, b) => a + b, 0) / n).toFixed(2)} ★ en moyenne (de ${Math.min(...notes).toFixed(2)} à ${Math.max(...notes).toFixed(2)}, départ 3) ; ${(nbAvis / n / jours).toFixed(1)} avis par jour ; note moyenne des avis ${moy.length ? (moy.reduce((a, b) => a + b, 0) / moy.length).toFixed(2) : '—'} ★`);
+  resumeLieux.forEach(([lieu, c]) => {
+    if (!(B.rep.note(c.S) >= 0.5 && B.rep.note(c.S) <= 5)) probleme(lieu + ' : réputation hors de 0,5…5');
+    if (!(c.S.totalAvis > 0) || !c.S.avis.length) probleme(lieu + ' : aucun avis de client');
+    if (c.S.avis.length > B.DATA.reputation.avis.garder) probleme(lieu + ' : trop d’avis gardés');
+    c.S.avis.forEach((a) => { if (!a.texte || a.texte.length > 140 || /\{|undefined/.test(a.texte)) probleme(lieu + ' : avis mal écrit « ' + a.texte + ' »'); });
+  });
+}
+// v1.0 : passage au format 9 (bonus de la v0.8.1 → vraie réputation) et étoile Michelin
+{
+  const o = JSON.parse(fs.readFileSync(path.join(RACINE, 'tests/sauvegardes-bistrot/v8-bistrot-0.8.1-en-service.json'), 'utf8'));
+  o.note = 3.5; o.cal.effets = [{ k: 'inspection', m: 1.05, jusqua: o.jour + 3 }, { k: 'critique', m: 0.9, jusqua: o.jour + 2 }, { k: 'buzz', m: 1.25, jusqua: o.jour + 2 }];
+  const r = B.relire(JSON.stringify(o));
+  if (!r.partie) probleme('format 8 → 9 : ' + r.erreur);
+  else {
+    const S = r.partie, n1 = 3.5 + (5 - 3.5) * 0.05, attendu = n1 + (1.5 - n1) * 0.18;
+    if (S.version !== 9 || !Array.isArray(S.avis) || S.cal.effets.length !== 1 || S.cal.effets[0].k !== 'buzz' || Math.abs(S.note - attendu) > 1e-3 || S.argent !== o.argent || S.groupes.length !== o.groupes.length) probleme('format 8 → 9 mal converti : note ' + S.note + ', effets ' + JSON.stringify(S.cal.effets));
+    B.verifier(S).forEach((pb) => probleme('format 8 → 9 : ' + pb));
+    console.log(`  Partie 0.8.1 (format 8) → format 9 : note 3,5 + inspection réussie + mauvais critique → réputation ${S.note.toFixed(2).replace('.', ',')} ; bonus de l’influenceuse gardé ; caisse et groupes intacts.`);
+  }
+  const S = B.creerPartie({ nom: 'M', lieu: 'paris', graine: 9, debut: '2027-03-10' });
+  recruter(S, ['serv', 'commis']); B.ouvrir(S); B.avancer(S, 60);
+  if (B.rep.michelinPret(S)) probleme('Michelin : prête trop tôt');
+  S.stats.joursJoues = 40;
+  for (const cnd of S.candidats.slice()) { if (S.equipe.filter((x) => !x.patron && !x.interim).length >= 8) break; if (B.equipe.placeLibre(S, cnd.poste)) { B.equipe.repondre(S, cnd, 'salaire'); B.equipe.proposer(S, cnd, cnd.demande); } }
+  if (B.rep.michelinPret(S)) probleme('Michelin : prête sans le niveau 10');
+  S.equipe.forEach((x) => { for (const f of B.DATA.equipe.formations.liste) if (f.stat) x[f.stat] = 10; });
+  const n0 = B.rep.note(S), a0 = S.argent, auto = B.ev.choixAuto;
+  B.ev.choixAuto = null; S.cal.attente = null; B.rep.michelinMatin(S);
+  if (!S.cal.attente || S.cal.attente.id !== 'michelin') probleme('Michelin : pas de fenêtre');
+  B.ev.choisir(S, 1); B.rep.michelinMatin(S);
+  if (S.cal.attente) probleme('Michelin : « Plus tard » doit attendre le lendemain');
+  S.michelin.propose = 0; B.rep.michelinMatin(S); B.ev.choisir(S, 0); B.ev.choixAuto = auto;
+  if (!S.michelin.etoile || Math.abs(B.rep.note(S) - Math.min(5, n0 + 0.4)) > 1e-3 || Math.abs(a0 - S.argent - 1800) > 0.01 || B.rep.michelinPret(S)) probleme('Michelin mal donnée');
+  else console.log(`  Étoile Michelin : 8 employés au niveau 10 après 30 jours → fenêtre, « Plus tard » → redemandée le lendemain, acceptée → réputation ${n0.toFixed(2)} → ${B.rep.note(S).toFixed(2)}, réception 1 800 €.`);
+}
 {
   const tout = {};
   for (const [, c] of resumeLieux) for (const k in c.causes) tout[k] = (tout[k] || 0) + c.causes[k];
@@ -822,7 +863,7 @@ console.log('\nÉtape 5 — Argent :');
 // ===== Étape 6 : lieux, météo, calendrier, événements =====
 console.log('\nÉtape 6 — Lieux, météo et calendrier :');
 {
-  if (B.VERSION_SAUVEGARDE !== 8 || B.VERSION_JEU !== '0.9') probleme('versions attendues : sauvegarde 8, jeu 0.9');
+  if (B.VERSION_SAUVEGARDE !== 9 || B.VERSION_JEU !== '1.0-test') probleme('versions attendues : sauvegarde 9, jeu 1.0-test');
   // 1) Les 44 lieux : météo, calendrier, touristes sur 2 ans, sans valeur absurde.
   const L = B.DATA.lieux.lieux;
   if (L.length !== 44) probleme('il faut 44 lieux, il y en a ' + L.length);
@@ -924,14 +965,14 @@ console.log('\nÉtape 6 — Lieux, météo et calendrier :');
     const res = [];
     let S = nouvelle();
     // inspection
-    S.proprete = 90; lancer(S, 'inspect', 1);
-    if (!S.cal.attente || S.cal.attente.id !== 'resultat' || Math.abs(B.ev.facteur(S, 700) - 1.05) > 1e-9) probleme('inspection : propreté 90 → félicitations et +5 % attendus');
+    S.note = 3; S.proprete = 90; lancer(S, 'inspect', 1);
+    if (!S.cal.attente || S.cal.attente.id !== 'resultat' || Math.abs(S.note - 3.1) > 1e-9) probleme('inspection : propreté 90 → félicitations et réputation 3 → 3,1 attendus');
     B.ev.choisir(S, 0); S.cal.effets = [];
     S.proprete = 40; let a0 = S.argent; lancer(S, 'inspect', 0); B.ev.choisir(S, 0);
     if (S.proprete !== 65 || Math.abs(a0 - S.argent - 80) > 0.01) probleme('inspection : le nettoyage express (80 €, +25) ne marche pas');
-    S.proprete = 20; a0 = S.argent; lancer(S, 'inspect', 1); B.ev.choisir(S, 0);
-    if (Math.abs(a0 - S.argent - 800) > 0.01 || Math.abs(B.ev.facteur(S, 700) - 0.95) > 1e-9) probleme('inspection : propreté 20 → amende de 800 € et −5 % attendus');
-    res.push('inspection 90 → bravo +5 % ; 40 + nettoyage → 65, sans amende ; 20 → 800 € et −5 %');
+    S.note = 3; S.proprete = 20; a0 = S.argent; lancer(S, 'inspect', 1); B.ev.choisir(S, 0);
+    if (Math.abs(a0 - S.argent - 800) > 0.01 || Math.abs(S.note - 2.84) > 1e-9) probleme('inspection : propreté 20 → amende de 800 € et réputation 3 → 2,84 attendus');
+    res.push('inspection 90 → bravo, réputation 3 → 3,1 ; 40 + nettoyage → 65, sans amende ; 20 → 800 € et réputation 3 → 2,84');
     S.cal.effets = []; S.proprete = 80;
     // influenceuse
     lancer(S, 'influ', 0); const f1 = B.ev.facteur(S, 700); S.cal.effets = []; lancer(S, 'influ', 1); const f2 = B.ev.facteur(S, 700); S.cal.effets = [];
@@ -1009,14 +1050,14 @@ console.log('\nÉtape 6 — Lieux, météo et calendrier :');
     if (!r.partie) probleme('sauvegarde 0.7 : ' + r.erreur);
     else {
       const S = r.partie;
-      if (S.version !== 8 || !S.cal || S.argent !== o.argent || S.groupes.length !== o.groupes.length || S.equipe.length !== o.equipe.length || S.tables.some((t) => t.reserve)) probleme('sauvegarde 0.7 mal convertie');
+      if (S.version !== B.VERSION_SAUVEGARDE || !S.cal || S.argent !== o.argent || S.groupes.length !== o.groupes.length || S.equipe.length !== o.equipe.length || S.tables.some((t) => t.reserve)) probleme('sauvegarde 0.7 mal convertie');
       B.verifier(S).forEach((pb) => probleme('sauvegarde 0.7 : ' + pb));
       let pas = 0; while (!S.finJour && pas++ < 4000) B.avancer(S, 0.5);
       B.verifier(S).forEach((pb) => probleme('sauvegarde 0.7 après le service : ' + pb));
       B.jourSuivant(S);
       B.verifier(S).forEach((pb) => probleme('sauvegarde 0.7 le lendemain : ' + pb));
       if (txt !== fs.readFileSync(path.join(RACINE, f), 'utf8')) probleme('sauvegarde 0.7 : le fichier d’origine a changé');
-      console.log(`  Sauvegarde 0.7 (${o.lieu}, jour ${o.jour}, ${o.groupes.length} groupes en salle, ${B.euros(o.argent)}) : convertie en format 8, service fini, lendemain ${B.texteDate(S)} (${B.meteo.aujourdhui(S).emoji} ${B.meteo.aujourdhui(S).temp}°).`);
+      console.log(`  Sauvegarde 0.7 (${o.lieu}, jour ${o.jour}, ${o.groupes.length} groupes en salle, ${B.euros(o.argent)}) : convertie en format ${S.version}, service fini, lendemain ${B.texteDate(S)} (${B.meteo.aujourdhui(S).emoji} ${B.meteo.aujourdhui(S).temp}°).`);
     }
   }
 }
