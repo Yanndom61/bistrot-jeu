@@ -237,8 +237,22 @@ Données : `donnees/stocks.json` (réserve, fournisseurs, règles), `donnees/pri
 ### Menu du jour
 - Composé **chaque matin** automatiquement (entrée, plat, dessert) parmi les plats du jour de l'ancien jeu : 6 propres au lieu + 37 classiques du bistrot en France. On choisit d'abord ce qui **doit être écoulé** (date limite proche), puis les **offres** des fournisseurs, puis la saison. Le jeu dit pourquoi chaque plat a été choisi.
 - **Formules** : entrée + plat 17 €, plat + dessert 17 €, entrée + plat + dessert 22 € (× coefficient du lieu), réglables de 50 en 50 centimes. Environ 1 client sur 3 le prend (moins s'il est cher).
-- **30 portions sur place** au plus, et **jusqu'à 8 à emporter** (payées tout de suite, vendues entre 11 h 30 et 13 h 30 puis 18 h 30 et 20 h 30). Moins si la réserve ne suffit pas : le menu ne prend jamais ce dont la carte a besoin. Pas assez de produits → pas de menu ce jour-là (message).
+- **30 portions sur place** au plus, et **jusqu'à 8 à emporter** (payées tout de suite, vendues entre 11 h 30 et 13 h 30 puis 18 h 30 et 20 h 30). Moins si la réserve ne suffit pas : le menu ne prend jamais ce dont la carte a besoin (80 % de ce qu'elle vend d'habitude), et depuis la v0.5.1 l'entrée, le plat et le dessert doivent **tous** être faisables pour chaque menu compté. Pas assez de produits → pas de menu ce jour-là (message).
 - On peut le couper (Carte → Menu du jour).
+
+### Modifier le menu du jour *(v0.5.1, demande de Yann)*
+- Carte → Menu du jour : chaque place (entrée, plat, dessert) a un gros bouton **« Changer »**. Il ouvre la liste des plats du menu du jour de ce lieu :
+  - en **vert** : assez de produits pour au moins 8 menus (le nombre de menus possibles est écrit) ;
+  - en **orange** : faisable, mais moins de 8 menus, avec les ingrédients qui manquent ;
+  - en **gris** : impossible, avec les ingrédients qui manquent. Si on le touche, un message rouge explique pourquoi et propose de commander dans Stocks ; le menu ne change pas.
+- On peut aussi choisir **« Pas d'entrée »** ou **« Pas de dessert »** (le menu devient « plat + dessert » ou « entrée + plat »). Le **plat est obligatoire**.
+- Le calcul tient compte des autres plats du menu et de ce que la carte garde pour elle.
+- Changer en cours de journée est permis : les menus déjà vendus restent vendus, et le nombre de menus restants est recalculé (30 sur place et 8 à emporter au plus sur la journée).
+- **« Revenir au menu proposé »** remet la proposition automatique du matin (la même, sans nouveau tirage).
+- **Prix** : les formules se règlent toujours de 50 en 50 centimes ; un bouton « Revenir aux prix conseillés » apparaît quand un prix a été changé. Les prix choisis restent d'un jour à l'autre ; le choix des plats ne vaut que pour la journée (chaque matin, nouvelle proposition automatique).
+- Si un ingrédient vient à manquer pendant la journée, un avertissement rouge s'affiche sous le plat concerné et le menu ne se vend plus jusqu'à ce que tu changes ce plat ou que la commande arrive.
+- Le menu du jour prévu pour le lendemain (et commandé le soir par la commande automatique) reste le menu automatique.
+- La sauvegarde garde le choix (format toujours 5) ; une partie de la v0.5 se relit sans changement.
 
 ### Boissons
 - **18 boissons de base** (café, vins, bière, sodas, jus, eau, kir, spritz, cidre, cappuccino…) dont 4 de saison (vin chaud et lait de poule l'hiver, citronnade et thé glacé l'été), + **5 boissons du lieu** (dont une bouteille de vin et une bière en bouteille). Entre 3 et 20 à la carte.
@@ -298,31 +312,32 @@ Tailles de référence testées (en pixels « CSS », téléphone en paysage) :
 - Ces chiffres sont mesurés automatiquement par `outils/tester.py` à chaque version.
 - Installé sur l'écran d'accueil, le jeu s'ouvre **en plein écran et en paysage**.
 
-## 10. Équilibre mesuré (simulateur, 30 jours, Facile, v0.5)
+## 10. Équilibre mesuré (simulateur, 30 jours, Facile, v0.5.1)
 
 Équipe testée : patron en salle + 1 serveur + 1 commis de cuisine, prix conseillés, **commande automatique** (Facile), partie commencée le 25 novembre (le 1er décembre passe pendant le test : les plats de saison changent).
 
 | Lieu | Servis par jour | Repartis faute de place | Recettes par jour | Achats de produits | Salaires (estimés) | Résultat par jour | Gaspillage | Ruptures par jour | Menus du jour | Boissons |
 |---|---|---|---|---|---|---|---|---|---|---|
 | Mayotte | 36 | 0 % | 1 221 € | 351 € (29 %) | 161 € | **708 €** | 18 portions (57 €) | 0,5 | 12 + 7 à emporter | 45 |
-| La Réunion | 61 | 2 % | 1 992 € | 441 € (22 %) | 158 € | **1 393 €** | 8 portions (12 €) | 0,5 | 19 + 7 | 76 |
-| Bretagne | 69 | 5 % | 1 915 € | 490 € (26 %) | 161 € | **1 264 €** | 12 portions (26 €) | 0,1 | 21 + 6 | 86 |
-| Île-de-France | 76 | 6 % | 2 393 € | 646 € (27 %) | 175 € | **1 572 €** | 15 portions (45 €) | 0,2 | 24 + 6 | 92 |
-| Paris | 88 | 10 % | 3 115 € | 712 € (23 %) | 213 € | **2 189 €** | 5 portions (6 €) | 0 | 26 + 6 | 107 |
-| Tokyo | 99 | 13 % | 3 549 € | 728 € (21 %) | 175 € | **2 646 €** | 7 portions (23 €) | 1,7 | 26 + 6 | 120 |
-| New York | 101 | 15 % | 4 221 € | 944 € (22 %) | 223 € | **3 054 €** | 1 portion (1 €) | 0,6 | 29 + 6 | 123 |
+| La Réunion | 60 | 2 % | 1 949 € | 408 € (21 %) | 158 € | **1 384 €** | 5 portions (9 €) | 0,7 | 17 + 5 | 75 |
+| Bretagne | 66 | 6 % | 1 850 € | 479 € (26 %) | 161 € | **1 210 €** | 14 portions (28 €) | 0,4 | 19 + 6 | 80 |
+| Île-de-France | 79 | 5 % | 2 476 € | 650 € (26 %) | 175 € | **1 651 €** | 19 portions (57 €) | 0,2 | 23 + 6 | 96 |
+| Paris | 90 | 11 % | 3 197 € | 720 € (23 %) | 213 € | **2 264 €** | 6 portions (14 €) | 0 | 24 + 6 | 110 |
+| Tokyo | 102 | 13 % | 3 710 € | 742 € (20 %) | 175 € | **2 793 €** | 7 portions (20 €) | 1,9 | 22 + 6 | 127 |
+| New York | 102 | 13 % | 4 341 € | 947 € (22 %) | 223 € | **3 172 €** | 2 portions (1 €) | 0,7 | 25 + 6 | 126 |
 
 - **Un joueur moyen reste bénéficiaire partout en Facile** (contrôle automatique). Résultat = recettes − achats − salaires des employés (35 h, sans charges ; loyer et charges viendront avec l'étape « Argent »).
-- Les recettes ont augmenté depuis la v0.4 (boissons et menu du jour) ; les achats font 21 à 29 % des recettes.
+- Les recettes ont augmenté depuis la v0.4 (boissons et menu du jour) ; les achats font 20 à 29 % des recettes.
+- **Menu du jour modifié** (contrôle automatique) : un plat faisable est accepté, un plat sans ingrédients est refusé avec la liste de ce qui manque, « pas de dessert » donne la formule entrée + plat, le plat est obligatoire, le choix tient dans la sauvegarde, et le lendemain un nouveau menu est proposé automatiquement.
 
 **Ruptures expliquées** (Paris, 6 jours) : toutes les ruptures ont une cause affichée (contrôle automatique).
 
 | Façon de jouer | Ruptures | Cause donnée |
 |---|---|---|
-| Commande automatique (Facile, 7 lieux, 30 jours) | 0 à 1,7 par jour | 104 fois « il s'en est vendu plus que prévu », 2 fois « la commande arrive à … » |
-| Commande automatique sans marge de sécurité | 1 | « il s'en est vendu plus que prévu : augmente la marge » |
-| Commande chaque soir au grossiste avec « Proposer les quantités » | 1 | « la dernière commande était trop petite » |
-| Ne jamais commander | 105 (414 clients partis sans manger) | « rien n'a été commandé depuis hier » |
+| Commande automatique (Facile, 7 lieux, 30 jours) | 0 à 1,9 par jour | 126 fois « il s'en est vendu plus que prévu », 7 fois « la commande arrive à … » |
+| Commande automatique sans marge de sécurité | 3 | « il s'en est vendu plus que prévu : augmente la marge » |
+| Commande chaque soir au grossiste avec « Proposer les quantités » | 2 | « la dernière commande était trop petite » |
+| Ne jamais commander | 107 (416 clients partis sans manger) | « rien n'a été commandé depuis hier » |
 
 Autres contrôles : 300 pains achetés sans clients → jetés en 3 matins et payés quand même ; les fruits coûtent 0,64 € en mai contre 0,98 € en novembre (et 0,60 € à La Réunion en novembre, saisons inversées) ; au 1er juin, les asperges quittent la carte et les tomates-burrata arrivent.
 
@@ -330,17 +345,17 @@ Effet des prix à Paris (même équipe, 10 jours, moyenne par jour) :
 
 | Prix de toute la carte | Clients servis | Recettes | Marge brute |
 |---|---|---|---|
-| × 0,7 | 110 | 3 204 € | 2 404 € |
-| × 1 (conseillé) | 95 | 3 342 € | 2 674 € |
-| × 1,3 | 52 | 2 019 € | 1 694 € |
-| × 1,6 | 35 | 1 542 € | 1 329 € |
+| × 0,7 | 104 | 3 033 € | 2 238 € |
+| × 1 (conseillé) | 90 | 3 235 € | 2 593 € |
+| × 1,3 | 65 | 2 466 € | 2 084 € |
+| × 1,6 | 40 | 1 707 € | 1 460 € |
 
 Selon l'équipe, à Paris (moyenne par jour) :
 
 | Équipe | Servis | Repartis | Attente avant la commande |
 |---|---|---|---|
-| Patron seul en salle + 1 commis | 83 | 16 % | 6 min |
-| Patron + 1 serveur + 1 commis | 84 | 11 % | 3 min |
-| Patron + 2 serveurs + chef + commis | 87 | 9 % | 3 min |
+| Patron seul en salle + 1 commis | 82 | 15 % | 5,5 min |
+| Patron + 1 serveur + 1 commis | 86 | 7 % | 3 min |
+| Patron + 2 serveurs + chef + commis | 95 | 8 % | 3 min |
 
 Contrôles automatiques : chaque jour, l'argent bouge exactement de « recettes − achats », chaque client servi paie, aucun stock négatif, zéro pourboire là où ce n'est pas l'usage, les 44 cartes sont complètes. Les 7 anciennes parties de Chez YaYa se reprennent (stocks compris quand ils existent). Aucune valeur impossible, toutes les journées se terminent. Détail complet : `tests/resultat-simulation-30-jours.txt`.

@@ -7,7 +7,7 @@ On ne travaille que sur la colonne **Indispensable**, dans l'ordre. Toute nouvel
 | ✅ 1. Salle lisible en paysage, clients qui arrivent et mangent, Pause/1×/2×/4×, écran portrait *(v0.1)* | Ambiance sonore (salle, cuisine, terrasse, pluie), sons libres de droits | Écran « caisse » et « tickets cuisine » |
 | ✅ 1b. Retours de Yann : placement des clients par le joueur (option), départ seul avec recrutement *(v0.2)* ; effectif de 16, intérim, renvoi *(v0.3, en test)* | Images libres de droits (Kenney), style unique | Étoile au guide |
 | ✅ 2. Carte des plats, prix et paiement des clients *(v0.4)* | Contrôle d'hygiène surprise (type Alim'confiance) | |
-| ✅ 3. Stocks, fournisseurs et vrais prix de gros (Rungis), **avec menu du jour, boissons et plats de saison** (décision de Yann) *(v0.5, en test)* | Fiches techniques des plats (grammages, coût matière) | Mise à jour des prix Rungis (nouveau relevé) |
+| ✅ 3. Stocks, fournisseurs et vrais prix de gros (Rungis), **avec menu du jour, boissons et plats de saison** (décision de Yann) *(v0.5 ; menu du jour modifiable en v0.5.1, en test)* | Fiches techniques des plats (grammages, coût matière) | Mise à jour des prix Rungis (nouveau relevé) |
 | 4. Équipe complète : plannings, repos, contrats, formations, recrutement des barmans, plongeurs, nettoyage et apprentis, **les 16 postes tous recrutables** (décision de Yann), intérim pour les absences, effets du sens du service et de la qualité | Écran « Crédits et sources » | |
 | 5. Argent : loyer, charges, paiement des salaires (et de l'intérim), indemnités de renvoi (à décider), 3 difficultés, bilan de fin de journée | | |
 | 6. Lieux (effets complets), météo et calendrier | | |
@@ -24,6 +24,7 @@ On ne travaille que sur la colonne **Indispensable**, dans l'ordre. Toute nouvel
 - **Version finale : les 16 postes seront tous recrutables** (salle, cuisine, bar, plonge, nettoyage, apprentis). À faire à l'étape 4 « Équipe ». En test, on recrute pour l'instant serveurs, commis de salle, responsable de salle, chef, second, commis et aide de cuisine.
 - **Menu du jour, boissons (carte et bar) et plats de saison** : arrivent avec l'étape 3 « Stocks » *(fait en v0.5)*. Le barman reste non recrutable jusqu'à l'étape « Équipe ».
 - **Commande automatique** : une option, activée par défaut en Facile seulement *(fait en v0.5)*.
+- **Menu du jour modifiable** : le jeu propose chaque matin, Yann peut changer chaque plat parmi ceux faisables, changer les prix et revenir à la proposition *(fait en v0.5.1)*.
 - **Renvoyer** : possible dès maintenant *(fait en v0.3)*. Pas le patron, jamais la salle ou la cuisine vide en service, et en plein service la personne finit sa tâche puis part.
 
 ## Questions en attente pour Yann
@@ -37,8 +38,16 @@ On ne travaille que sur la colonne **Indispensable**, dans l'ordre. Toute nouvel
   - Commande automatique le soir : 1, 2 ou 4 jours de stock selon la conservation, + 15 % de marge ; activée en Facile seulement.
   - Premières courses (2 jours) payées à la création de la partie.
   - Rupture : le plat disparaît, le client choisit autre chose ; s'il n'y a plus rien, la table repart. Le plat revient à la livraison.
-  - Menu du jour automatique (écouler, offres, saison), formules 17 / 17 / 22 € × lieu, 30 portions + 8 à emporter. Tu peux le couper ou changer ses prix, mais pas encore choisir ses plats toi-même : le veux-tu ?
+  - Menu du jour automatique (écouler, offres, saison), formules 17 / 17 / 22 € × lieu, 30 portions + 8 à emporter. Tu peux le couper, changer ses prix et, depuis la v0.5.1, ses plats.
   - Boissons servies par la salle avec les plats (pas de barman), 9 secondes de service par boisson ; 3 à 20 boissons à la carte.
   - Plats de saison seulement à leurs mois, ajoutés et retirés tout seuls au changement de mois, choisis 25 % plus souvent.
   - Calendrier : le jour 1 est la date de création de la partie.
   - Anciennes parties : commandes en route livrées tout de suite ; réserve qui peut déborder après la reprise.
+- **Choix de la v0.5.1 à valider** (REGLES §4c « Modifier le menu du jour ») :
+  - Seuls les plats du menu du jour du lieu sont proposés (pas ceux de la carte).
+  - Vert = au moins 8 menus possibles ; orange = moins de 8 ; gris = impossible (refusé avec message).
+  - Le plat est obligatoire ; entrée et dessert peuvent être retirés.
+  - Changer en pleine journée est permis ; les menus déjà vendus restent vendus.
+  - Le choix des plats ne vaut que pour la journée ; les prix choisis restent.
+  - Le menu prévu pour demain (commande automatique) reste le menu automatique.
+  - Le nombre de menus compte maintenant l'entrée, le plat et le dessert ensemble (un peu moins de menus qu'en v0.5).

@@ -40,6 +40,8 @@ UI.fermerVolet = function () {
   UI.carteRefus = null;
   UI.ticketGroupe = null;
   UI.stMsg = null;
+  UI.mdjChoix = null;
+  UI.mdjMsg = null;
   UI.pause('volet', false);
   UI.majDetail();
 };

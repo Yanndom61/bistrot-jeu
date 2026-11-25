@@ -164,6 +164,28 @@ if (!pertes) console.log('  ✓ joueur moyen bénéficiaire partout en Facile.')
   if (!(fraise < fraise11)) probleme('les fruits devraient coûter moins cher en saison');
 }
 
+// Menu du jour modifié par le joueur (v0.5.1) : choix parmi les plats faisables, refus clair sinon, retour à la proposition, sauvegarde.
+{
+  const S = B.creerPartie({ nom: 'Test', lieu: 'paris', graine: 8 });
+  recruter(S, ['serv', 'commis']);
+  const auto = S.stocks.mdj.plat, L = B.menuJour.choix(S, 'plat');
+  const ok = L.find((x) => x.assez && !x.actuel), ko = L.find((x) => !x.faisable);
+  const r1 = B.menuJour.choisir(S, 'plat', ok.d.id);
+  if (!r1.ok || S.stocks.mdj.plat !== ok.d.id) probleme('menu du jour : un plat faisable est refusé');
+  const r2 = ko ? B.menuJour.choisir(S, 'plat', ko.d.id) : { erreur: 'mdj_err_manque' };
+  if (r2.erreur !== 'mdj_err_manque') probleme('menu du jour : un plat sans ingrédients est accepté');
+  B.menuJour.choisir(S, 'dessert', null);
+  if (B.menuJour.formules(S).join() !== 'ep') probleme('menu du jour : sans dessert, il ne reste pas « entrée + plat »');
+  if (!B.menuJour.choisir(S, 'plat', null).erreur) probleme('menu du jour : il doit toujours y avoir un plat');
+  const T = B.relire(B.serialiser(S)).partie;
+  if (T.stocks.mdj.plat !== ok.d.id || !B.menuJour.estModifie(T)) probleme('menu du jour : le choix ne tient pas dans la sauvegarde');
+  const c = jouer(T, 'menu modifié', 1, false);
+  const S2 = c.S;
+  B.menuJour.revenirAuto(S2);
+  console.log(`\nMenu du jour modifié : ${B.menuJour.plat(S, auto).nom} → ${ok.d.nom} (${r1.portions} menus), ${ko ? `« ${ko.d.nom} » refusé (${B.t(r2.erreur, r2.vars)})` : 'aucun plat impossible ce jour-là'} ; ${c.mdj} menus vendus dans la journée ; le lendemain, nouveau menu proposé automatiquement : ${B.menuJour.plat(S2, S2.stocks.mdj.plat) ? B.menuJour.plat(S2, S2.stocks.mdj.plat).nom : 'aucun'} (modifié : ${B.menuJour.estModifie(S2)}).`);
+  if (B.menuJour.estModifie(S2)) probleme('menu du jour : le choix du joueur ne devrait valoir que pour la journée');
+}
+
 // Comparaison de différentes équipes à Paris (moyennes par jour).
 console.log('\nComparaison des équipes à Paris (moyenne par jour) :');
 const equipes = [

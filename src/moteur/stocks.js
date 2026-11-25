@@ -444,7 +444,12 @@ B.menuJour.calculer = function (S) {
     mdj.portions = n - mdj.emporter;
     mdj.prevues = n;
   } else B.message(S, 'msg_mdj_aucun');
+  /* la proposition automatique est gardée pour le bouton « Revenir au menu proposé » */
+  mdj.auto = { entree: mdj.entree, plat: mdj.plat, dessert: mdj.dessert, raisons: mdj.raisons };
+  mdj.manuel = {};
   S.stocks.mdj = mdj;
+  /* portions : le menu complet (entrée + plat + dessert) doit être faisable sans prendre ce dont la carte a besoin */
+  if (mdj.plat) { B.menuJour.recompter(S); mdj.prevues = mdj.portions + mdj.emporter; }
   if (!S.stocks.mdjPrix) S.stocks.mdjPrix = B.menuJour.prixConseilles(S);
 };
 B.menuJour.prixConseilles = function (S) {
@@ -476,6 +481,75 @@ B.menuJour.changerPrix = function (S, f, sens) {
   const P = S.stocks.mdjPrix, c = B.menuJour.prixConseilles(S);
   P[f] = Math.round(Math.min(c[f] * 3, Math.max(1, P[f] + sens * B.DATA.carte.prix.pas)) * 100) / 100;
 };
+/* ---------- Menu du jour modifié par le joueur (v0.5.1) ---------- */
+B.menuJour.CATS = ['entree', 'plat', 'dessert'];
+/* Ce que la carte garde pour elle aujourd'hui (le menu ne le prend jamais) + ce que prennent les autres plats du menu. */
+B.menuJour.reserve = function (S, sauf) {
+  const P = B.stock.prevision(S), r = {}, m = S.stocks.mdj;
+  for (const i in P) r[i] = P[i] * 0.8;
+  if (m) B.menuJour.CATS.forEach(function (c) {
+    const d = c !== sauf && m[c] && B.menuJour.plat(S, m[c]);
+    if (d) for (const i in d.recette) r[i] = (r[i] || 0) + d.recette[i] * Math.max(0, (m.portions || 0) + (m.emporter || 0));
+  });
+  return r;
+};
+/* Les plats proposables pour une place du menu : portions possibles et ingrédients qui manquent. */
+B.menuJour.choix = function (S, cat) {
+  const M = B.DATA.stocks.menuDuJour, r = B.menuJour.reserve(S, cat), m = S.stocks.mdj || {};
+  return B.menuJour.pool(S).filter(function (d) { return d.cat === cat; }).map(function (d) {
+    const n = Math.max(0, B.menuJour.possible(S, d, r));
+    const manque = Object.keys(d.recette).filter(function (i) { return B.stock.quantite(S, i) - (r[i] || 0) < d.recette[i] * M.minPortions - 1e-9; });
+    return { d: d, n: n, faisable: n >= 1, assez: n >= M.minPortions, manque: manque, actuel: m[cat] === d.id, propose: !!(m.auto && m.auto[cat] === d.id) };
+  }).sort(function (a, b) { return (b.actuel - a.actuel) || (b.assez - a.assez) || (b.n - a.n) || a.d.nom.localeCompare(b.d.nom); });
+};
+/* Recalcule les portions restantes du menu (les menus déjà vendus restent vendus). */
+B.menuJour.recompter = function (S) {
+  const m = S.stocks.mdj, M = B.DATA.stocks.menuDuJour;
+  if (!m.plat) { m.portions = 0; m.emporter = 0; return; }
+  const r = {}, P = B.stock.prevision(S);
+  for (const i in P) r[i] = P[i] * 0.8;
+  const rec = {};
+  B.menuJour.CATS.forEach(function (c) { const d = m[c] && B.menuJour.plat(S, m[c]); if (d) for (const i in d.recette) rec[i] = (rec[i] || 0) + d.recette[i]; });
+  const n = Math.max(0, B.menuJour.possible(S, { recette: rec }, r));
+  const reste = Math.max(0, Math.min(M.portionsSurPlace + M.portionsEmporter - m.vendus - m.emporterVendus, n));
+  m.emporter = Math.max(0, Math.min(M.portionsEmporter - m.emporterVendus, Math.floor(reste / 4)));
+  m.portions = reste - m.emporter;
+};
+/* Le joueur change une place du menu. id = null pour « pas d'entrée » ou « pas de dessert » (le plat est obligatoire). */
+B.menuJour.choisir = function (S, cat, id) {
+  const m = S.stocks.mdj;
+  if (!m || B.menuJour.CATS.indexOf(cat) < 0) return { erreur: 'mdj_err_inconnu' };
+  if (id == null) {
+    if (cat === 'plat') return { erreur: 'mdj_err_plat_obligatoire' };
+  } else {
+    const c = B.menuJour.choix(S, cat).find(function (x) { return x.d.id === id; });
+    if (!c) return { erreur: 'mdj_err_inconnu' };
+    if (!c.faisable) return { erreur: 'mdj_err_manque', vars: { plat: c.d.nom, manque: c.manque.map(function (i) { return B.stock.ing(i).nom.toLowerCase(); }).join(', ') } };
+  }
+  m[cat] = id;
+  m.manuel = m.manuel || {};
+  m.manuel[cat] = true;
+  if (id) m.raisons[id] = [{ cle: 'mdj_raison_choisi', vars: {} }];
+  B.menuJour.recompter(S);
+  return { ok: true, portions: m.portions + m.emporter };
+};
+/* Bouton « Revenir au menu proposé » : la proposition automatique du matin revient (sans nouveau tirage). */
+B.menuJour.revenirAuto = function (S) {
+  const m = S.stocks.mdj;
+  if (!m || !m.auto) return false;
+  B.menuJour.CATS.forEach(function (c) { m[c] = m.auto[c]; });
+  m.raisons = Object.assign({}, m.auto.raisons);
+  m.manuel = {};
+  B.menuJour.recompter(S);
+  return true;
+};
+B.menuJour.estModifie = function (S) { const m = S.stocks.mdj; return !!(m && m.manuel && Object.keys(m.manuel).length); };
+B.menuJour.prixModifies = function (S) {
+  const P = S.stocks.mdjPrix, C = B.menuJour.prixConseilles(S);
+  return !!P && Object.keys(C).some(function (k) { return P[k] !== C[k]; });
+};
+B.menuJour.prixConseillesRemettre = function (S) { S.stocks.mdjPrix = B.menuJour.prixConseilles(S); };
+
 /* Un client prend-il le menu du jour ? Renvoie les lignes du ticket, ou null. */
 B.menuJour.commander = function (S, g) {
   const m = S.stocks.mdj, M = B.DATA.stocks.menuDuJour;

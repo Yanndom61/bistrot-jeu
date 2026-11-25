@@ -38,7 +38,7 @@ UI.htmlCarte = function () {
   if (UI.platCourant && B.carte.plat(S, UI.platCourant)) return UI.htmlFichePlat(B.carte.plat(S, UI.platCourant));
   const L = B.DATA.carte.limites;
   let h = UI.onglets('data-ca-onglet', [['plats', B.t('carte_onglet_plats')], ['boissons', B.t('carte_onglet_boissons')], ['mdj', B.t('carte_onglet_mdj')]], UI.carteOnglet);
-  if (UI.carteOnglet === 'mdj') return h + UI.htmlMenuDuJour();
+  if (UI.carteOnglet === 'mdj') return UI.mdjChoix && S.stocks.mdj ? UI.htmlChoixMdj(UI.mdjChoix) : h + UI.htmlMenuDuJour();
   if (UI.carteOnglet === 'boissons') {
     h += '<p class="sous">' + UI.esc(B.t('carte_intro_boissons', { n: B.carte.surCarte(S, 'boisson').length, max: L.max.boisson })) + '</p>';
     ['apero', 'vin', 'bouteille', 'froid', 'chaud'].forEach(function (ty) {
@@ -59,32 +59,70 @@ UI.htmlCarte = function () {
   return h;
 };
 
+UI.mdjChoix = null;   /* place du menu en cours de modification : entree | plat | dessert */
+UI.mdjMsg = null;     /* { texte, ok } */
+
 UI.htmlMenuDuJour = function () {
   const S = UI.S, m = S.stocks.mdj, on = S.stocks.mdjOn !== false;
   let h = '<p class="sous">' + UI.esc(B.t('mdj_intro')) + '</p>';
+  if (UI.mdjMsg) h += '<div class="refus' + (UI.mdjMsg.ok ? ' ok' : '') + ' gros-texte">' + UI.esc(UI.mdjMsg.texte) + '</div>';
   h += '<div class="ligne-reglage"><span>' + UI.esc(B.t('mdj_actif')) + '</span><button type="button" class="bascule' + (on ? ' on' : '') + '" data-ca="mdj-on">' + UI.esc(B.t(on ? 'menu_oui' : 'menu_non')) + '</button></div>';
-  h += '<h3>' + UI.esc(B.t('mdj_du_jour') + ' · ' + B.texteDate(S)) + '</h3>';
-  if (!m || !m.plat) h += '<p>' + UI.esc(B.t('mdj_aucun')) + '</p>';
-  else {
-    ['entree', 'plat', 'dessert'].forEach(function (c) {
+  h += '<h3>' + UI.esc(B.t('mdj_du_jour') + ' · ' + B.texteDate(S)) + (B.menuJour.estModifie(S) ? ' <span class="badge orange">' + UI.esc(B.t('mdj_badge_modifie')) + '</span>' : '') + '</h3>';
+  if (!m || !m.plat) {
+    h += '<p class="gros-texte">' + UI.esc(B.t('mdj_aucun')) + '</p>';
+    if (m) h += '<button type="button" class="gros" data-ca="mdj-changer" data-id="plat">' + UI.esc(B.t('mdj_choisir_plat')) + '</button>';
+  } else {
+    B.menuJour.CATS.forEach(function (c) {
       const d = m[c] && B.menuJour.plat(S, m[c]);
-      if (!d) return;
-      const r = (m.raisons[d.id] || []).map(function (x) { return B.t(x.cle, x.vars); }).join(' · ');
-      h += '<div class="ligne-st"><span><span class="sous">' + UI.esc(B.t('mdj_cat_' + c)) + '</span><br><b>' + UI.esc(d.emoji + ' ' + d.nom) + '</b>' + (r ? '<br><span class="sous">' + UI.esc(r) + '</span>' : '') + '</span></div>';
+      const r = d ? (m.raisons[d.id] || []).map(function (x) { return B.t(x.cle, x.vars); }).join(' · ') : '';
+      const manque = d ? B.stock.manque(S, d.recette) : [];
+      h += '<div class="mdj-place"><div class="mdj-texte"><span class="sous">' + UI.esc(B.t('mdj_cat_' + c)) + (m.manuel && m.manuel[c] ? ' · ' + B.t('mdj_choisi_par_toi') : '') + '</span>' +
+        '<b class="mdj-nom">' + UI.esc(d ? d.emoji + ' ' + d.nom : B.t('mdj_sans_' + c)) + '</b>' + (r ? '<span class="sous">' + UI.esc(r) + '</span>' : '') +
+        (manque.length ? '<span class="alerte-mdj">' + UI.esc(B.t('mdj_alerte_manque', { manque: manque.map(function (i) { return B.stock.ing(i).nom.toLowerCase(); }).join(', ') })) + '</span>' : '') +
+        '</div><button type="button" class="petit-btn mdj-btn" data-ca="mdj-changer" data-id="' + c + '">' + UI.esc(B.t('mdj_changer')) + '</button></div>';
     });
-    h += '<p>' + UI.esc(B.t('mdj_restant', { n: m.portions, e: m.emporter, v: m.vendus, ve: m.emporterVendus })) + '</p>';
+    h += '<p class="gros-texte">' + UI.esc(B.t('mdj_restant', { n: m.portions, e: m.emporter, v: m.vendus, ve: m.emporterVendus })) + '</p>';
+    if (m.portions + m.emporter <= 0) h += '<div class="alerte">' + UI.esc(B.t('mdj_alerte_epuise')) + '</div>';
+  }
+  if (m && m.auto && B.menuJour.estModifie(S)) h += '<button type="button" class="gros" data-ca="mdj-auto">' + UI.esc(B.t('mdj_revenir_auto')) + '</button>';
+  if (m && m.plat) {
     h += '<h3>' + UI.esc(B.t('mdj_formules')) + '</h3>';
-    B.menuJour.formules(S).concat(on ? [] : []).forEach(function (f) {
-      h += '<div class="ligne-st"><span>' + UI.esc(B.t('mdj_formule_' + f)) + '</span><span class="plat-prix"><button type="button" class="petit-btn mini" data-ca="mdj-moins" data-id="' + f + '">−</button><b>' +
-        UI.esc(B.prix(B.menuJour.prixFormule(S, f))) + '</b><button type="button" class="petit-btn mini" data-ca="mdj-plus" data-id="' + f + '">+</button></span></div>';
+    B.menuJour.formules(S).forEach(function (f) {
+      h += '<div class="ligne-st"><span class="gros-texte">' + UI.esc(B.t('mdj_formule_' + f)) + '</span><span class="plat-prix"><button type="button" class="petit-btn mini" data-ca="mdj-moins" data-id="' + f + '" aria-label="' + UI.esc(B.t('carte_moins')) + '">−</button><b>' +
+        UI.esc(B.prix(B.menuJour.prixFormule(S, f))) + '</b><button type="button" class="petit-btn mini" data-ca="mdj-plus" data-id="' + f + '" aria-label="' + UI.esc(B.t('carte_plus')) + '">+</button></span></div>';
     });
+    if (B.menuJour.prixModifies(S)) h += '<button type="button" class="gros" data-ca="mdj-prix-auto">' + UI.esc(B.t('mdj_prix_conseilles', { ep: B.prix(B.menuJour.prixConseilles(S).ep), epd: B.prix(B.menuJour.prixConseilles(S).epd) })) + '</button>';
   }
   const pl = S.stocks.planMdj;
   if (pl && pl.jour === S.jour + 1) {
-    h += '<h3>' + UI.esc(B.t('mdj_demain')) + '</h3><p>' + ['entree', 'plat', 'dessert'].map(function (c) { const d = pl[c] && B.menuJour.plat(S, pl[c]); return d ? UI.esc(d.emoji + ' ' + d.nom) : ''; }).filter(Boolean).join(' · ') + '</p>';
+    h += '<h3>' + UI.esc(B.t('mdj_demain')) + '</h3><p>' + B.menuJour.CATS.map(function (c) { const d = pl[c] && B.menuJour.plat(S, pl[c]); return d ? UI.esc(d.emoji + ' ' + d.nom) : ''; }).filter(Boolean).join(' · ') + '</p>';
   }
   return h;
 };
+
+/* Écran de modification d'une place du menu : les plats faisables d'abord, ceux qui manquent d'ingrédients grisés avec la raison. */
+UI.htmlChoixMdj = function (cat) {
+  const S = UI.S, M = B.DATA.stocks.menuDuJour, L = B.menuJour.choix(S, cat);
+  let h = '<button type="button" class="gros" data-ca="mdj-retour">' + UI.esc(B.t('mdj_retour')) + '</button>';
+  h += '<p class="gros-texte">' + UI.esc(B.t('mdj_choix_intro_' + cat, { min: M.minPortions })) + '</p>';
+  if (UI.mdjMsg) h += '<div class="refus gros-texte">' + UI.esc(UI.mdjMsg.texte) + '</div>';
+  if (cat !== 'plat') {
+    const actuel = !S.stocks.mdj[cat];
+    h += '<button type="button" class="mdj-choix' + (actuel ? ' actuel' : '') + '" data-ca="mdj-prendre" data-cat="' + cat + '" data-id=""><b>' + UI.esc(B.t('mdj_sans_' + cat)) + '</b>' +
+      '<span>' + UI.esc(B.t('mdj_sans_aide_' + cat)) + '</span></button>';
+  }
+  L.forEach(function (x) {
+    const etat = x.actuel ? B.t('mdj_etat_actuel') : x.propose ? B.t('mdj_etat_propose') : '';
+    let info;
+    if (!x.faisable) info = B.t('mdj_choix_impossible', { manque: x.manque.map(function (i) { return B.stock.ing(i).nom.toLowerCase(); }).join(', ') });
+    else if (!x.assez) info = B.t('mdj_choix_peu', { n: x.n, manque: x.manque.map(function (i) { return B.stock.ing(i).nom.toLowerCase(); }).join(', ') });
+    else info = B.t('mdj_choix_ok', { n: Math.min(x.n, M.portionsSurPlace + M.portionsEmporter) });
+    h += '<button type="button" class="mdj-choix' + (x.actuel ? ' actuel' : '') + (x.faisable ? (x.assez ? '' : ' peu') : ' impossible') + '" data-ca="mdj-prendre" data-cat="' + cat + '" data-id="' + x.d.id + '"' + (x.faisable ? '' : ' aria-disabled="true"') + '>' +
+      '<b>' + UI.esc(x.d.emoji + ' ' + x.d.nom) + (etat ? ' <span class="badge">' + UI.esc(etat) + '</span>' : '') + '</b><span>' + UI.esc(info) + '</span></button>';
+  });
+  return h;
+};
+
 
 UI.htmlFichePlat = function (d) {
   const S = UI.S, p = S.carte.plats[d.id], m = B.carte.marge(S, d.id), I = B.DATA.catalogue.ingredients;
@@ -135,7 +173,7 @@ UI.htmlTicket = function (g) {
 UI.rafraichirCarte = function (enHaut) {
   if (UI.voletOuvert !== 'carte') return;
   const d = UI.platCourant && B.carte.plat(UI.S, UI.platCourant);
-  UI.$('volet-titre').textContent = d ? d.emoji + ' ' + d.nom : B.t('carte_titre');
+  UI.$('volet-titre').textContent = d ? d.emoji + ' ' + d.nom : UI.carteOnglet === 'mdj' && UI.mdjChoix ? B.t('mdj_titre_choix_' + UI.mdjChoix) : B.t('carte_titre');
   const corps = UI.$('volet-corps'), y = corps.scrollTop;
   corps.innerHTML = UI.htmlCarte();
   corps.scrollTop = enHaut ? 0 : y;
@@ -151,10 +189,22 @@ UI.ouvrirTicket = function (gid) {
 UI.initCarte = function () {
   UI.$('volet-corps').addEventListener('click', function (e) {
     const o = e.target.closest('[data-ca-onglet]');
-    if (o && UI.voletOuvert === 'carte') { UI.carteOnglet = o.dataset.caOnglet; UI.platCourant = null; UI.carteRefus = null; UI.rafraichirCarte(true); return; }
+    if (o && UI.voletOuvert === 'carte') { UI.carteOnglet = o.dataset.caOnglet; UI.platCourant = null; UI.carteRefus = null; UI.mdjChoix = null; UI.mdjMsg = null; UI.rafraichirCarte(true); return; }
     const b = e.target.closest('[data-ca]');
     if (!b || !UI.S || b.disabled) return;
     const S = UI.S, a = b.dataset.ca, id = b.dataset.id;
+    if (a === 'mdj-changer') { UI.mdjChoix = id; UI.mdjMsg = null; UI.rafraichirCarte(true); return; }
+    if (a === 'mdj-retour') { UI.mdjChoix = null; UI.mdjMsg = null; UI.rafraichirCarte(true); return; }
+    if (a === 'mdj-prendre') {
+      const r = B.menuJour.choisir(S, b.dataset.cat, b.dataset.id || null);
+      if (r.erreur) { UI.mdjMsg = { texte: B.t(r.erreur, r.vars) }; UI.rafraichirCarte(true); return; }
+      const d = b.dataset.id && B.menuJour.plat(S, b.dataset.id);
+      UI.mdjChoix = null;
+      UI.mdjMsg = { ok: r.portions >= B.DATA.stocks.menuDuJour.minPortions, texte: d ? B.t(r.portions >= B.DATA.stocks.menuDuJour.minPortions ? 'mdj_ok_change' : 'mdj_ok_peu', { plat: d.nom, n: r.portions }) : B.t('mdj_ok_sans_' + b.dataset.cat, { n: r.portions }) };
+      UI.sauver(); UI.rafraichirCarte(true); return;
+    }
+    if (a === 'mdj-auto') { B.menuJour.revenirAuto(S); UI.mdjMsg = { ok: true, texte: B.t('mdj_ok_auto') }; UI.sauver(); UI.rafraichirCarte(true); return; }
+    if (a === 'mdj-prix-auto') { B.menuJour.prixConseillesRemettre(S); UI.sauver(); UI.rafraichirCarte(); return; }
     if (a === 'mdj-on') { S.stocks.mdjOn = S.stocks.mdjOn === false; UI.sauver(); UI.rafraichirCarte(); return; }
     if (a === 'mdj-plus' || a === 'mdj-moins') { B.menuJour.changerPrix(S, id, a === 'mdj-plus' ? 1 : -1); UI.sauver(); UI.rafraichirCarte(); return; }
     if (a === 'fiche') { UI.platCourant = id; UI.carteRefus = null; UI.rafraichirCarte(true); return; }

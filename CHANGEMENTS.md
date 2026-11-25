@@ -1,5 +1,13 @@
 # Changements
 
+## v0.5.1 — modifier le menu du jour (demande de Yann, lien TEST)
+- Carte → Menu du jour : un gros bouton **« Changer »** pour l'entrée, le plat et le dessert. On choisit dans une liste de gros boutons : en vert ce qui est faisable (avec le nombre de menus possibles), en orange ce qui est juste, en gris ce qui manque d'ingrédients (avec la liste).
+- Message rouge clair si on touche un plat impossible, ou si un ingrédient vient à manquer pendant la journée.
+- « Pas d'entrée » / « Pas de dessert » possibles ; le plat est obligatoire.
+- Bouton **« Revenir au menu proposé »**, et « Revenir aux prix conseillés » quand un prix de formule a été changé.
+- Le nombre de menus vérifie maintenant que l'entrée, le plat et le dessert sont tous faisables.
+- Le choix tient dans la sauvegarde ; les parties de la v0.5 se relisent sans changement.
+
 ## v0.5 — étape 3 : stocks, fournisseurs, menu du jour, boissons et plats de saison (lien TEST)
 - Nouveau bouton **Stocks** : la réserve (chambre froide, congélateur, étagères) avec les dates limites, les commandes en route et les ruptures du jour ; onglet **Commander** (4 fournisseurs, offres du jour, « Proposer les quantités », total et heure d'arrivée) ; onglet **Réglages** (commande automatique, marge de sécurité, fournisseur habituel, source des prix).
 - **L'argent baisse à l'achat** des produits. Prix de gros datés et sourcés (Rungis, RNM FranceAgriMer, novembre 2026), qui changent avec la saison.
