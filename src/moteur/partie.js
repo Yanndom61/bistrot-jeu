@@ -2,7 +2,8 @@
 B.statsVides = function () {
   return { groupes: 0, arrives: 0, servis: 0, repartis: 0, fileMax: 0, attenteCommande: 0, nbCommandes: 0,
     recettes: 0, pourboires: 0, couverts: 0, tickets: 0, coutMatiere: 0, platsRenvoyes: 0, platsVendus: {},
-    achats: 0, gaspillage: 0, gaspillagePortions: 0, jetes: [], ruptures: 0, partisRupture: 0, mdjVendus: 0, emporter: 0, boissons: 0 };
+    achats: 0, gaspillage: 0, gaspillagePortions: 0, jetes: [], ruptures: 0, partisRupture: 0, mdjVendus: 0, emporter: 0, boissons: 0,
+    formations: 0, partisSale: 0 };
 };
 
 B.nouvellePartie = function (o) {
@@ -37,6 +38,8 @@ B.nouvellePartie = function (o) {
     carte: null,
     stocks: null,
     cagnotte: 0,
+    partages: [],
+    proprete: B.DATA.equipe.effets.proprete.depart,
     tickets: [],
     stats: { jour: B.statsVides(), totalServis: 0, joursJoues: 0 },
     journal: [],
@@ -107,6 +110,8 @@ B.finDeJournee = function (S) {
     S.finJour = true;
     B.stock.soir(S);
     const st = S.stats.jour;
+    const net = B.planning.nettoyageDuSoir(S);
+    const partage = B.planning.dernierJourDuMois(S) ? B.planning.partager(S) : null;
     S.bilan = {
       jour: S.jour, servis: st.servis, repartis: st.repartis,
       attente: st.nbCommandes ? Math.round(st.attenteCommande / st.nbCommandes) : 0,
@@ -117,7 +122,10 @@ B.finDeJournee = function (S) {
       achats: B.r2(st.achats), gaspillage: st.gaspillage, gaspillagePortions: st.gaspillagePortions, jetes: st.jetes,
       ruptures: Object.keys(S.stocks.ruptures).map(function (id) { const r = S.stocks.ruptures[id]; return { nom: r.nom, cause: r.cause, vars: r.vars, refus: r.refus, debut: r.debut, fin: r.fin, manque: r.manque }; }),
       partisRupture: st.partisRupture, mdjVendus: st.mdjVendus, emporter: st.emporter, boissons: st.boissons,
-      resultat: B.r2(st.recettes - st.achats), autoCommande: S.stocks.derniereAuto && S.stocks.derniereAuto.jour === S.jour ? S.stocks.derniereAuto.total : 0
+      resultat: B.r2(st.recettes - st.achats - (st.formations || 0)), formations: B.r2(st.formations || 0), partisSale: st.partisSale || 0,
+      proprete: net, partage: partage, cagnotte: S.cagnotte,
+      absents: S.equipe.filter(function (p) { return p.absent; }).map(function (p) { return { nom: p.nom, pourquoi: p.absent }; }),
+      autoCommande: S.stocks.derniereAuto && S.stocks.derniereAuto.jour === S.jour ? S.stocks.derniereAuto.total : 0
     };
     S.stats.totalServis += st.servis;
     S.stats.joursJoues++;
@@ -181,6 +189,14 @@ B.verifier = function (S) {
     if (w.service === 'salle' && w.salaire < 0) pb.push('salaire négatif');
   });
   if (S.equipe.filter(function (p) { return p.patron; }).length !== 1) pb.push('il faut exactement un patron');
+  S.equipe.forEach(function (p) {
+    if (p.absent && (p.tache || S.groupes.some(function (g) { return g.cuisinier === p.id && g.etat === 'cuisine'; }))) pb.push(p.nom + ' travaille alors qu’il est absent');
+    if (!B.equipe.aDesRepos(p)) { if (p.absent) pb.push(p.nom + ' (patron ou intérim) ne devrait pas être absent'); return; }
+    if (!p.repos || p.repos.length !== 2 || (p.repos[0] + 1) % 7 !== p.repos[1]) pb.push(p.nom + ' : les 2 jours de repos ne se suivent pas');
+    if (p.absent === 'repos' && !B.planning.estRepos(p, B.jourSemaine(S))) pb.push(p.nom + ' en repos un jour travaillé');
+  });
+  if (!(S.cagnotte >= -0.001)) pb.push('cagnotte négative');
+  if (!(S.proprete >= 0 && S.proprete <= 100)) pb.push('propreté hors limites');
   S.groupes.forEach(function (g) {
     if (g.cuisinier && !S.equipe.find(function (p) { return p.id === g.cuisinier && p.service === 'cuisine'; })) pb.push('groupe ' + g.id + ' attend un cuisinier absent');
   });

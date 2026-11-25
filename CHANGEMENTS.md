@@ -1,5 +1,17 @@
 # Changements
 
+## v0.6 — étape 4 : l'équipe (lien TEST)
+- **Les 16 postes sont tous recrutables** : en plus, **barmans**, **plongeurs**, **agents de nettoyage** et **apprenti**, avec leurs candidats dès le départ.
+- Volet Équipe en **5 onglets** à gros textes et grosses touches : **Équipe** (qui travaille aujourd'hui, fiche de chacun, renvoi), **Embauche** (candidats, intérim, places), **Planning**, **Formations**, **Cagnotte**.
+- **Plannings** : chacun a **2 jours de repos qui se suivent**, choisis automatiquement et décalables avec ◀ ▶ ; tableau des présents par jour, alerte quand la salle ou la cuisine serait vide. L'intérim remplace aussi les absents.
+- **Formations** : Rapidité, Accueil et service, Soin et qualité (+1 point), et **Sommellerie** (plus de vin vendu). Payée tout de suite, absent un jour, formé le lendemain ; annulable.
+- **Cagnotte des pourboires** partagée à parts égales entre les employés le dernier soir du mois (ni patron, ni intérimaires) ; historique et part de chacun.
+- **Effet des qualités** : le sens du service fait monter les pourboires, le chef (ou le second) améliore les cuissons des autres, le responsable accélère la salle, le barman prépare les boissons, sans plongeur la cuisine ralentit, l'apprenti fait 1 commande à la fois.
+- Nouvelle **propreté de la salle** : les agents de nettoyage la gardent propre ; une salle sale fait baisser les pourboires puis fuir des clients.
+- Barmans et plongeurs dessinés dans la salle. Bilan du soir : formations payées, propreté, absents, partage de la cagnotte.
+- Renvoi toujours possible pour tout le monde (formation pas commencée remboursée). Pas de paiement des salaires ni d'indemnités (étape 5).
+- Sauvegarde format 6 : les parties 0.5.1 continuent (même en plein service) ; barmans, plongeurs et agents repris de l'ancien jeu prennent enfin leur poste.
+
 ## v0.5.1 — modifier le menu du jour (demande de Yann, lien TEST)
 - Carte → Menu du jour : un gros bouton **« Changer »** pour l'entrée, le plat et le dessert. On choisit dans une liste de gros boutons : en vert ce qui est faisable (avec le nombre de menus possibles), en orange ce qui est juste, en gris ce qui manque d'ingrédients (avec la liste).
 - Message rouge clair si on touche un plat impossible, ou si un ingrédient vient à manquer pendant la journée.

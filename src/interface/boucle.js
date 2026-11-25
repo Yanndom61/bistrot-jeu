@@ -24,7 +24,12 @@ UI.majFin = function () {
       B.t('fin_d_achats', { total: B.euros(b.achats || 0) }), B.t('fin_d_resultat', { total: B.euros(b.resultat || 0) }),
       B.t('fin_d_gaspillage', { n: b.gaspillagePortions || 0, valeur: B.euros(b.gaspillage || 0) }),
       B.t('fin_d_mdj', { n: b.mdjVendus || 0, e: b.emporter || 0 }), B.t('fin_d_boissons', { n: b.boissons || 0 }),
-      B.t('fin_d_ruptures', { n: (b.ruptures || []).length, partis: b.partisRupture || 0 })
+      B.t('fin_d_ruptures', { n: (b.ruptures || []).length, partis: b.partisRupture || 0 }),
+      b.formations ? B.t('fin_d_formations', { total: B.euros(b.formations) }) : '',
+      b.proprete ? B.t('fin_d_proprete', { avant: b.proprete.avant, apres: b.proprete.apres }) : '',
+      b.partisSale ? B.t('fin_d_partis_sale', { n: b.partisSale }) : '',
+      (b.absents || []).length ? B.t('fin_d_absents', { n: b.absents.map(function (x) { return x.nom.split(' ')[0]; }).join(', ') }) : '',
+      b.partage ? B.t('fin_d_partage', { total: B.prix(b.partage.total), n: b.partage.n, part: B.prix(b.partage.part) }) : ''
     ].filter(Boolean).map(function (x) { return '<span>' + UI.esc(x) + '</span>'; }).join('') + '</div>' + UI.htmlFinRuptures(b) +
     '<button type="button" class="gros principal" id="fin-suivant">' + UI.esc(B.t('fin_suivant', { jour: b.jour + 1 })) + '</button></div>';
   el.hidden = false;

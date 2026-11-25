@@ -35,6 +35,15 @@ B.clients.arrivee = function (S) {
   S.groupes.push(g);
   S.stats.jour.groupes++;
   S.stats.jour.arrives += taille;
+  /* salle sale : certains font demi-tour en entrant */
+  const fuite = B.planning.fuiteProprete(S);
+  if (fuite > 0 && B.hasard(S) < fuite) {
+    g.etat = 'repart';
+    g.chemin = [{ x: B.DATA.salle.dehors.x, y: B.DATA.salle.dehors.y }];
+    S.stats.jour.repartis += taille; S.stats.jour.partisSale = (S.stats.jour.partisSale || 0) + taille;
+    B.noter(S, 'msg_repart_sale', { taille: taille });
+    return;
+  }
   if (taille >= 5) B.message(S, 'msg_grand_groupe', { taille: taille, groupe: B.t('groupe_' + type.id, { nom: g.nom }) });
 };
 

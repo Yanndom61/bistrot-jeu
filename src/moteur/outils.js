@@ -1,5 +1,5 @@
 /* outils.js — petites fonctions communes : hasard reproductible, textes, heures, euros. */
-B.VERSION_JEU = '0.5.1';
+B.VERSION_JEU = '0.6.0';
 
 /* Hasard reproductible : la graine est rangée dans la partie, donc une partie rechargée continue pareil. */
 B.hasard = function (S) {

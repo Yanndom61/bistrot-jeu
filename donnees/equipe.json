@@ -126,25 +126,45 @@
       "nomF": "Apprentie cuisine",
       "service": "cuisine",
       "niveauHCR": "I",
-      "partDuMinimum": 0.53
+      "partDuMinimum": 0.53,
+      "niveauJeu": [
+        1,
+        4
+      ],
+      "recrutable": true
     },
     "barman": {
       "nom": "Barman",
       "nomF": "Barmaid",
-      "service": "autre",
-      "niveauHCR": "II"
+      "service": "bar",
+      "niveauHCR": "II",
+      "niveauJeu": [
+        3,
+        8
+      ],
+      "recrutable": true
     },
     "plong": {
       "nom": "Plongeur",
       "nomF": "Plongeuse",
-      "service": "autre",
-      "niveauHCR": "I"
+      "service": "plonge",
+      "niveauHCR": "I",
+      "niveauJeu": [
+        2,
+        6
+      ],
+      "recrutable": true
     },
     "nett": {
       "nom": "Agent de nettoyage",
       "nomF": "Agente de nettoyage",
-      "service": "autre",
-      "niveauHCR": "I"
+      "service": "nettoyage",
+      "niveauHCR": "I",
+      "niveauJeu": [
+        2,
+        6
+      ],
+      "recrutable": true
     }
   },
   "candidatsDepart": [
@@ -157,12 +177,16 @@
     "aide",
     "chef",
     "chef",
-    "second"
+    "second",
+    "barman",
+    "plong",
+    "nett",
+    "appr"
   ],
   "nouveauxCandidatsParJour": {
     "min": 1,
-    "max": 2,
-    "plafond": 6
+    "max": 3,
+    "plafond": 8
   },
   "refusAvantDepart": 2,
   "commandesParCuisinier": 2,
@@ -485,7 +509,7 @@
     ]
   },
   "interim": {
-    "_explication": "Comme dans Chez YaYa : un intérimaire remplace une place vide pour la journée, environ 30 % plus cher. Il ne compte pas dans les 16.",
+    "_explication": "Comme dans Chez YaYa : un intérimaire remplace pour la journée une place vide ou une personne absente (repos, formation) en salle ou en cuisine, environ 30 % plus cher. Il ne compte pas dans les 16.",
     "majoration": 0.3,
     "postes": {
       "salle": "serv",
@@ -501,5 +525,117 @@
       "normal": false,
       "difficile": false
     }
+  },
+  "familles": {
+    "_explication": "Pour l'entretien : le bar se présente comme la salle, la plonge et le nettoyage comme la cuisine.",
+    "salle": "salle",
+    "bar": "salle",
+    "cuisine": "cuisine",
+    "plonge": "cuisine",
+    "nettoyage": "cuisine"
+  },
+  "planning": {
+    "_explication": "Chaque employé a 2 jours de repos qui se suivent chaque semaine (0 = dimanche). Le patron et les intérimaires n'en ont pas. Choisis automatiquement à l'embauche pour que le même service ne soit pas absent les mêmes jours ; modifiables (effet dès le lendemain).",
+    "ordrePreference": [
+      [
+        1,
+        2
+      ],
+      [
+        2,
+        3
+      ],
+      [
+        3,
+        4
+      ],
+      [
+        4,
+        5
+      ],
+      [
+        0,
+        1
+      ],
+      [
+        5,
+        6
+      ],
+      [
+        6,
+        0
+      ]
+    ]
+  },
+  "formations": {
+    "_explication": "Une formation se paie à l'inscription. L'employé est absent le prochain jour où il travaille (il est en formation), puis gagne le point le lendemain matin. Sommellerie : reprise de l'ancien jeu (600 €, +45 % de verres de vin, salle et bar).",
+    "max": 10,
+    "liste": [
+      {
+        "id": "vitesse",
+        "stat": "vitesse",
+        "services": [
+          "salle",
+          "bar",
+          "cuisine",
+          "plonge",
+          "nettoyage"
+        ],
+        "prixParPoint": 60
+      },
+      {
+        "id": "amabilite",
+        "stat": "amabilite",
+        "services": [
+          "salle"
+        ],
+        "prixParPoint": 60
+      },
+      {
+        "id": "qualite",
+        "stat": "qualite",
+        "services": [
+          "cuisine",
+          "nettoyage"
+        ],
+        "prixParPoint": 60
+      },
+      {
+        "id": "sommelier",
+        "services": [
+          "salle",
+          "bar"
+        ],
+        "prix": 600
+      }
+    ]
+  },
+  "effets": {
+    "_explication": "Effet des qualités et des postes sur le service. Voir REGLES.md §5.",
+    "amabiliteParPoint": 0.08,
+    "respEtoiles": 0.15,
+    "respVitesse": 1.05,
+    "chefBonusQualite": 1,
+    "apprentiCommandes": 1,
+    "barmanTempsBoisson": 0.3,
+    "sansPlongeur": 1.15,
+    "plongeVitessePleine": 8,
+    "sommelierVin": 1.45,
+    "proprete": {
+      "depart": 80,
+      "salissureParCouvert": 0.12,
+      "nettoyageEquipe": 8,
+      "agentBase": 4,
+      "agentParVitesse": 1,
+      "agentParQualite": 1,
+      "seuilEtoiles": 50,
+      "etoilesMax": 0.6,
+      "seuilDepart": 25,
+      "departMax": 0.2
+    }
+  },
+  "cagnotte": {
+    "_explication": "Comme dans l'ancien jeu : la cagnotte des pourboires est partagée à parts égales le dernier soir de chaque mois entre les employés de l'équipe (absents compris), ni le patron ni les intérimaires. Elle ne va jamais dans la caisse du restaurant. Les centimes qui restent attendent le mois suivant.",
+    "historique": 6
   }
 }

@@ -60,7 +60,7 @@ B.ancien.convertir = function (o, infos) {
 };
 
 /* Reprend les employés lisibles de l'ancien jeu. Salaire recalculé sur la grille HCR (poste + expérience).
-   Bar, plonge et nettoyage sont gardés dans l'équipe, leur rôle viendra plus tard. Renvoie le nombre repris. */
+   Bar, plonge et nettoyage gardent leur poste. Jours de repos choisis automatiquement. Renvoie le nombre repris. */
 B.ancien.reprendreEquipe = function (S, o) {
   const staff = Array.isArray(o.staff) ? o.staff : [];
   const fem = B.DATA.equipe.prenomsFemininsAncienJeu.concat(B.DATA.equipe.prenoms.filter(function (p) { return p[1] === 'f'; }).map(function (p) { return p[0]; }));

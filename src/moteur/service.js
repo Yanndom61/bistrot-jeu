@@ -34,7 +34,7 @@ B.service.preparer = function (S, w, tache) {
     const g = B.service.groupe(S, tache.groupe);
     g.serveur = w.id;
     const nbB = (g.commande || []).filter(function (l) { return l.cat === 'boisson'; }).length;
-    if (tache.type === 'servir') tache.etapes.push({ aller: { x: B.DATA.salle.passe.x, y: A } }, { agir: D.prendrePlatPasse + nbB * B.DATA.stocks.boissons.tempsParBoisson }, { aller: auBord(g.tables), porte: 'assiette' }, { agir: D.poserPlat, porte: 'assiette' });
+    if (tache.type === 'servir') tache.etapes.push({ aller: { x: B.DATA.salle.passe.x, y: A } }, { agir: D.prendrePlatPasse + nbB * B.equipe.tempsBoisson(S) }, { aller: auBord(g.tables), porte: 'assiette' }, { agir: D.poserPlat, porte: 'assiette' });
     if (tache.type === 'commande') tache.etapes.push({ aller: auBord(g.tables) }, { agir: D.prendreCommande });
     if (tache.type === 'addition') tache.etapes.push({ aller: auBord(g.tables), porte: 'addition' }, { agir: D.addition, porte: 'addition' });
   }
@@ -53,6 +53,7 @@ B.service.terminer = function (S, w) {
   const g = B.service.groupe(S, tache.groupe);
   if (!g) return;
   g.serveur = null;
+  if (tache.type === 'commande' || tache.type === 'addition') { g.amabS = (g.amabS || 0) + (w.amabilite || 5); g.amabN = (g.amabN || 0) + 1; }
   if (tache.type === 'commande') {
     S.stats.jour.attenteCommande += S.minute - g.depuis;
     S.stats.jour.nbCommandes++;
@@ -77,8 +78,9 @@ B.service.terminer = function (S, w) {
 };
 
 B.service.avancer = function (S, h) {
+  const resp = B.equipe.aLePoste(S, 'resp') ? B.DATA.equipe.effets.respVitesse : 1;
   B.equipe.salle(S).forEach(function (w) {
-    const f = B.equipe.facteurSalle(w), v = B.DATA.clients.vitesses.serveurs * f;
+    const f = B.equipe.facteurSalle(w) * resp, v = B.DATA.clients.vitesses.serveurs * f;
     let reste = h;
     let garde = 0;
     while (reste > 1e-9 && garde++ < 20) {

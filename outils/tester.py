@@ -40,6 +40,7 @@ MESURES_JS = r"""() => {
     if (r.left < -0.5 || r.right > vw + 0.5 || (!defile && (r.top < -0.5 || r.bottom > vh + 0.5))) pb.push('bouton hors écran : ' + b.textContent);
     if (r.height < 43.5 || r.width < 43.5) pb.push('bouton trop petit (' + Math.round(r.width) + '×' + Math.round(r.height) + ') : ' + b.textContent);
     if (r.bottom > vh || r.top < 0) return;
+    if (defile) { const cr = defile.getBoundingClientRect(), cy = r.top + r.height / 2; if (cy < cr.top || cy > cr.bottom) return; }   /* à moitié sorti en faisant défiler : pas recouvert */
     const e = document.elementFromPoint(r.left + r.width / 2, r.top + r.height / 2);
     if (e && e !== b && !b.contains(e)) pb.push('bouton recouvert : ' + b.textContent);
   });
@@ -234,16 +235,18 @@ async def main():
         reste = await p.evaluate(f"() => B.UI.S.equipe.some(x => x.id === {serv})")
         print('  serveur renvoyé encore là 15 min après :', reste)
         if reste: problemes.append('renvoi : le serveur renvoyé ne part pas')
-        # Intérim : appeler un serveur pour la journée sur la place vide
+        # Intérim : appeler un serveur pour la journée sur la place vide (onglet Embauche)
         await p.get_by_role('button', name='Équipe').click(); await p.wait_for_timeout(300)
+        await p.locator('[data-eq-onglet="embauche"]').click(); await p.wait_for_timeout(250)
         await p.locator('[data-eq="interim"][data-sv="salle"]').click(); await p.wait_for_timeout(300)
         nb = await p.evaluate("() => B.UI.S.equipe.filter(x => x.interim).length")
         print('  intérimaires appelés :', nb)
         if nb != 1: problemes.append("intérim : le serveur intérimaire n'est pas arrivé")
-        await p.locator('.effectif').scroll_into_view_if_needed()
-        await p.screenshot(path=str(CAPTURES / '20-interim-780x360.png'))
         await p.locator('[data-eq="interim"][data-sv="salle"]').scroll_into_view_if_needed()
         await p.screenshot(path=str(CAPTURES / '21-interim-boutons-780x360.png'))
+        verifier('intérim', await p.evaluate(MESURES_JS), p)
+        await p.locator('[data-eq-onglet="equipe"]').click(); await p.wait_for_timeout(250)
+        await p.screenshot(path=str(CAPTURES / '20-interim-780x360.png'))
         verifier('intérim', await p.evaluate(MESURES_JS), p)
         problemes.extend('renvoi : ' + e for e in p.erreurs)
         await c.close()
@@ -408,6 +411,112 @@ async def main():
         problemes.extend('stocks : ' + e for e in p.erreurs)
         await c.close()
 
+        print('1f) Étape 4 — équipe : postes, planning, formations, cagnotte :')
+        for nom, w, h in TAILLES:
+            c, p = await nouveau_contexte(b, w, h)
+            await p.get_by_role('button', name='Nouvelle partie').click(); await p.wait_for_timeout(300)
+            await p.get_by_role('button', name='Ouvrir le restaurant').click(); await p.wait_for_timeout(300)
+            onglet = await p.evaluate('() => B.UI.eqOnglet')
+            if onglet != 'embauche': problemes.append('avant la 1re ouverture, l’équipe devrait s’ouvrir sur l’onglet Embauche')
+            postes = await p.evaluate("() => [...new Set(B.UI.S.candidats.map(c => c.poste))]")
+            for k in ('barman', 'plong', 'nett', 'appr'):
+                if k not in postes: problemes.append(f'candidat {k} absent au départ')
+            if nom == 's22':
+                await p.locator('[data-eq="entretien"]').last.scroll_into_view_if_needed()
+                await p.screenshot(path=str(CAPTURES / '36-embauche-nouveaux-postes-780x360.png'))
+                verifier('embauche (nouveaux postes)', await p.evaluate(MESURES_JS), p)
+            # on embauche tout le monde côté moteur (l'entretien à l'écran est déjà testé plus haut), puis 6 jours de jeu
+            info = await p.evaluate("""() => { const S = B.UI.S, B_ = B;
+              const tout = () => S.candidats.slice().forEach(c => { if (B_.equipe.placeLibre(S, c.poste)) { B_.equipe.repondre(S, c, 'salaire'); B_.equipe.proposer(S, c, c.demande); } });
+              tout(); B_.ouvrir(S);
+              for (let j = 0; j < 6; j++) { let k = 0; while (!S.finJour && k++ < 4000) B_.avancer(S, 0.5); B_.jourSuivant(S); tout(); if (!S.ouvert) B_.ouvrir(S); }
+              B_.avancer(S, 95); B.UI.sauver();
+              return { n: S.equipe.length, absents: S.equipe.filter(p => p.absent).length, partages: (S.partages || []).length, jour: S.jour, bar: S.equipe.filter(p => p.service === 'bar' && !p.absent).length, plonge: S.equipe.filter(p => p.service === 'plonge' && !p.absent).length }; }""")
+            print(f'  {w}×{h} :', info)
+            if info['n'] < 12: problemes.append(f'équipe : seulement {info["n"]} personnes après 6 jours')
+            if info['partages'] < 1: problemes.append('cagnotte : pas de partage fin novembre')
+            await p.get_by_role('button', name='Fermer').click(); await p.wait_for_timeout(300)
+            await p.evaluate('() => { B.UI.majBarre(); B.UI.dessin.dynamique(); }'); await p.wait_for_timeout(300)
+            if nom == 's22':
+                await p.screenshot(path=str(CAPTURES / '41-salle-bar-plonge-780x360.png'))
+                nbBar = await p.evaluate("() => B.equipe.duService(B.UI.S, 'bar').length + B.equipe.duService(B.UI.S, 'plonge').length")
+                if not nbBar: problemes.append('dessin : ni barman ni plongeur au travail')
+            await p.get_by_role('button', name='Équipe').click(); await p.wait_for_timeout(400)
+            if await p.evaluate('() => B.UI.eqOnglet') != 'equipe': problemes.append('l’équipe devrait s’ouvrir sur l’onglet Équipe une fois ouvert')
+            if nom == 's22': await p.screenshot(path=str(CAPTURES / '35-equipe-onglets-780x360.png'))
+            verifier(f'onglet Équipe {w}×{h}', await p.evaluate(MESURES_JS), p)
+            # Planning
+            await p.locator('[data-eq-onglet="planning"]').click(); await p.wait_for_timeout(300)
+            await p.screenshot(path=str(CAPTURES / f'37-planning-{w}x{h}.png'))
+            verifier(f'planning {w}×{h}', await p.evaluate(MESURES_JS), p)
+            pid = await p.evaluate("() => B.UI.S.equipe.find(x => !x.patron && !x.interim).id")
+            r0 = await p.evaluate(f"() => B.UI.S.equipe.find(x => x.id === {pid}).repos.join(',')")
+            await p.locator(f'[data-eq="repos-plus"][data-id="{pid}"]').click(); await p.wait_for_timeout(250)
+            r1 = await p.evaluate(f"() => B.UI.S.equipe.find(x => x.id === {pid}).repos.join(',')")
+            if r0 == r1: problemes.append('planning : ▶ ne décale pas les jours de repos')
+            if nom == 's22':
+                print(f'  repos décalés : {r0} → {r1} ;', (await p.locator('.refus.ok').first.inner_text()))
+                await p.screenshot(path=str(CAPTURES / '37b-planning-repos-decale-780x360.png'))
+            # Formations → fiche d'un serveur
+            await p.locator('[data-eq-onglet="formations"]').click(); await p.wait_for_timeout(300)
+            if nom == 's22': await p.screenshot(path=str(CAPTURES / '38a-formations-liste-780x360.png'))
+            verifier(f'formations {w}×{h}', await p.evaluate(MESURES_JS), p)
+            sid = await p.evaluate("() => (B.UI.S.equipe.find(x => x.service === 'salle' && !x.patron && !x.interim && !x.formation && !x.partant) || {}).id")
+            await p.locator(f'[data-eq="fiche"][data-id="{sid}"]').click(); await p.wait_for_timeout(300)
+            await p.screenshot(path=str(CAPTURES / f'38-fiche-employe-{w}x{h}.png'))
+            verifier(f'fiche employé {w}×{h}', await p.evaluate(MESURES_JS), p)
+            fiche = await p.locator('#volet-corps').inner_text()
+            for mot in ('Vitesse', 'Sens du service', 'Jours de repos', 'Formations', 'Sommellerie', 'Rapidité'):
+                if mot not in fiche: problemes.append(f'fiche employé : « {mot} » absent')
+            a0 = await p.evaluate('() => B.UI.S.argent')
+            await p.locator(f'[data-eq="form-inscrire"][data-f="sommelier"]').click(); await p.wait_for_timeout(300)
+            a1 = await p.evaluate('() => B.UI.S.argent')
+            insc = await p.evaluate(f"() => (B.UI.S.equipe.find(x => x.id === {sid}).formation || {{}}).id")
+            if insc != 'sommelier' or abs(a0 - a1 - 600) > 0.01: problemes.append(f'formation : inscription sommelier ratée ({insc}, {a0 - a1})')
+            if nom == 's22':
+                await p.screenshot(path=str(CAPTURES / '39-formation-inscrite-780x360.png'))
+                print('  formation :', (await p.locator('.refus.ok').first.inner_text()))
+            verifier(f'formation inscrite {w}×{h}', await p.evaluate(MESURES_JS), p)
+            await p.locator('#volet-corps').evaluate('e => e.scrollTop = e.scrollHeight'); await p.wait_for_timeout(150)
+            if nom == 's22': await p.screenshot(path=str(CAPTURES / '38b-fiche-employe-bas-780x360.png'))
+            verifier(f'fiche employé (bas) {w}×{h}', await p.evaluate(MESURES_JS), p)
+            await p.locator('[data-eq="fiche-retour"]').click(); await p.wait_for_timeout(250)
+            # Cagnotte
+            await p.locator('[data-eq-onglet="cagnotte"]').click(); await p.wait_for_timeout(300)
+            if nom == 's22' or nom == 'barres': await p.screenshot(path=str(CAPTURES / f'40-cagnotte-{w}x{h}.png'))
+            verifier(f'cagnotte {w}×{h}', await p.evaluate(MESURES_JS), p)
+            if 'Novembre' not in await p.locator('#volet-corps').inner_text() and 'novembre' not in await p.locator('#volet-corps').inner_text(): problemes.append('cagnotte : le partage de novembre n’est pas affiché')
+            # Renvoi toujours possible (le plongeur, depuis sa fiche)
+            await p.locator('[data-eq-onglet="equipe"]').click(); await p.wait_for_timeout(250)
+            plg = await p.evaluate("() => (B.UI.S.equipe.find(x => x.service === 'plonge') || {}).id")
+            if plg:
+                await p.locator(f'[data-eq="fiche"][data-id="{plg}"]').click(); await p.wait_for_timeout(250)
+                await p.locator(f'[data-eq="renvoyer"][data-id="{plg}"]').click(); await p.wait_for_timeout(250)
+                await p.locator('[data-eq="renvoi-oui"]').click(); await p.wait_for_timeout(300)
+                if await p.evaluate(f"() => B.UI.S.equipe.some(x => x.id === {plg})"): problemes.append('renvoi du plongeur depuis sa fiche : pas parti')
+            # Bilan du soir avec la propreté et les absents
+            await p.get_by_role('button', name='Fermer').click(); await p.wait_for_timeout(250)
+            await p.evaluate('() => B.avancer(B.UI.S, 900)'); await p.wait_for_timeout(600)
+            if nom == 's22': await p.screenshot(path=str(CAPTURES / '42-bilan-equipe-780x360.png'))
+            verifier(f'bilan équipe {w}×{h}', await p.evaluate(MESURES_JS), p)
+            if 'Propreté' not in await p.locator('#fin').inner_text(): problemes.append('bilan : propreté absente')
+            # la partie se relit
+            ok = await p.evaluate("() => !!B.relire(B.serialiser(B.UI.S)).partie && B.verifier(B.UI.S).length === 0")
+            if not ok: problemes.append('équipe : partie illisible ou incohérente après les essais : ' + str(await p.evaluate('() => B.verifier(B.UI.S)')))
+            problemes.extend(f'équipe {w}×{h} : ' + e for e in p.erreurs)
+            await c.close()
+
+        print('1g) Sauvegarde 0.5.1 (format 5, en plein service) relue par la v0.6 :')
+        v5 = (RACINE / 'tests/sauvegardes-bistrot/v5-bistrot-0.5.1-equipe-ancien-jeu-en-service.json').read_text()
+        c, p = await nouveau_contexte(b, 780, 360, "if(!sessionStorage.getItem('g5')){sessionStorage.setItem('g5','1');localStorage.setItem('bistrotjeu.test.partie'," + json.dumps(v5) + ");}")
+        await p.locator('[data-a="continuer"], button:has-text("Continuer")').first.click(); await p.wait_for_timeout(500)
+        etat = await p.evaluate("() => ({v: B.UI.S.version, jeu: B.UI.S.jeu, n: B.UI.S.equipe.length, autre: B.UI.S.equipe.filter(x => x.service === 'autre').length, repos: B.UI.S.equipe.filter(x => !x.patron && !x.repos).length, groupes: B.UI.S.groupes.length, cagnotte: B.UI.S.cagnotte, pb: B.verifier(B.UI.S)})")
+        print('  ', etat)
+        if etat['v'] != 6 or etat['autre'] or etat['repos'] or etat['groupes'] < 1 or etat['pb']: problemes.append('sauvegarde 0.5.1 mal relue : ' + str(etat))
+        await p.screenshot(path=str(CAPTURES / '43-reprise-0.5.1-equipe-780x360.png'))
+        problemes.extend('reprise 0.5.1 : ' + e for e in p.erreurs)
+        await c.close()
+
         print('2) Téléphone tenu en portrait :')
         c, p = await nouveau_contexte(b, 360, 780)
         await p.screenshot(path=str(CAPTURES / '06-portrait-360x780.png'))
@@ -451,7 +560,7 @@ async def main():
         await p.get_by_role('button', name='Continuer : Chez YaYa · Bretagne · jour 1').click(); await p.wait_for_timeout(400)
         etat = await p.evaluate("() => ({v: B.UI.S.version, equipe: B.UI.S.equipe.map(x => x.nom), volet: B.UI.voletOuvert})")
         print('  partie 0.1 relue :', etat)
-        if etat['v'] != 5 or etat['equipe'] != ['Patron'] or etat['volet'] != 'equipe': problemes.append('la sauvegarde 0.1 est mal relue')
+        if etat['v'] != 6 or etat['equipe'] != ['Patron'] or etat['volet'] != 'equipe': problemes.append('la sauvegarde 0.1 est mal relue')
         problemes.extend('sauvegarde 0.1 : ' + e for e in p.erreurs)
         await c.close()
 

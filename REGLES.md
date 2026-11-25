@@ -1,7 +1,7 @@
 # Règles du jeu Bistrot
 
 Ce document est **la référence unique** des règles. Il est tenu à jour à chaque version.
-Version décrite : **0.3 (étape 1 + retours de Yann : placement manuel, équipe de départ, effectif de 16, intérim, renvoi)**.
+Version décrite : **0.6 (étape 4 « Équipe » : les 16 postes, plannings, formations, cagnotte, effets des qualités)**.
 
 ---
 
@@ -61,7 +61,7 @@ Version décrite : **0.3 (étape 1 + retours de Yann : placement manuel, équipe
 
 ### Démarrage (comme dans Chez YaYa)
 - Tu démarres **seul, avec le patron**, et tu recrutes ton équipe dès le premier jour, avant d'ouvrir.
-- **10 candidats** t'attendent : 3 serveurs, 1 commis de salle, 1 responsable de salle, 2 chefs de cuisine, 1 second de cuisine, 1 commis de cuisine, 1 aide de cuisine. Chaque matin, 1 ou 2 nouveaux candidats arrivent (6 au plus en attente), seulement pour des postes qui ont encore une place.
+- **14 candidats** t'attendent : 3 serveurs, 1 commis de salle, 1 responsable de salle, 2 chefs de cuisine, 1 second de cuisine, 1 commis de cuisine, 1 aide de cuisine, **1 barman, 1 plongeur, 1 agent de nettoyage, 1 apprenti** *(v0.6)*. Chaque matin, 1 à 3 nouveaux candidats arrivent (8 au plus en attente), seulement pour des postes qui ont encore une place. Deux candidats n'ont jamais le même nom.
 
 ### L'effectif : 16 employés, comme dans Chez YaYa
 - Source : l'équipe que Yann avait fixée dans Chez YaYa (cahier des charges v6, §1, et v6b, point 7 ; constantes `SLOTS` et `DEPS` de l'ancien jeu). Fichier : `donnees/equipe.json` (`effectif`).
@@ -74,17 +74,17 @@ Version décrite : **0.3 (étape 1 + retours de Yann : placement manuel, équipe
 | Nettoyage (2) | 2 agents de nettoyage |
 
 - Quand une place est prise, on ne peut plus embaucher à ce poste : le candidat affiche « Poste complet » et n'a plus de bouton Entretien. Renvoyer quelqu'un libère sa place.
-- **Recrutables dès maintenant** : responsable de salle, serveur, commis de salle, chef, second, commis et aide de cuisine. Les places d'apprenti, de barman, de plongeur et de nettoyage sont affichées mais se recruteront à l'étape « Équipe », quand ces métiers auront un rôle.
-- Le volet Équipe affiche l'effectif (« Effectif : 3 / 16… ») et le détail des places.
+- **Les 16 places sont toutes recrutables** *(v0.6, décision de Yann)* : responsable de salle, serveurs, commis de salle, **barmans**, chef, second, commis et aide de cuisine, **apprenti**, **plongeurs**, **agents de nettoyage**.
+- Le volet Équipe a 5 onglets : **Équipe** (ton équipe, fiche de chacun, renvoi), **Embauche** (candidats, intérim, places), **Planning**, **Formations**, **Cagnotte**. Avant la toute première ouverture, il s'ouvre sur « Embauche » ; ensuite sur « Équipe ».
 - Une ancienne partie peut dépasser une place (l'ancien jeu le permettait) : tout le monde est gardé, mais on ne peut plus embaucher à ce poste tant qu'il est au-dessus.
 
 ### L'intérim (comme dans Chez YaYa, version simple)
-- Un intérimaire **remplace une place vide pour la journée**. Il repart le lendemain matin et ne compte pas dans les 16.
-- Bouton « Appeler un serveur intérimaire » (salle) ou « Appeler un commis intérimaire » (cuisine) dans le volet Équipe. Il y a au plus autant d'intérimaires que de places vides **recrutables** dans ce groupe (salle : responsable + 5 serveurs ; cuisine : chef + second + commis).
+- Un intérimaire **remplace pour la journée une place vide ou une personne absente** (en repos ou en formation, *v0.6*). Il repart le lendemain matin et ne compte pas dans les 16.
+- Bouton « Appeler un serveur intérimaire » (salle) ou « Appeler un commis intérimaire » (cuisine) dans l'onglet Embauche. Il y a au plus autant d'intérimaires que de places vides ou d'absents aujourd'hui en salle (responsable + 5 serveurs) ou en cuisine (chef + second + commis + apprenti). Pas d'intérimaire au bar, à la plonge ni au nettoyage : sans eux, la salle et la cuisine se débrouillent (plus lentement).
 - **Pas avant ta première ouverture** : le premier jour, tu recrutes toi-même.
 - Salaire : minimum de la grille (3 ans d'expérience) **+ 30 %**, comme dans l'ancien jeu. Il est affiché mais pas encore payé, comme les autres salaires.
 - Intérimaire « moyen » : note 5, vitesse 5. Il peut être renvoyé comme les autres.
-- **Intérim automatique** (option dans le volet Équipe) : le matin, s'il manque quelqu'un en salle ou en cuisine pour ouvrir, un intérimaire est appelé tout seul (dernier recours, comme dans l'ancien jeu). **Activé par défaut en Facile, coupé par défaut en Normal et Difficile** (ces difficultés viendront plus tard).
+- **Intérim automatique** (option dans l'onglet Embauche) : le matin, s'il n'y a personne en salle ou en cuisine pour ouvrir (par exemple ton seul cuisinier est en repos), un intérimaire est appelé tout seul (dernier recours, comme dans l'ancien jeu). **Activé par défaut en Facile, coupé par défaut en Normal et Difficile** (ces difficultés viendront plus tard).
 - Pour ouvrir, il faut **au moins une personne en salle et une en cuisine**. Le patron compte pour l'une des deux : il est en salle au départ, et tu peux le passer en cuisine (bouton dans Équipe), sauf s'il laisserait son poste vide.
 - La v0.1 avait une serveuse automatique (Léa) : elle est supprimée.
 
@@ -113,7 +113,7 @@ Version décrite : **0.3 (étape 1 + retours de Yann : placement manuel, équipe
 | Échelon 2 | 12,37 € | 12,80 € | 13,81 € | 15,07 € | 22,22 € |
 | Échelon 3 | 12,47 € | 13,43 € | 14,28 € | 15,71 € | 28,68 € |
 
-- Niveau de chaque poste (choix du jeu) : commis de salle **I**, aide de cuisine **I**, serveur **II**, commis de cuisine **II**, responsable de salle **III**, second de cuisine **III**, chef de cuisine **IV**. Pour les employés repris de l'ancien jeu : barman II, plongeur I, nettoyage I, apprenti 53 % du niveau I-1.
+- Niveau de chaque poste (choix du jeu) : commis de salle **I**, aide de cuisine **I**, serveur **II**, commis de cuisine **II**, responsable de salle **III**, second de cuisine **III**, chef de cuisine **IV**. Barman **II**, plongeur **I**, agent de nettoyage **I**, apprenti 53 % du niveau I-1 (comme dans l'ancien jeu).
 - Échelon selon l'expérience : jusqu'à 2 ans → échelon 1 ; 3 à 7 ans → échelon 2 ; 8 ans et plus → échelon 3.
 - Le coefficient « salaires » du lieu s'applique par-dessus (Paris × 1,15). Il ne descend jamais sous 1, donc jamais sous la grille.
 - Le candidat demande entre le minimum et environ 35 % de plus, selon sa note et sa personnalité.
@@ -121,7 +121,7 @@ Version décrite : **0.3 (étape 1 + retours de Yann : placement manuel, équipe
 - **Les salaires ne sont pas encore payés** (décision de Yann) : ils seront payés avec l'étape « Argent ». D'ici là, l'argent ne bouge pas. Le coût mensuel de l'équipe est affiché dans le volet Équipe (sans les intérimaires).
 
 ### Renvoyer un employé
-- Chaque employé (intérimaires compris) a un bouton **« Renvoyer »** dans le volet Équipe. **Le patron ne peut pas être renvoyé** : il n'a pas ce bouton.
+- Chaque employé (intérimaires compris) a un bouton **« Renvoyer »** dans l'onglet Équipe et sur sa fiche *(v0.6 : barmans, plongeurs, agents de nettoyage et apprentis aussi ; une personne absente part tout de suite ; une formation pas encore commencée est remboursée)*. **Le patron ne peut pas être renvoyé** : il n'a pas ce bouton.
 - Toucher « Renvoyer » ouvre une **confirmation** : « Veux-tu vraiment renvoyer … ? », avec ce qui va se passer et deux boutons, « Oui, renvoyer … » et « Non, garder … ».
 - **Pendant le service** (restaurant ouvert, journée pas finie), il est **impossible de laisser la salle ou la cuisine vide**. Si c'est la dernière personne de son poste (le patron compte), un message court l'explique : « Impossible de renvoyer … : la cuisine serait vide pendant le service. Recrute quelqu'un ou passe le patron en cuisine d'abord. »
 - **Hors service** (avant la première ouverture, ou restaurant fermé faute d'équipe), on peut renvoyer n'importe quel employé. Si un poste se retrouve vide, le restaurant reste fermé jusqu'au prochain recrutement (ou jusqu'à un intérimaire).
@@ -137,17 +137,68 @@ Version décrite : **0.3 (étape 1 + retours de Yann : placement manuel, équipe
 - Les personnes en salle (patron compris) choisissent seules quoi faire, dans cet ordre : 1) apporter un plat prêt, 2) apporter l'addition, 3) prendre une commande, 4) débarrasser. À priorité égale, elles servent celui qui attend depuis le plus longtemps.
 - Temps de base de chaque geste : prendre une commande 1,5 min, prendre le plat à la passe 0,3 min, poser le plat 0,5 min, addition 1,5 min, débarrasser 1 min par table.
 - La **vitesse** change la marche et les gestes : × (0,8 + 0,04 × vitesse). Une vitesse de 5 donne la vitesse normale, 10 va 20 % plus vite, 1 va 16 % moins vite.
+- *(v0.6)* Quand un **responsable de salle** travaille, toute la salle va **5 %** plus vite. Quand un **barman** travaille, les boissons sont prêtes au bar : le serveur met 0,3 × (1,25 − 0,05 × vitesse du barman) du temps habituel par boisson (9 s → environ 2 s).
 - À l'écran : rond noir cerclé de jaune avec un tablier blanc ; **le patron est en rouge foncé**. Ils portent une assiette ou une note quand ils servent.
 
 ### Le travail en cuisine
-- Chaque personne en cuisine (patron compris s'il y est) prépare **2 commandes à la fois**. Les autres attendent leur tour, dans l'ordre d'arrivée.
+- Chaque personne en cuisine (patron compris s'il y est) prépare **2 commandes à la fois** ; **l'apprenti 1 seule** *(v0.6)*. Les autres attendent leur tour, dans l'ordre d'arrivée.
 - Durée d'une commande : 12 à 18 min × (1,25 − 0,05 × vitesse). Une vitesse de 5 donne la durée normale, 10 va 25 % plus vite.
+- *(v0.6)* **Plonge** : sans plongeur au travail, les cuisiniers font la vaisselle et vont **15 % moins vite**. Avec des plongeurs, ce retard baisse selon leur vitesse (vitesses additionnées ; à 8 ou plus, plus aucun retard ; un plongeur à 5 laisse 6 %).
 - À l'écran : rond blanc avec une toque, cerclé d'orange quand la personne cuisine (rouge foncé pour le patron).
 
-### Pas encore là (étape « Équipe »)
-- Le sens du service, la qualité, la personnalité, la motivation, les plannings, les jours de repos, les contrats, les formations et le départ d'un employé n'ont pas encore d'effet.
-- Bar, plonge, nettoyage et apprentis existent seulement pour les employés repris de l'ancien jeu : ils sont gardés dans l'équipe et comptent dans les 16, mais leur rôle (et leur recrutement) viendra plus tard.
-- L'intérim ne remplace pas encore les absences (il n'y a pas encore de jours de repos).
+### Effet des qualités des employés *(v0.6)*
+Chaque fiche (onglet Équipe › « Fiche ») montre les qualités et ce qu'elles changent. Fichier : `donnees/equipe.json` (`effets`).
+
+| Qualité / poste | Effet |
+|---|---|
+| Vitesse (tous) | Salle : marche et gestes ; cuisine : durée des plats ; bar : préparation des boissons ; plonge : vaisselle ; nettoyage : ménage du soir |
+| Sens du service (salle) | Les clients donnent une note (étoiles) qui décide du pourboire : + 0,08 étoile par point au-dessus de 5 (moyenne de ceux qui ont pris la commande et apporté l'addition), − 0,08 par point en dessous |
+| Qualité (cuisine) | Cuissons ratées : 16 % − 1,8 % par point (entre 1 et 15 %) |
+| Qualité (nettoyage) | Ménage du soir mieux fait |
+| Chef de cuisine présent | **+1 en qualité** pour les autres cuisiniers ; s'il n'est pas là, le **second** donne ce +1 |
+| Responsable de salle présent | Salle 5 % plus rapide et + 0,15 étoile pour chaque table |
+| Barman présent | Boissons préparées au bar (voir « Le travail en salle ») |
+| Plongeur présent | La cuisine ne ralentit pas (voir « Le travail en cuisine ») |
+| Sommelier (formation) présent en salle ou au bar | Les clients prennent **45 % plus souvent du vin** (verre ou bouteille), comme dans l'ancien jeu |
+| Apprenti | 1 commande à la fois |
+
+- La personnalité ne change que les réponses à l'entretien et le salaire demandé.
+- Dans la salle : les barmans sont dessinés derrière le comptoir du bar (en haut, près de la passe), rond noir cerclé de bleu avec un verre ; les plongeurs en bas de la cuisine, rond blanc cerclé de bleu. Les agents de nettoyage travaillent le soir, après la fermeture : ils ne sont pas dessinés.
+
+### Propreté de la salle *(v0.6)*
+- Une jauge de **0 à 100** (onglet Équipe ; 80 au départ). Chaque soir : − 0,12 par client servi, puis ménage : + 8 (l'équipe en fermant) + pour chaque agent de nettoyage au travail (4 + vitesse + qualité ; 14 pour un agent à 5 et 5).
+- En dessous de **50** : chaque table perd jusqu'à 0,6 étoile (moins de pourboires), et un message le dit le matin. En dessous de **25** : jusqu'à 20 % des groupes font demi-tour en entrant.
+- Un restaurant calme (Mayotte, Bretagne…) reste propre sans agent ; un restaurant plein (Paris, Tokyo, New York) a besoin d'un agent de nettoyage.
+
+### Plannings et jours de repos *(v0.6)*
+- Chaque employé a **2 jours de repos qui se suivent** chaque semaine (par exemple lundi et mardi). Le patron et les intérimaires n'en ont pas.
+- À l'embauche, le jeu choisit les 2 jours qui gênent le moins : là où le moins de collègues du même service sont déjà en repos (à égalité, lundi-mardi, puis mardi-mercredi, mercredi-jeudi, jeudi-vendredi, dimanche-lundi, vendredi-samedi, samedi-dimanche).
+- Onglet **Planning** : un tableau dit combien de personnes travaillent chaque jour en salle, au bar, en cuisine, à la plonge et au ménage (patron compris ; jour du jour surligné ; case rouge si la salle ou la cuisine est vide). Un message prévient des jours sans personne en salle ou en cuisine.
+- Les boutons **◀ ▶** décalent les 2 jours de repos d'un jour. Le changement compte **dès le lendemain** (aujourd'hui ne change pas).
+- Le matin, le Journal dit qui est en repos ou en formation. Un absent ne travaille pas et n'est pas dessiné. S'il n'y a plus personne en salle ou en cuisine, l'intérim automatique appelle un remplaçant (s'il est activé), sinon le restaurant ne peut pas ouvrir.
+
+### Formations *(v0.6)*
+- Onglet **Formations** › « Former » ouvre la fiche de l'employé avec les formations possibles :
+
+| Formation | Pour qui | Prix | Effet |
+|---|---|---|---|
+| Rapidité | tous | 60 € × (vitesse + 1) | vitesse + 1 |
+| Accueil et service | salle | 60 € × (sens du service + 1) | sens du service + 1 |
+| Soin et qualité | cuisine, nettoyage | 60 € × (qualité + 1) | qualité + 1 |
+| Sommellerie | salle et bar | 600 € (prix de l'ancien jeu) | devient sommelier (une seule fois) |
+
+- On **paie à l'inscription** (l'argent baisse, le bilan du soir l'affiche). L'employé est **absent le prochain jour où il travaille** (il est en formation), et revient formé **le lendemain matin**. Une formation à la fois ; 10 au maximum pour une qualité.
+- On peut **annuler** une formation qui n'a pas commencé : elle est remboursée.
+- Après une formation, la note sur 10 devient la moyenne des 3 qualités (elle ne baisse jamais).
+
+### La cagnotte des pourboires *(v0.6)*
+- Les pourboires vont dans la **cagnotte de l'équipe**, **jamais dans ta caisse** (comme dans l'ancien jeu).
+- **Le dernier soir de chaque mois**, elle est **partagée à parts égales** entre tous les employés de l'équipe, même ceux en repos ce jour-là. **Ni le patron ni les intérimaires** n'ont de part. Les centimes qui ne se partagent pas restent pour le mois suivant.
+- Onglet **Cagnotte** : le montant, la date du prochain partage, ce que chacun toucherait, les 6 derniers partages, et ce que chaque employé a reçu. Le Journal et le bilan du soir annoncent le partage.
+
+### Pas encore là
+- Contrats (CDD, CDI, saisonniers), motivation, fatigue, départs volontaires : pas demandés pour cette étape.
+- Paiement réel des salaires, de l'intérim et indemnités de renvoi : étape 5 « Argent ».
 
 ## 4b. La carte et le paiement *(v0.4)*
 
@@ -257,7 +308,7 @@ Données : `donnees/stocks.json` (réserve, fournisseurs, règles), `donnees/pri
 ### Boissons
 - **18 boissons de base** (café, vins, bière, sodas, jus, eau, kir, spritz, cidre, cappuccino…) dont 4 de saison (vin chaud et lait de poule l'hiver, citronnade et thé glacé l'été), + **5 boissons du lieu** (dont une bouteille de vin et une bière en bouteille). Entre 3 et 20 à la carte.
 - Les clients prennent parfois un apéritif, souvent un verre de vin ou une boisson fraîche, un café ou un thé à la fin ; certaines tables prennent une bouteille. Moins si c'est cher.
-- **Pas de barman** (toujours pas recrutable) : les boissons sont **servies par la salle avec les plats**, ce qui ajoute un petit temps de service (9 secondes par boisson). Elles consomment le stock (café, vin, bière…) comme les plats.
+- Les boissons sont **servies par la salle avec les plats**, ce qui ajoute un petit temps de service (9 secondes par boisson, environ 2 secondes quand un barman travaille, *v0.6*). Elles consomment le stock (café, vin, bière…) comme les plats.
 
 ## 5. Les lieux
 
@@ -279,7 +330,8 @@ Données : `donnees/stocks.json` (réserve, fournisseurs, règles), `donnees/pri
 
 - La partie est **enregistrée toute seule** : toutes les 5 minutes de jeu, quand on ouvre un volet, en fin de journée, et quand on quitte l'appli.
 - L'avant-dernière sauvegarde est gardée en secours. Si la dernière est abîmée, le jeu reprend la précédente.
-- Chaque sauvegarde porte un **numéro de version** (actuellement 5). Quand une version change le format, elle sait convertir les anciennes sauvegardes.
+- Chaque sauvegarde porte un **numéro de version** (actuellement 6). Quand une version change le format, elle sait convertir les anciennes sauvegardes.
+- **Format 5 → 6 (Bistrot 0.6)** : la partie reprend exactement où elle était (même en plein service). Les barmans, plongeurs et agents de nettoyage « en attente de rôle » prennent leur poste ; chaque employé reçoit 2 jours de repos qui se suivent (personne n'est absent le jour de la reprise : les repos commencent le lendemain) ; la cagnotte garde son montant ; propreté 80 ; un candidat est ajouté pour chaque nouveau poste (barman, plongeur, nettoyage, apprenti) s'il reste une place.
 - **Format 4 → 5 (Bistrot 0.5)** : une partie de la v0.4 reçoit les boissons de base à sa carte, un calendrier (jour 1 = date de création), et ses premières courses (payées). La commande automatique suit la règle Facile.
 - **Format 3 → 4 (Bistrot 0.4)** : une partie de la v0.3 reçoit la carte de départ de son lieu, une cagnotte vide, et les tables déjà assises reçoivent leur commande.
 - **Format 2 → 3 (Bistrot 0.3)** : une partie de la v0.2 reprend là où elle était. L'option d'intérim automatique prend la valeur par défaut (activée en Facile). Un employé nommé « Intérimaire » repris par erreur de l'ancien jeu (remplaçant d'un jour) est retiré.
@@ -293,9 +345,9 @@ Données : `donnees/stocks.json` (réserve, fournisseurs, règles), `donnees/pri
 - L'ancien jeu et Bistrot sont sur la même adresse (yanndom61.github.io). Bistrot peut donc **lire** les parties de l'ancien jeu sur le même téléphone : les 5 emplacements (`bistrot_slot1` à `bistrot_slot5`) et la sauvegarde principale (`bistrot_save_v1`).
 - Bistrot **ne modifie jamais et n'efface jamais** ces cases. Il fait une copie dans ses propres cases (`bistrotjeu.test.copie-ancien-jeu`).
 - Bistrot reprend : le **nom** du restaurant, le **lieu**, le **jour**, l'**argent**, la **note** et **l'équipe**. La partie repart au matin de ce jour.
-- **Équipe reprise** : chaque employé lisible garde son nom, son poste, sa note, sa vitesse, son sens du service, sa qualité, son expérience et sa personnalité. Les serveurs, commis de salle et responsables vont en salle ; les chefs, seconds, commis, aides et apprentis vont en cuisine. Les barmans, plongeurs et agents de nettoyage sont gardés en attente de leur rôle. Le genre est déduit du prénom. Les intérimaires d'un jour de l'ancien jeu ne sont pas repris.
+- **Équipe reprise** : chaque employé lisible garde son nom, son poste, sa note, sa vitesse, son sens du service, sa qualité, son expérience et sa personnalité. Les serveurs, commis de salle et responsables vont en salle ; les chefs, seconds, commis, aides et apprentis vont en cuisine. Les barmans vont au bar, les plongeurs à la plonge, les agents de nettoyage au nettoyage *(v0.6)*, et chacun reçoit 2 jours de repos qui se suivent. Le genre est déduit du prénom. Les intérimaires d'un jour de l'ancien jeu ne sont pas repris.
 - Le salaire est **recalculé sur la grille officielle** (poste + expérience), car l'ancien jeu comptait autrement.
-- Si l'ancienne équipe n'a personne en cuisine, le patron y passe. Si elle est vide, le restaurant reste fermé jusqu'au recrutement. **La carte est reprise** (v0.4) : chaque plat de l'ancienne carte qui existe dans Bistrot garde sa place et son prix (si le prix est raisonnable) ; ensuite la carte est ramenée aux limites 6/9/6 et complétée si besoin. Les plats de l'ancien jeu absents de Bistrot (saison, menu du jour, boissons) sont gardés dans la copie pour plus tard. **Les stocks sont repris** (v0.5) : quantités, dates limites (recalculées par rapport au jour repris ; ce qui est déjà périmé est jeté), prix payés, et les commandes en route sont livrées tout de suite (déjà payées dans l'ancien jeu). Si au moins un produit avait la commande automatique, elle est activée. Une partie sans stock lisible reçoit les premières courses. La réserve peut déborder après la reprise : rien n'est jeté, on ne peut juste pas commander dans ce rangement tant qu'il déborde. Les plannings et le plan seront repris aux étapes suivantes.
+- Si l'ancienne équipe n'a personne en cuisine, le patron y passe. Si elle est vide, le restaurant reste fermé jusqu'au recrutement. **La carte est reprise** (v0.4) : chaque plat de l'ancienne carte qui existe dans Bistrot garde sa place et son prix (si le prix est raisonnable) ; ensuite la carte est ramenée aux limites 6/9/6 et complétée si besoin. Les plats de l'ancien jeu absents de Bistrot (saison, menu du jour, boissons) sont gardés dans la copie pour plus tard. **Les stocks sont repris** (v0.5) : quantités, dates limites (recalculées par rapport au jour repris ; ce qui est déjà périmé est jeté), prix payés, et les commandes en route sont livrées tout de suite (déjà payées dans l'ancien jeu). Si au moins un produit avait la commande automatique, elle est activée. Une partie sans stock lisible reçoit les premières courses. La réserve peut déborder après la reprise : rien n'est jeté, on ne peut juste pas commander dans ce rangement tant qu'il déborde. Les jours de repos de l'ancien jeu ne sont pas repris : ils sont choisis automatiquement (modifiables dans Planning). Le plan sera repris plus tard.
 - Les anciennes sauvegardes testées vont de la version 9 à la version 11 de l'ancien format (Chez YaYa v8 à v10.2), dont une partie au « Jour 0 » sans équipe, et une partie à Tokyo.
 
 ## 9. Affichage sur téléphone
@@ -312,21 +364,24 @@ Tailles de référence testées (en pixels « CSS », téléphone en paysage) :
 - Ces chiffres sont mesurés automatiquement par `outils/tester.py` à chaque version.
 - Installé sur l'écran d'accueil, le jeu s'ouvre **en plein écran et en paysage**.
 
-## 10. Équilibre mesuré (simulateur, 30 jours, Facile, v0.5.1)
+## 10. Équilibre mesuré (simulateur, 30 jours, Facile, v0.6)
 
-Équipe testée : patron en salle + 1 serveur + 1 commis de cuisine, prix conseillés, **commande automatique** (Facile), partie commencée le 25 novembre (le 1er décembre passe pendant le test : les plats de saison changent).
+Équipe testée : patron en salle + 1 serveur + 1 commis de cuisine, prix conseillés, **commande automatique** (Facile), partie commencée le 25 novembre. *Depuis la v0.6*, le serveur et le commis prennent leurs 2 jours de repos chaque semaine : les jours de repos du commis, la cuisine serait vide, donc un commis intérimaire est appelé (intérim automatique de Facile) ; les jours de repos du serveur, le patron sert seul. Pas d'agent de nettoyage : la salle se salit dans les lieux très fréquentés.
 
-| Lieu | Servis par jour | Repartis faute de place | Recettes par jour | Achats de produits | Salaires (estimés) | Résultat par jour | Gaspillage | Ruptures par jour | Menus du jour | Boissons |
+| Lieu | Servis par jour | Repartis | Recettes par jour | Achats de produits | Salaires (estimés, intérim compris) | Résultat par jour | Propreté au jour 30 | Ruptures par jour | Menus du jour | Boissons |
 |---|---|---|---|---|---|---|---|---|---|---|
-| Mayotte | 36 | 0 % | 1 221 € | 351 € (29 %) | 161 € | **708 €** | 18 portions (57 €) | 0,5 | 12 + 7 à emporter | 45 |
-| La Réunion | 60 | 2 % | 1 949 € | 408 € (21 %) | 158 € | **1 384 €** | 5 portions (9 €) | 0,7 | 17 + 5 | 75 |
-| Bretagne | 66 | 6 % | 1 850 € | 479 € (26 %) | 161 € | **1 210 €** | 14 portions (28 €) | 0,4 | 19 + 6 | 80 |
-| Île-de-France | 79 | 5 % | 2 476 € | 650 € (26 %) | 175 € | **1 651 €** | 19 portions (57 €) | 0,2 | 23 + 6 | 96 |
-| Paris | 90 | 11 % | 3 197 € | 720 € (23 %) | 213 € | **2 264 €** | 6 portions (14 €) | 0 | 24 + 6 | 110 |
-| Tokyo | 102 | 13 % | 3 710 € | 742 € (20 %) | 175 € | **2 793 €** | 7 portions (20 €) | 1,9 | 22 + 6 | 127 |
-| New York | 102 | 13 % | 4 341 € | 947 € (22 %) | 223 € | **3 172 €** | 2 portions (1 €) | 0,7 | 25 + 6 | 126 |
+| Mayotte | 36 | 1 % | 1 222 € | 349 € (29 %) | 200 € | **674 €** | 100 | 0,9 | 12 + 6 à emporter | 46 |
+| La Réunion | 60 | 3 % | 1 949 € | 422 € (22 %) | 206 € | **1 321 €** | 100 | 0,8 | 18 + 5 | 74 |
+| Bretagne | 68 | 5 % | 1 877 € | 478 € (25 %) | 197 € | **1 202 €** | 77 | 0 | 20 + 5 | 83 |
+| Île-de-France | 71 | 7 % | 2 253 € | 614 € (27 %) | 222 € | **1 417 €** | 63 | 0,2 | 21 + 7 | 86 |
+| Paris | 88 | 16 % | 3 126 € | 704 € (23 %) | 246 € | **2 176 €** | 6 | 0 | 22 + 6 | 108 |
+| Tokyo | 92 | 19 % | 3 355 € | 691 € (21 %) | 230 € | **2 434 €** | 0 | 1,3 | 20 + 6 | 112 |
+| New York | 90 | 21 % | 3 763 € | 836 € (22 %) | 290 € | **2 636 €** | 0 | 0,4 | 26 + 6 | 110 |
 
-- **Un joueur moyen reste bénéficiaire partout en Facile** (contrôle automatique). Résultat = recettes − achats − salaires des employés (35 h, sans charges ; loyer et charges viendront avec l'étape « Argent »).
+- **Un joueur moyen reste bénéficiaire partout en Facile** (contrôle automatique). Résultat = recettes − achats − salaires des employés (39 h, sans charges) − intérimaires des jours de repos (≈ 9 jours sur 30) ; loyer et charges viendront avec l'étape « Argent ».
+- Par rapport à la v0.5.1, les recettes baissent un peu (jours de repos, et salle sale à Paris, Tokyo et New York où des clients font demi-tour) : c'est voulu, pour donner envie d'embaucher un agent de nettoyage.
+- **Équipe complète** (Paris, on embauche chaque candidat qui a une place) : 16/16 au bout de 20 jours ; 93 servis par jour, 3 min d'attente, salaires ≈ 1 522 € par jour, **résultat ≈ 1 012 € par jour**, propreté 100. Une grosse équipe coûte cher : elle n'est rentable que dans un lieu fréquenté.
+- **Effets mesurés** (Paris, 8 jours) : serveur aimable (9) ≈ 102 € de pourboires par jour contre ≈ 32 € (2) ; sommelier : 862 → 948 boissons ; propreté après 20 jours sans agent 36/100, avec un agent 100/100 ; chef ou second : +1 en qualité ; plongeur : cuisine × 1,15 → × 1,07 ; barman : 9 s → 2 s par boisson.
 - Les recettes ont augmenté depuis la v0.4 (boissons et menu du jour) ; les achats font 20 à 29 % des recettes.
 - **Menu du jour modifié** (contrôle automatique) : un plat faisable est accepté, un plat sans ingrédients est refusé avec la liste de ce qui manque, « pas de dessert » donne la formule entrée + plat, le plat est obligatoire, le choix tient dans la sauvegarde, et le lendemain un nouveau menu est proposé automatiquement.
 

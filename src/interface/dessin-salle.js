@@ -16,6 +16,9 @@ UI.dessin.fond = function () {
   /* Passe : le comptoir où les plats sortent de la cuisine */
   s += '<rect x="' + (k.x - 16) + '" y="' + (P.allee - 87) + '" width="16" height="174" rx="4" fill="#9b9b9b"/>';
   s += '<text x="' + (k.x - 8) + '" y="' + (P.allee - 97) + '" class="petit-txt">' + UI.esc(B.t('salle_passe')) + '</text>';
+  /* Bar (en haut, près de la passe) et plonge (en bas de la cuisine) */
+  s += '<rect x="' + (P.passe.x - 46) + '" y="22" width="92" height="14" rx="4" fill="#7a5233"/>';
+  s += '<rect x="' + (k.x + 14) + '" y="' + (k.y + k.hauteur - 12) + '" width="104" height="10" rx="3" fill="#9fb8c8"/>';
   /* Murs avec la porte d'entrée à gauche */
   s += '<path d="M12 12 H' + (W - 12) + ' V' + (H - 12) + ' H12 V' + (e.y + 32) + ' M12 ' + (e.y - 32) + ' V12" fill="none" stroke="#5a4636" stroke-width="10"/>';
   s += '<text x="22" y="' + (e.y - 42) + '" class="petit-txt gauche">' + UI.esc(B.t('salle_entree')) + '</text>';
@@ -139,6 +142,15 @@ UI.dessin.dynamique = function () {
     const x = w.x, y = w.y, occupe = S.groupes.some(function (g) { return g.cuisinier === w.id; });
     haut += '<rect x="' + (x - 11) + '" y="' + (y - 33) + '" width="22" height="14" rx="4" fill="#fff" stroke="#555" stroke-width="2"/>';
     haut += '<circle cx="' + x + '" cy="' + y + '" r="16" fill="' + (w.patron ? '#8e2a22' : '#ffffff') + '" stroke="' + (occupe ? '#d9811c' : '#555') + '" stroke-width="3"/>';
+  });
+  /* Bar : rond foncé cerclé de bleu, avec un verre ; plonge : rond blanc cerclé de bleu */
+  B.equipe.duService(S, 'bar').forEach(function (w) {
+    haut += '<circle cx="' + w.x + '" cy="' + w.y + '" r="16" fill="#1f1f1f" stroke="#5fb3d9" stroke-width="3"/>';
+    haut += '<path d="M' + (w.x - 5) + ' ' + (w.y - 6) + ' h10 l-3 9 h-4 z" fill="#fff"/>';
+  });
+  B.equipe.duService(S, 'plonge').forEach(function (w) {
+    haut += '<circle cx="' + w.x + '" cy="' + w.y + '" r="16" fill="#ffffff" stroke="#2f7fbf" stroke-width="3"/>';
+    haut += '<rect x="' + (w.x - 7) + '" y="' + (w.y - 2) + '" width="14" height="12" rx="2" fill="#2f7fbf"/>';
   });
   /* Salle : rond foncé avec tablier blanc (le patron en rouge foncé) */
   B.equipe.salle(S).forEach(function (w) {

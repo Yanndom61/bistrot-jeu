@@ -163,7 +163,7 @@ B.carte.ligne = function (S, id) {
   if (d.cuisson) { l.viande = d.cuisson; l.cuisson = B.carte.cuissonDemandee(S, d.cuisson); }
   return l;
 };
-/* Boissons, servies par l'équipe de salle (pas de barman pour l'instant) : apéritif, vin ou boisson fraîche, boisson chaude. */
+/* Boissons : apéritif, vin ou boisson fraîche, boisson chaude. Un sommelier en salle ou au bar fait vendre plus de vin. */
 B.carte.probaBoisson = function (S, base, type) {
   const idx = B.carte.indiceType(S, 'boisson', type);
   if (idx == null) return 0;
@@ -173,11 +173,12 @@ B.carte.probaBoisson = function (S, base, type) {
 B.carte.boissons = function (S, g) {
   const Bo = B.DATA.stocks.boissons, out = [];
   const prendre = function (type) { const id = B.carte.choisirPlat(S, g, 'boisson', type); if (id) out.push(B.carte.ligne(S, id)); };
-  const bouteille = g.taille >= 2 && B.hasard(S) < B.carte.probaBoisson(S, Bo.probaBouteille, 'bouteille');
+  const som = B.equipe.sommelierPresent(S) ? B.DATA.equipe.effets.sommelierVin : 1;
+  const bouteille = g.taille >= 2 && B.hasard(S) < som * B.carte.probaBoisson(S, Bo.probaBouteille, 'bouteille');
   if (bouteille) prendre('bouteille');
   for (let i = 0; i < g.taille; i++) {
     if (B.hasard(S) < B.carte.probaBoisson(S, Bo.probaApero, 'apero')) prendre('apero');
-    if (!bouteille && B.hasard(S) < B.carte.probaBoisson(S, Bo.probaVin, 'vin')) prendre('vin');
+    if (!bouteille && B.hasard(S) < som * B.carte.probaBoisson(S, Bo.probaVin, 'vin')) prendre('vin');
     else if (B.hasard(S) < B.carte.probaBoisson(S, Bo.probaFraiche, 'froid')) prendre('froid');
     if (B.hasard(S) < B.carte.probaBoisson(S, Bo.probaChaude, 'chaud')) prendre('chaud');
   }
@@ -231,11 +232,11 @@ B.carte.verifierSaisons = function (S) {
   if (sansPlace.length) B.message(S, 'msg_debut_saison_place', { liste: sansPlace.join(', ') });
 };
 
-/* ---------- Cuissons : réussies ou ratées selon la qualité du cuisinier ---------- */
+/* ---------- Cuissons : réussies ou ratées selon la qualité du cuisinier (+1 si le chef, ou à défaut le second, est là) ---------- */
 B.carte.finirCuisson = function (S, g) {
   const E = B.DATA.carte.cuissons.erreur, C = B.DATA.carte.cuissons;
   const cuisinier = S.equipe.find(function (p) { return p.id === g.cuisinier; });
-  const q = cuisinier ? (cuisinier.qualite || 5) : 5;
+  const q = B.equipe.qualiteCuisson(S, cuisinier);
   const proba = Math.max(E.min, Math.min(E.max, E.base - E.parPointDeQualite * q));
   (g.commande || []).forEach(function (l) {
     if (!l.cuisson) return;
@@ -270,6 +271,11 @@ B.carte.etoiles = function (S, g) {
   let s = R.base;
   if (g.attenteCommande != null && g.attenteCommande > B.DATA.clients.alertes.attenteRouge) s += R.attenteLongue;
   if ((g.commande || []).some(function (l) { return l.renvoye; })) s += R.platRenvoye;
+  /* équipe : amabilité de ceux qui ont pris la commande et l'addition, responsable de salle, propreté */
+  const E = B.DATA.equipe.effets;
+  if (g.amabN) s += E.amabiliteParPoint * (g.amabS / g.amabN - 5);
+  if (B.equipe.aLePoste(S, 'resp')) s += E.respEtoiles;
+  s -= B.planning.malusProprete(S);
   const lignes = g.commande || [];
   if (lignes.length) {
     const pay = lignes.filter(function (l) { return l.prix > 0; });

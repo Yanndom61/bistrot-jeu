@@ -31,12 +31,17 @@ function recruter(S, postes) {
 
 function jouer(S, etiquette, jours, afficher, avantNuit) {
   const cumul = { arrives: 0, servis: 0, repartis: 0, attente: 0, recettes: 0, couverts: 0, tickets: 0, pourboires: 0, coutMatiere: 0, renvois: 0, jours: 0,
-    achats: 0, gaspillage: 0, gaspPortions: 0, ruptures: 0, partisRupture: 0, mdj: 0, emporter: 0, boissons: 0, causes: {}, S: null };
+    achats: 0, gaspillage: 0, gaspPortions: 0, ruptures: 0, partisRupture: 0, mdj: 0, emporter: 0, boissons: 0, causes: {}, S: null,
+    interim: 0, joursInterim: 0, formations: 0, absences: 0, partisSale: 0 };
+  const heuresJour = B.DATA.equipe.heuresParMois39h * 12 / 52 / 5;
   for (let j = 1; j <= jours; j++) {
     if (!S.ouvert) B.ouvrir(S);
     if (!S.ouvert) { probleme(etiquette + ' : impossible d’ouvrir'); return cumul; }
     let pas = 0;
     const argent0 = S.argent;
+    const interims = S.equipe.filter((p) => p.interim);
+    cumul.interim += interims.reduce((s, p) => s + p.salaire * heuresJour, 0); cumul.joursInterim += interims.length;
+    cumul.absences += S.equipe.filter((p) => p.absent).length;
     while (!S.finJour && pas < 4000) {
       B.avancer(S, 0.5);
       pas++;
@@ -51,7 +56,8 @@ function jouer(S, etiquette, jours, afficher, avantNuit) {
     if (avantNuit) avantNuit(S, j);
     const st = S.stats.jour, b = S.bilan || {};
     if (afficher) console.log(`${etiquette.padEnd(14)} ${String(j).padStart(4)} ${String(st.groupes).padStart(8)} ${String(st.arrives).padStart(8)} ${String(st.servis).padStart(7)} ${String(st.repartis).padStart(9)} ${String(b.attente ?? '-').padStart(7)} min ${B.euros(st.recettes).padStart(10)} ${B.prix(b.ticketMoyen || 0).padStart(10)} ${String(st.platsRenvoyes).padStart(7)} ${B.prix(st.pourboires).padStart(11)}  ${B.heure(S.minute)}`);
-    if (Math.abs(S.argent - argent0 - (st.recettes - st.achats)) > 0.01) probleme(`${etiquette} jour ${j} : l’argent a bougé de ${S.argent - argent0} mais recettes − achats = ${st.recettes - st.achats}`);
+    if (Math.abs(S.argent - argent0 - (st.recettes - st.achats - (st.formations || 0))) > 0.01) probleme(`${etiquette} jour ${j} : l’argent a bougé de ${S.argent - argent0} mais recettes − achats − formations = ${st.recettes - st.achats - (st.formations || 0)}`);
+    cumul.formations += st.formations || 0; cumul.partisSale += st.partisSale || 0;
     for (const r of b.ruptures || []) {
       cumul.causes[r.cause] = (cumul.causes[r.cause] || 0) + 1;
       if (!r.cause || !B.DATA.textes[r.cause] || !r.manque || !r.manque.length) probleme(`${etiquette} jour ${j} : rupture de ${r.nom} sans explication`);
@@ -89,11 +95,11 @@ for (const [lieu, c] of resumeLieux) {
 }
 
 // Stocks et argent : un joueur moyen (patron + serveur + commis, commande automatique de la difficulté Facile, prix conseillés).
-console.log('\nArgent par jour en Facile (commande automatique) : recettes − achats de marchandise − salaires (35 h, charges non comptées) = résultat');
+console.log('\nArgent par jour en Facile (commande automatique) : recettes − achats de marchandise − salaires (39 h, charges non comptées, intérimaires des jours de repos compris) = résultat');
 let pertes = 0;
 for (const [lieu, c] of resumeLieux) {
-  const n = c.jours || 1, sal = B.equipe.coutMensuel(c.S) / 30, res = (c.recettes - c.achats) / n - sal;
-  console.log(`  ${lieu.padEnd(12)} recettes ${B.euros(c.recettes / n).padStart(8)} · achats ${B.euros(c.achats / n).padStart(7)} (${Math.round(c.achats / Math.max(1, c.recettes) * 100)} %) · salaires ${B.euros(sal).padStart(6)} · résultat ${B.euros(res).padStart(8)} · gaspillage ${(c.gaspPortions / n).toFixed(1)} portions (${B.euros(c.gaspillage / n)}) · ruptures ${(c.ruptures / n).toFixed(1)} · menus du jour ${Math.round(c.mdj / n)} + ${Math.round(c.emporter / n)} à emporter · boissons ${Math.round(c.boissons / n)}`);
+  const n = c.jours || 1, sal = B.equipe.coutMensuel(c.S) / 30 + c.interim / n, res = (c.recettes - c.achats) / n - sal;
+  console.log(`  ${lieu.padEnd(12)} recettes ${B.euros(c.recettes / n).padStart(8)} · achats ${B.euros(c.achats / n).padStart(7)} (${Math.round(c.achats / Math.max(1, c.recettes) * 100)} %) · salaires ${B.euros(sal).padStart(6)} (dont intérim ${B.euros(c.interim / n)}, ${c.joursInterim} jours) · propreté ${c.S.proprete} · résultat ${B.euros(res).padStart(8)} · gaspillage ${(c.gaspPortions / n).toFixed(1)} portions (${B.euros(c.gaspillage / n)}) · ruptures ${(c.ruptures / n).toFixed(1)} · menus du jour ${Math.round(c.mdj / n)} + ${Math.round(c.emporter / n)} à emporter · boissons ${Math.round(c.boissons / n)}`);
   if (res <= 0) { pertes++; probleme(lieu + ' : un joueur moyen perd de l’argent en Facile'); }
   if (!c.mdj) probleme(lieu + ' : aucun menu du jour vendu');
   if (!c.boissons) probleme(lieu + ' : aucune boisson vendue');
@@ -296,8 +302,9 @@ for (const [nom, postes] of equipes) {
   if (B.equipe.interimPossible(S, 'salle') !== 'interim_jour1') probleme('intérim : pas possible avant la première ouverture');
   B.ouvrir(S);
   if (B.equipe.interimPossible(S, 'cuisine') !== null) probleme('intérim : il reste la place du second, il devrait être possible');
-  const i1 = B.equipe.appelerInterim(S, 'cuisine');
-  if (!i1 || B.equipe.interimPossible(S, 'cuisine') !== 'interim_complet_cuisine') probleme('intérim : une seule place vide en cuisine → un seul intérimaire');
+  const vC = B.equipe.placesVides(S, 'cuisine');
+  let nC = 0; while (B.equipe.appelerInterim(S, 'cuisine')) nC++;
+  if (vC !== 2 || nC !== 2 || B.equipe.interimPossible(S, 'cuisine') !== 'interim_complet_cuisine') probleme(`intérim : places du second et de l’apprenti vides → 2 intérimaires en cuisine (trouvé ${nC})`);
   const vS = B.equipe.placesVides(S, 'salle');
   let n = 0; while (B.equipe.appelerInterim(S, 'salle')) n++;
   if (n !== vS) probleme(`intérim : ${n} intérimaires en salle au lieu de ${vS}`);
@@ -306,7 +313,7 @@ for (const [nom, postes] of equipes) {
   B.verifier(S).forEach((pb) => probleme('intérim : ' + pb));
   B.jourSuivant(S);
   if (S.equipe.some((p) => p.interim)) probleme('intérim : les intérimaires devraient repartir le lendemain');
-  console.log(`\nEffectif : ${ef.n}/${ef.total} titulaires (2e chef refusé : poste complet), intérim : 1 en cuisine + ${n} en salle pour la journée, repartis le lendemain.`);
+  console.log(`\nEffectif : ${ef.n}/${ef.total} titulaires (2e chef refusé : poste complet), intérim : ${nC} en cuisine + ${n} en salle pour la journée, repartis le lendemain.`);
   // Intérim automatique : seulement si l'option est active et qu'il manque quelqu'un pour ouvrir.
   const T = B.creerPartie({ nom: 'Test', lieu: 'paris', graine: 92 });
   recruter(T, ['commis']); B.ouvrir(T);
@@ -330,7 +337,7 @@ for (const [nom, postes] of equipes) {
   if (!r.partie) probleme('sauvegarde 0.2 illisible : ' + r.erreur);
   else {
     const T = r.partie;
-    if (T.version !== 5 || !T.dejaOuvert || T.interimAuto !== true || T.equipe.some((p) => p.nom === 'Intérimaire')) probleme('sauvegarde 0.2 mal convertie');
+    if (T.version !== B.VERSION_SAUVEGARDE || !T.dejaOuvert || T.interimAuto !== true || T.equipe.some((p) => p.nom === 'Intérimaire')) probleme('sauvegarde 0.2 mal convertie');
     B.verifier(T).forEach((pb) => probleme('sauvegarde 0.2 : ' + pb));
     let pas = 0; while (!T.finJour && pas++ < 4000) B.avancer(T, 0.5);
     if (!T.finJour) probleme('sauvegarde 0.2 : la journée ne se termine pas');
@@ -428,7 +435,8 @@ for (const f of fs.readdirSync(dossier).filter((x) => x.endsWith('.json')).sort(
   if (!o) { probleme(f + ' illisible'); continue; }
   const S = B.ancien.convertir(o, { cle: 'bistrot_slot1', graine: 7 });
   const pb = B.verifier(S);
-  const sal = B.equipe.salle(S).length, cui = B.equipe.cuisine(S).length, aut = S.equipe.filter((p) => p.service === 'autre').length;
+  const sal = B.equipe.salle(S).length, cui = B.equipe.cuisine(S).length, aut = S.equipe.filter((p) => ['bar', 'plonge', 'nettoyage'].includes(p.service)).length;
+  if (S.equipe.some((p) => p.service === 'autre')) pb.push('employé sans rôle après reprise');
   if (!S.ouvert) B.ouvrir(S);
   if (!S.ouvert) recruter(S, ['serv', 'commis']), B.ouvrir(S);
   if (fs.readFileSync(path.join(dossier, f), 'utf8') !== txt) probleme(f + ' modifié !');
@@ -439,7 +447,172 @@ for (const f of fs.readdirSync(dossier).filter((x) => x.endsWith('.json')).sort(
   if (!r.partie) probleme(f + ' : la partie convertie ne se relit pas');
   const ca = S.origine.carte || {}, so = S.origine.stocks || {};
   if (f === 'save_v10_service_generated.json' && !so.produits) probleme(f + ' : les stocks de l’ancienne partie ne sont pas repris');
-  console.log(`  ✓ ${f} → ${S.nom}, ${B.lieu(S.lieu).nom}, jour ${S.jour}, ${B.euros(S.argent)}, note ${S.note}, ${S.equipeReprise} employés repris (salle ${sal} et cuisine ${cui}, patron compris ; ${aut} en attente de rôle), carte : ${ca.lus || 0} plats relus, ${ca.ignores || 0} plats de l’ancien jeu pas encore dans Bistrot${ca.ajustes ? ', carte ajustée aux limites 6/9/6' : ''}, stocks : ${so.produits ? `${so.produits} produits (${so.portions} portions${so.perimes ? `, ${so.perimes} périmées jetées` : ''}), ${so.commandes} commande(s) en route livrée(s)` : 'pas de stock lisible, premières courses faites'}`);
+  console.log(`  ✓ ${f} → ${S.nom}, ${B.lieu(S.lieu).nom}, jour ${S.jour}, ${B.euros(S.argent)}, note ${S.note}, ${S.equipeReprise} employés repris (salle ${sal} et cuisine ${cui}, patron compris ; ${aut} au bar, à la plonge ou au nettoyage), carte : ${ca.lus || 0} plats relus, ${ca.ignores || 0} plats de l’ancien jeu pas encore dans Bistrot${ca.ajustes ? ', carte ajustée aux limites 6/9/6' : ''}, stocks : ${so.produits ? `${so.produits} produits (${so.portions} portions${so.perimes ? `, ${so.perimes} périmées jetées` : ''}), ${so.commandes} commande(s) en route livrée(s)` : 'pas de stock lisible, premières courses faites'}`);
+}
+
+// ===== Étape 4 : équipe (postes, plannings, formations, cagnotte, effets des qualités) =====
+console.log('\nÉtape 4 — Équipe :');
+const embaucherTout = (S) => {
+  let n = 0;
+  for (const c of S.candidats.slice()) {
+    if (!B.equipe.placeLibre(S, c.poste)) continue;
+    B.equipe.repondre(S, c, 'salaire');
+    if (B.equipe.proposer(S, c, c.demande).r === 'accepte') n++;
+  }
+  return n;
+};
+// 1) Les 16 postes sont tous ouverts à l'embauche, et l'équipe complète se remplit en quelques jours.
+{
+  const rec = Object.keys(B.DATA.equipe.postes).filter((k) => B.DATA.equipe.postes[k].recrutable);
+  const places = B.DATA.equipe.effectif.places.filter((pl) => !B.equipe.placeRecrutable(pl));
+  if (places.length) probleme('places pas encore ouvertes à l’embauche : ' + places.map((p) => p.nom).join(', '));
+  const S = B.creerPartie({ nom: 'Test', lieu: 'paris', graine: 4004 });
+  embaucherTout(S);
+  const c = jouer(S, 'équipe complète', 20, false, (T) => embaucherTout(T));
+  const T = c.S, ef = B.equipe.effectif(T);
+  const n = c.jours || 1, sal = B.equipe.coutMensuel(T) / 30 + c.interim / n, res = (c.recettes - c.achats - c.formations) / n - sal;
+  console.log(`  ${rec.length} sortes de postes ouvertes (${rec.map((k) => B.DATA.equipe.postes[k].nom).join(', ')}).`);
+  console.log(`  Paris, on embauche chaque candidat qui a une place : ${ef.n}/${ef.total} au bout de 20 jours (salle ${ef.groupes.salle}, cuisine ${ef.groupes.cuisine}, nettoyage ${ef.groupes.nettoyage}).`);
+  console.log(`  moyenne par jour : ${Math.round(c.servis / n)} servis, attente ${Math.round(c.attente / n)} min, recettes ${B.euros(c.recettes / n)}, salaires ${B.euros(sal)}, résultat ${B.euros(res)}, propreté finale ${T.proprete}/100, ${(c.absences / n).toFixed(1)} absents par jour.`);
+  if (ef.n < 12) probleme('équipe complète : trop peu d’embauches en 20 jours (' + ef.n + ')');
+  if (res <= 0) probleme('équipe complète en Facile à Paris : le restaurant perd de l’argent');
+  // 2) Plannings : 2 jours de repos qui se suivent, chaque semaine.
+  const suivi = {};
+  const S2 = B.relire(B.serialiser(T)).partie;
+  for (let j = 0; j < 14; j++) {
+    for (const p of S2.equipe) if (B.equipe.aDesRepos(p)) { suivi[p.id] = suivi[p.id] || []; suivi[p.id].push(p.absent === 'repos' ? 1 : 0); }
+    if (S2.equipe.some((p) => p.patron && p.absent)) probleme('le patron ne doit jamais être en repos');
+    S2.finJour = true; B.jourSuivant(S2);
+  }
+  let bons = 0, total = 0;
+  for (const id in suivi) {
+    const a = suivi[id]; if (a.length < 14) continue; total++;
+    const sem = [a.slice(0, 7), a.slice(7, 14)].every((w) => w.reduce((x, y) => x + y, 0) === 2);
+    const ronde = a.concat(a.slice(0, 1)).join('');
+    if (sem && /11/.test(ronde)) bons++; else probleme('planning : ' + id + ' → ' + a.join(''));
+  }
+  const cv = [1, 2, 3, 4, 5, 6, 0].map((j) => B.planning.couverture(S2, j));
+  console.log(`  plannings : ${bons}/${total} employés ont bien 2 jours de repos qui se suivent chaque semaine ; salle par jour (lun→dim) ${cv.map((x) => x.salle).join('-')}, cuisine ${cv.map((x) => x.cuisine).join('-')}.`);
+}
+// 3) Formations : payée tout de suite, absent le prochain jour travaillé, +1 le lendemain. Sommellerie : plus de vin.
+{
+  const S = B.creerPartie({ nom: 'Test', lieu: 'paris', graine: 4005 });
+  recruter(S, ['serv', 'commis']);
+  const sv = S.equipe.find((p) => p.poste === 'serv'), v0 = sv.vitesse, a0 = S.argent;
+  const o = B.planning.formationsPour(S, sv).find((f) => f.id === 'vitesse');
+  const r = B.planning.inscrire(S, sv, 'vitesse');
+  if (!r.ok || Math.abs(a0 - S.argent - o.prix) > 0.001) probleme('formation : pas payée au bon prix');
+  if (B.planning.inscrire(S, sv, 'sommelier').erreur !== 'form_non_inscrit') probleme('formation : 2 formations en même temps');
+  let jourForm = null, jours = 0;
+  B.ouvrir(S);
+  while (jours++ < 10 && sv.vitesse === v0) {
+    let k = 0; while (!S.finJour && k++ < 4000) B.avancer(S, 0.5);
+    B.jourSuivant(S); if (!S.ouvert) B.ouvrir(S);
+    if (sv.absent === 'formation') jourForm = S.jour;
+  }
+  if (!jourForm || sv.vitesse !== v0 + 1) probleme('formation : pas d’absence ou pas de point gagné');
+  else console.log(`  formation « Rapidité » (${B.euros(o.prix)}) : inscrite le jour 1, en formation le jour ${jourForm}, vitesse ${v0} → ${sv.vitesse} le jour ${S.jour}.`);
+  const B2 = B.planning.inscrire(S, sv, 'sommelier'); const prixS = B.DATA.equipe.formations.liste.find((f) => f.id === 'sommelier').prix;
+  if (!B2.ok) probleme('formation sommelier refusée : ' + B2.erreur);
+  if (!B.planning.annuler(S, sv) || sv.formation) probleme('formation : annulation impossible');
+  // vin vendu avec et sans sommelier (mêmes clients)
+  const vin = (som) => {
+    const T = B.creerPartie({ nom: 'Test', lieu: 'paris', graine: 4006 });
+    recruter(T, ['serv', 'commis']); if (som) T.equipe.forEach((p) => { if (p.service === 'salle') p.sommelier = true; });
+    const c = jouer(T, som ? 'sommelier' : 'sans sommelier', 8, false);
+    let n = 0; (c.S.tickets || []).forEach(() => {}); return c.boissons;
+  };
+  const sansS = vin(false), avecS = vin(true);
+  console.log(`  sommellerie (${B.euros(prixS)}) : boissons vendues en 8 jours ${sansS} sans sommelier → ${avecS} avec.`);
+  if (!(avecS > sansS)) probleme('sommelier : il devrait faire vendre plus de vin');
+}
+// 4) Cagnotte : partagée le dernier soir du mois entre les employés, ni patron ni intérimaire ; jamais dans la caisse.
+{
+  const S = B.creerPartie({ nom: 'Test', lieu: 'paris', graine: 4007, debut: '2026-11-27' });
+  recruter(S, ['serv', 'commis', 'plong']);
+  const c = jouer(S, 'cagnotte', 5, false);
+  const T = c.S, r = (T.partages || [])[0];
+  if (!r) probleme('cagnotte : pas de partage en fin de mois');
+  else {
+    const gens = T.equipe.filter((p) => B.equipe.aDesRepos(p));
+    const somme = gens.reduce((s, p) => s + (p.pourboires || 0), 0);
+    if (Math.abs(somme + r.reste - r.total) > 0.011) probleme('cagnotte : les parts ne font pas le total');
+    if (T.equipe.some((p) => (p.patron || p.interim) && p.pourboires)) probleme('cagnotte : le patron ou un intérimaire a reçu une part');
+    console.log(`  cagnotte : partagée le 30 novembre au soir, ${B.prix(r.total)} → ${r.n} × ${B.prix(r.part)} (reste ${B.prix(r.reste)}), patron et intérimaires exclus, argent du restaurant inchangé.`);
+  }
+}
+// 5) Effet des postes et des qualités (mêmes clients à chaque fois : seule l'équipe change).
+{
+  const essai = (etiq, postes, regler, jours = 8, lieu = 'paris') => {
+    const S = B.creerPartie({ nom: 'Test', lieu, graine: 4010 });
+    recruter(S, postes); if (regler) regler(S);
+    S.equipe.forEach((p) => { if (B.equipe.aDesRepos(p)) p.repos = [5, 6]; });   /* repos vendredi-samedi pour tous : comparaison juste */
+    return jouer(S, etiq, jours, false);
+  };
+  const ligne = (c) => `${Math.round(c.servis / c.jours)} servis/j, attente ${Math.round(c.attente / c.jours)} min, ${(c.renvois / c.jours).toFixed(1)} renvois/j, pourboires ${B.prix(c.pourboires / c.jours)}/j`;
+  const base = essai('base', ['serv', 'commis']);
+  const plonge = essai('plonge', ['serv', 'commis', 'plong']);
+  const bar = essai('bar', ['serv', 'commis', 'barman']);
+  const chef = essai('chef', ['serv', 'commis', 'chef']);
+  const resp = essai('resp', ['serv', 'commis', 'resp']);
+  const doux = essai('aimable', ['serv', 'commis'], (S) => S.equipe.forEach((p) => { if (p.service === 'salle') p.amabilite = 9; }));
+  const dur = essai('pas aimable', ['serv', 'commis'], (S) => S.equipe.forEach((p) => { if (p.service === 'salle') p.amabilite = 2; }));
+  const sale = essai('sans nettoyage', ['serv', 'commis'], null, 20);
+  const propre = essai('avec nettoyage', ['serv', 'commis', 'nett'], null, 20);
+  console.log('  Effets (Paris, 8 jours, même graine de hasard ; chiffres indicatifs) :');
+  console.log(`    patron + serveur + commis      : ${ligne(base)}`);
+  console.log(`    + plongeur                     : ${ligne(plonge)}`);
+  console.log(`    + barman                       : ${ligne(bar)}`);
+  console.log(`    + chef (+1 qualité aux autres) : ${ligne(chef)}`);
+  console.log(`    + responsable de salle         : ${ligne(resp)}`);
+  console.log(`    serveur aimable 9 / 2          : pourboires ${B.prix(doux.pourboires / doux.jours)}/j contre ${B.prix(dur.pourboires / dur.jours)}/j`);
+  console.log(`    propreté après 20 jours        : ${sale.S.proprete}/100 sans agent de nettoyage (${sale.partisSale} clients partis), ${propre.S.proprete}/100 avec un agent`);
+  if (!(doux.pourboires > dur.pourboires)) probleme('amabilité : un serveur aimable devrait rapporter plus de pourboires');
+  if (!(propre.S.proprete > sale.S.proprete)) probleme('nettoyage : un agent devrait garder la salle plus propre');
+  {
+    const S = B.creerPartie({ nom: 'Test', lieu: 'paris', graine: 4012 });
+    recruter(S, ['commis']);
+    const cm = S.equipe.find((p) => p.poste === 'commis'); cm.qualite = 5;
+    const q0 = B.equipe.qualiteCuisson(S, cm);
+    recruter(S, ['second']); const q1 = B.equipe.qualiteCuisson(S, cm);
+    recruter(S, ['chef']); const q2 = B.equipe.qualiteCuisson(S, cm);
+    const f0 = B.equipe.facteurPlonge(S); recruter(S, ['plong']); const f1 = B.equipe.facteurPlonge(S);
+    const t0 = B.equipe.tempsBoisson(S); recruter(S, ['barman']); const t1 = B.equipe.tempsBoisson(S);
+    console.log(`    règles vérifiées : qualité en cuisine d’un commis à 5 → ${q0} seul, ${q1} avec le second, ${q2} avec le chef ; cuisine ×${f0.toFixed(2)} sans plongeur → ×${f1.toFixed(2)} avec ; préparation d’une boisson ${(t0 * 60).toFixed(0)} s → ${(t1 * 60).toFixed(1)} s avec un barman.`);
+    if (!(q1 === q0 + 1 && q2 === q0 + 1 && f1 < f0 && t1 < t0)) probleme('effets des postes (chef, second, plongeur, barman) incorrects');
+  }
+}
+// 6) Renvoi : toujours possible (bar, plonge, nettoyage compris) ; une formation pas encore commencée est remboursée.
+{
+  const S = B.creerPartie({ nom: 'Test', lieu: 'paris', graine: 4011 });
+  recruter(S, ['serv', 'commis', 'barman', 'plong', 'nett']);
+  B.ouvrir(S); B.avancer(S, 90);
+  const bm = S.equipe.find((p) => p.poste === 'barman'), pl = S.equipe.find((p) => p.poste === 'plong');
+  const a0 = S.argent; B.planning.inscrire(S, bm, 'vitesse'); const prix = a0 - S.argent;
+  if (!B.equipe.renvoyer(S, bm) || S.equipe.includes(bm) || Math.abs(S.argent - a0) > 0.001) probleme('renvoi du barman : pas parti ou formation pas remboursée');
+  if (!B.equipe.renvoyer(S, pl) || S.equipe.includes(pl)) probleme('renvoi du plongeur impossible');
+  B.verifier(S).forEach((x) => probleme('renvoi étape 4 : ' + x));
+  console.log(`  renvoi : barman (formation de ${B.euros(prix)} remboursée) et plongeur partis tout de suite, en plein service.`);
+}
+// 7) Sauvegarde Bistrot 0.5.1 (format 5) : rôles, jours de repos, cagnotte gardée, service repris.
+{
+  const f = 'tests/sauvegardes-bistrot/v5-bistrot-0.5.1-equipe-ancien-jeu-en-service.json';
+  const txt = fs.readFileSync(path.join(RACINE, f), 'utf8'), o = JSON.parse(txt);
+  const r = B.relire(txt);
+  if (!r.partie) probleme('sauvegarde 0.5.1 illisible : ' + r.erreur);
+  else {
+    const T = r.partie;
+    if (T.version !== 6 || T.equipe.some((p) => p.service === 'autre') || T.cagnotte !== o.cagnotte || T.groupes.length !== o.groupes.length) probleme('sauvegarde 0.5.1 mal convertie');
+    if (T.equipe.some((p) => B.equipe.aDesRepos(p) && (!p.repos || p.absent))) probleme('sauvegarde 0.5.1 : repos manquants ou absent dès la reprise');
+    B.verifier(T).forEach((x) => probleme('sauvegarde 0.5.1 : ' + x));
+    let k = 0; while (!T.finJour && k++ < 4000) B.avancer(T, 0.5);
+    if (!T.finJour) probleme('sauvegarde 0.5.1 : la journée reprise ne se termine pas');
+    B.jourSuivant(T);
+    const c = jouer(T, 'reprise 0.5.1', 3, false);
+    if (fs.readFileSync(path.join(RACINE, f), 'utf8') !== txt) probleme('sauvegarde 0.5.1 modifiée !');
+    const sv = {}; T.equipe.forEach((p) => { sv[p.service] = (sv[p.service] || 0) + 1; });
+    console.log(`  sauvegarde 0.5.1 relue (format ${T.version}) : ${T.equipe.length} personnes (${Object.entries(sv).map(([k, v]) => v + ' ' + k).join(', ')}), cagnotte ${B.prix(o.cagnotte)} gardée, ${o.groupes.length} groupes repris en plein service, 3 jours joués ensuite (${c.servis} servis).`);
+  }
 }
 
 // Sauvegarde venant d'une version future : refusée proprement, sans plantage.

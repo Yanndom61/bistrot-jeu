@@ -1,5 +1,5 @@
 /* equipe.js — l'équipe : le patron, les employés, les candidats, les entretiens et l'embauche.
-   Version simple : plannings, formations et contrats viendront à l'étape « Équipe ». */
+   Plannings, formations, cagnotte et effets des postes : voir planning.js. */
 B.equipe = {};
 
 B.equipe.D = function () { return B.DATA.equipe; };
@@ -39,10 +39,12 @@ B.equipe.parMois = function (horaire) { return horaire * B.DATA.equipe.heuresPar
 B.equipe.euroHeure = function (n) { return n.toFixed(2).replace('.', ',') + '\u00A0€'; };
 
 /* ---------- Composition ---------- */
-B.equipe.salle = function (S) { return S.equipe.filter(function (p) { return p.service === 'salle'; }); };
-B.equipe.cuisine = function (S) { return S.equipe.filter(function (p) { return p.service === 'cuisine'; }); };
-/* Ceux qui restent (sans compter les personnes renvoyées qui finissent leur tâche). */
-B.equipe.actifs = function (S, service) { return S.equipe.filter(function (p) { return p.service === service && !p.partant; }); };
+/* Ceux qui sont au travail aujourd'hui (pas en repos ni en formation). */
+B.equipe.salle = function (S) { return S.equipe.filter(function (p) { return p.service === 'salle' && !p.absent; }); };
+B.equipe.cuisine = function (S) { return S.equipe.filter(function (p) { return p.service === 'cuisine' && !p.absent; }); };
+B.equipe.duService = function (S, service) { return S.equipe.filter(function (p) { return p.service === service && !p.absent; }); };
+/* Ceux qui restent (sans compter les absents du jour ni les personnes renvoyées qui finissent leur tâche). */
+B.equipe.actifs = function (S, service) { return S.equipe.filter(function (p) { return p.service === service && !p.partant && !p.absent; }); };
 B.equipe.patron = function (S) { return S.equipe.find(function (p) { return p.patron; }); };
 B.equipe.peutOuvrir = function (S) { return B.equipe.actifs(S, 'salle').length > 0 && B.equipe.actifs(S, 'cuisine').length > 0; };
 B.equipe.coutMensuel = function (S) {
@@ -56,7 +58,11 @@ B.equipe.base = function (S, p) {
     const i = B.equipe.salle(S).indexOf(p);
     return { x: P.passe.x - 12 - Math.floor(i / 2) * 36, y: i % 2 ? P.allee + 20 : P.allee - 20 };
   }
-  const k = P.cuisine, j = Math.max(0, B.equipe.cuisine(S).indexOf(p));
+  const k = P.cuisine;
+  if (p.service === 'bar') { const b = Math.max(0, B.equipe.duService(S, 'bar').indexOf(p)); return { x: P.passe.x - 22 + (b % 2) * 44, y: 50 + Math.floor(b / 2) * 40 }; }
+  if (p.service === 'plonge') { const b = Math.max(0, B.equipe.duService(S, 'plonge').indexOf(p)); return { x: k.x + 36 + (b % 2) * 60, y: k.y + k.hauteur - 34 }; }
+  if (p.service === 'nettoyage') { const b = Math.max(0, B.equipe.duService(S, 'nettoyage').indexOf(p)); return { x: 60 + b * 44, y: 40 }; }
+  const j = Math.max(0, B.equipe.cuisine(S).indexOf(p));
   return { x: k.x + 36 + (j % 2) * 60, y: k.y + 178 + Math.floor(j / 2) * 58 };
 };
 
@@ -68,6 +74,10 @@ B.equipe.nouveauMembre = function (S, o) {
     salaire: o.salaire || 0, experience: o.experience || 0, perso: o.perso || null,
     x: 0, y: 0, chemin: [], tache: null
   };
+  if (o.interim) { p.interim = true; p.jourInterim = S.jour; }
+  if (B.equipe.aDesRepos(p)) {
+    p.repos = B.planning.choisirRepos(S, p); p.absent = null; p.formation = null; p.formations = []; p.sommelier = false; p.pourboires = 0;
+  }
   S.equipe.push(p);
   const b = B.equipe.base(S, p); p.x = b.x; p.y = b.y;
   return p;
@@ -109,10 +119,12 @@ B.equipe.effectif = function (S) {
 };
 
 /* ---------- Intérim : un remplaçant pour la journée, sur une place vide ---------- */
+/* Places vides ou dont le titulaire est absent aujourd'hui, pour les postes de ce service (salle ou cuisine). */
 B.equipe.placesVides = function (S, service) {
   return B.DATA.equipe.effectif.places.reduce(function (s, pl) {
-    if (pl.groupe !== service || !B.equipe.placeRecrutable(pl)) return s;
-    return s + Math.max(0, pl.nombre - B.equipe.occupes(S, pl));
+    if (!pl.postes.some(function (k) { return B.equipe.poste(k).service === service; })) return s;
+    const la = B.equipe.titulaires(S).filter(function (p) { return pl.postes.indexOf(p.poste) >= 0 && !p.absent; }).length;
+    return s + Math.max(0, pl.nombre - la);
   }, 0);
 };
 B.equipe.interimaires = function (S, service) { return S.equipe.filter(function (p) { return p.interim && !p.partant && (!service || p.service === service); }); };
@@ -133,20 +145,20 @@ B.equipe.appelerInterim = function (S, service, auto) {
   const p = B.equipe.nouveauMembre(S, {
     nom: pr[0] + ' ' + noms[B.entier(S, 0, noms.length - 1)], genre: pr[1], poste: poste, service: service,
     note: I.note, vitesse: I.vitesse, qualite: I.qualite, amabilite: I.amabilite, experience: I.experience,
-    salaire: B.equipe.salaireInterim(S, service)
+    salaire: B.equipe.salaireInterim(S, service), interim: true
   });
-  p.interim = true; p.jourInterim = S.jour;
   B.equipe.replacer(S);
   if (auto) B.message(S, 'msg_interim_auto', { nom: p.nom });
   else B.message(S, 'msg_interim', { nom: p.nom, poste: B.equipe.nomPoste(p), salaire: B.equipe.euroHeure(p.salaire) });
   return p;
 };
-/* Le matin : les intérimaires de la veille repartent ; si l'option est active et qu'il manque quelqu'un pour ouvrir,
-   un intérimaire est appelé automatiquement (dernier recours). */
+/* Le matin : les intérimaires de la veille repartent, on regarde qui est en repos ou en formation ;
+   si l'option est active et qu'il manque quelqu'un pour ouvrir, un intérimaire est appelé automatiquement (dernier recours). */
 B.equipe.matin = function (S) {
-  const avant = S.equipe.length;
   S.equipe = S.equipe.filter(function (p) { return !p.partant && !p.interim; });
-  if (S.equipe.length < avant) B.equipe.replacer(S);
+  B.planning.matin(S);
+  B.equipe.replacer(S);
+  if (S.proprete != null && S.proprete < B.DATA.equipe.effets.proprete.seuilEtoiles) B.message(S, 'msg_salle_sale', { n: S.proprete });
   if (S.interimAuto && S.dejaOuvert) {
     ['salle', 'cuisine'].forEach(function (sv) {
       if (!B.equipe.actifs(S, sv).length) B.equipe.appelerInterim(S, sv, true);
@@ -179,6 +191,7 @@ B.equipe.occupe = function (S, p) {
 };
 B.equipe.retirer = function (S, p, apresTache) {
   B.equipe.liberer(S, p);
+  if (p.formation && p.absent !== 'formation') B.planning.annuler(S, p);
   S.equipe = S.equipe.filter(function (x) { return x.id !== p.id; });
   B.equipe.replacer(S);
   if (apresTache) B.message(S, 'msg_renvoi_parti', { nom: p.nom });
@@ -208,8 +221,10 @@ B.equipe.replacer = function (S) {
 /* ---------- Candidats ---------- */
 B.equipe.candidat = function (S, poste) {
   const D = B.DATA.equipe, P = D.postes[poste];
-  const pr = D.prenoms[B.entier(S, 0, D.prenoms.length - 1)];
   const noms = D.noms.concat(B.lieu(S.lieu).nomsClients);
+  const pris = S.equipe.map(function (x) { return x.nom; }).concat(S.candidats.map(function (x) { return x.nom; }));
+  let pr, nom, essai = 0;
+  do { pr = D.prenoms[B.entier(S, 0, D.prenoms.length - 1)]; nom = pr[0] + ' ' + noms[B.entier(S, 0, noms.length - 1)]; } while (pris.indexOf(nom) >= 0 && ++essai < 8);
   const note = B.entier(S, P.niveauJeu[0], P.niveauJeu[1]);
   const age = B.entier(S, 19, 55);
   const exp = Math.max(0, Math.min(age - 18, Math.round((note - 2) * 1.6 + B.entre(S, -2, 3))));
@@ -218,7 +233,7 @@ B.equipe.candidat = function (S, poste) {
   const min = B.equipe.minimum(S, poste, exp);
   const demande = Math.round(min * (1 + Math.max(0, (note - 4) * 0.03) + perso.exigence + B.entre(S, 0, 0.06)) * 10) / 10;
   return {
-    id: S.prochainId++, nom: pr[0] + ' ' + noms[B.entier(S, 0, noms.length - 1)], genre: pr[1], poste: poste,
+    id: S.prochainId++, nom: nom, genre: pr[1], poste: poste,
     age: age, experience: exp, note: note, vitesse: varie(), amabilite: varie(), qualite: varie(),
     perso: perso.id, minimum: min, demande: Math.max(min, demande), offre: min,
     reponses: [], revele: {}, refus: 0, dernierMot: null, graineTexte: B.entier(S, 0, 9999)
@@ -226,7 +241,8 @@ B.equipe.candidat = function (S, poste) {
 };
 
 B.equipe.genererDepart = function (S) {
-  S.candidats = B.DATA.equipe.candidatsDepart.map(function (p) { return B.equipe.candidat(S, p); });
+  S.candidats = [];
+  B.DATA.equipe.candidatsDepart.forEach(function (p) { S.candidats.push(B.equipe.candidat(S, p)); });
 };
 
 B.equipe.nouveauxCandidats = function (S) {
@@ -248,14 +264,14 @@ B.equipe.texteExperience = function (c) {
 
 /* ---------- Entretien ---------- */
 B.equipe.questions = function (c) {
-  const service = B.equipe.poste(c.poste).service;
+  const service = B.equipe.famille(B.equipe.poste(c.poste).service);
   return ['parcours', 'rush', service === 'cuisine' ? 'qualite_cuisine' : 'qualite_salle', 'salaire'];
 };
 B.equipe.niveau3 = function (v) { return v <= 3 ? 0 : v <= 6 ? 1 : 2; };
 
 B.equipe.repondre = function (S, c, q) {
   if (c.reponses.some(function (r) { return r.q === q; })) return null;
-  const service = B.equipe.poste(c.poste).service, g = c.genre, n = c.graineTexte + c.reponses.length * 7;
+  const service = B.equipe.famille(B.equipe.poste(c.poste).service), g = c.genre, n = c.graineTexte + c.reponses.length * 7;
   let corps;
   if (q === 'parcours') corps = B.tChoix('r_parcours_' + service + '_' + (c.experience === 0 ? 0 : c.experience < 5 ? 1 : 2), n, { exp: c.experience }, g);
   else if (q === 'rush') { corps = B.tChoix('r_rush_' + B.equipe.niveau3(c.vitesse), n, null, g); c.revele.vitesse = true; }

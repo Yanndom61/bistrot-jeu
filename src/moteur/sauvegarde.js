@@ -1,7 +1,7 @@
 /* sauvegarde.js — enregistrer et relire une partie. Chaque sauvegarde porte un numéro de version.
    Quand le format change, on ajoute une étape dans B.MIGRATIONS (de la version n à n+1) :
    ainsi chaque nouvelle version du jeu sait relire toutes les anciennes. */
-B.VERSION_SAUVEGARDE = 5;
+B.VERSION_SAUVEGARDE = 6;
 
 B.MIGRATIONS = {
   /* v1 → v2 (Bistrot 0.2) : l'équipe arrive. Le patron démarre seul (Léa n'est plus là), avec des candidats.
@@ -65,6 +65,32 @@ B.MIGRATIONS = {
     B.carte.completer(S);
     B.stock.creer(S);
     S.version = 5;
+    return S;
+  },
+  /* v5 → v6 (Bistrot 0.6) : étape Équipe. Barmans, plongeurs et agents de nettoyage (« rôle à venir ») prennent leur poste ;
+     chacun reçoit 2 jours de repos qui se suivent (personne n'est absent le jour de la reprise) ; propreté de départ ;
+     la cagnotte garde son montant ; un candidat pour chaque nouveau poste ouvert à l'embauche (s'il reste une place). */
+  5: function (S) {
+    S.equipe.forEach(function (p) {
+      const P = B.equipe.poste(p.poste);
+      if (P && !p.patron) p.service = P.service;
+    });
+    S.equipe.forEach(function (p) {
+      if (!B.equipe.aDesRepos(p)) { p.absent = null; return; }
+      p.absent = null; p.formation = null; p.formations = []; p.sommelier = false; p.pourboires = 0;
+      p.repos = null;
+    });
+    S.equipe.forEach(function (p) { if (B.equipe.aDesRepos(p)) p.repos = B.planning.choisirRepos(S, p); });
+    S.partages = [];
+    S.proprete = B.DATA.equipe.effets.proprete.depart;
+    S.cagnotte = B.r2(S.cagnotte || 0);
+    const v = B.statsVides();
+    for (const k in v) if (S.stats.jour[k] == null) S.stats.jour[k] = v[k];
+    ['barman', 'plong', 'nett', 'appr'].forEach(function (poste) {
+      if (B.equipe.placeLibre(S, poste) && !S.candidats.some(function (c) { return c.poste === poste; })) S.candidats.push(B.equipe.candidat(S, poste));
+    });
+    B.equipe.replacer(S);
+    S.version = 6;
     return S;
   }
 };
