@@ -61,11 +61,12 @@ B.rep.auteur = function (S) { const L = B.t('avis_auteurs').split('|'); return L
 B.rep.apresRepas = function (S, g, etoiles) {
   const P = B.rep.D().poids, A = B.rep.D().avis;
   if (g.critique) return;
-  B.rep.maj(S, etoiles, P.client);
+  const cible = etoiles - (B.rep.D().exigence[S.difficulte] || 0);   /* Difficile : clients plus exigeants */
+  B.rep.maj(S, cible, P.client);
   const p = A.base + A.parEcart * Math.abs(Math.round(etoiles) - 3) / 2;
   if (B.hasard(S) < p) {
     B.rep.publier(S, etoiles, B.rep.texte(S, etoiles, g, B.rep.points(S, g)), B.rep.auteur(S));
-    B.rep.maj(S, etoiles, P.avis);
+    B.rep.maj(S, cible, P.avis);
   }
 };
 /* Clients partis sans manger. */

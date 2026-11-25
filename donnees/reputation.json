@@ -21,6 +21,7 @@
   "notes": { "fileRepart": 2.5, "salleSale": 2.5, "rupture": 1, "inspectBravo": 5, "inspectMauvais": 1, "influRepas": 5, "critiqueParti": 1 },
   "avis": { "_explication": "Probabilité qu'une table écrive un avis : base + parEcart × |étoiles − 3| / 2 (les très contents et les mécontents écrivent plus). On garde les 80 derniers.", "base": 0.12, "parEcart": 0.2, "garder": 80 },
   "critique": { "buzzAPartirDe": 4.5, "buzz": 1.15, "buzzJours": 5 },
+  "exigence": { "_explication": "Choix de Bistrot (pas dans l'ancien jeu) : en Difficile, les concurrents rendent les clients plus exigeants ; pour la réputation, chaque repas compte 0,5 étoile de moins (l'avis affiché garde ses étoiles).", "facile": 0, "normal": 0, "difficile": 0.5 },
   "influMin": 2.5,
   "michelin": { "_explication": "Ancien jeu : au moins 30 jours après l'ouverture, brigade au sommet (ici : 8 employés ou plus, tous au niveau 10 dans les formations de leur service). +0,4 de réputation, réception privée de 1 800 €.", "jours": 30, "employes": 8, "niveau": 10, "bonus": 0.4, "reception": 1800 }
 }
